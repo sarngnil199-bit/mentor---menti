@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillGraph - Profile</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .persona-banner {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 22px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .persona-banner.Competitor { background:#ede9fe; color:#7c3aed; }
+        .persona-banner.Builder    { background:#dbeafe; color:#1d4ed8; }
+        .persona-banner.Leader     { background:#dcfce7; color:#15803d; }
+        .persona-banner.Scholar    { background:#fef3c7; color:#92400e; }
+        .persona-banner span.emoji { font-size:28px; }
+        .persona-banner .text small { display:block; font-weight:400; opacity:.75; margin-top:2px; font-size:12px; }
+
+        .alert-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 4px 4px 0 0;
+        }
+        .alert-HIGH   { background:#fee2e2; color:#dc2626; }
+        .alert-MEDIUM { background:#fef3c7; color:#92400e; }
+        .alert-LOW    { background:#dcfce7; color:#15803d; }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <div class="logo">Skill<span>Graph</span></div>
+        <ul class="menu">
+            <li onclick="goTo('index.html')">🏠 Dashboard</li>
+            <li class="active">👤 My Profile</li>
+            <li onclick="goTo('skills.html')">🧠 Skills</li>
+            <li onclick="goTo('certifications.html')">📜 Certifications</li>
+            <li onclick="goTo('projects.html')">🚀 Projects</li>
+            <li onclick="goTo('achievements.html')">🏆 Achievements</li>
+            <li onclick="goTo('team.html')">🤝 Team Match</li>
+            <li onclick="goTo('learning.html')">🎯 Learning Path</li>
+            <li onclick="goTo('graph.html')">🕸️ Skill Graph</li>
+            <li onclick="goTo('settings.html')">⚙️ Settings</li>
+        </ul>
+    </div>
+
+    <div class="main">
+
+        <div class="page-header">
+            <h1>👤 My Profile</h1>
+            <p>Your complete student growth profile.</p>
+        </div>
+
+        <div class="profile-card" id="profileCard">
+            <div class="big-avatar" id="profileAvatar">?</div>
+            <div>
+                <h1 id="profileName">Loading…</h1>
+                <p id="profileDept">—</p>
+                <p id="profileCollege">🎓 Mahendra Engineering College</p>
+            </div>
+            <button onclick="alert('Profile edit form coming soon!')">Edit Profile</button>
+        </div>
+
+        <!-- Persona banner (API-driven) -->
+        <div class="persona-banner" id="personaBanner" style="display:none">
+            <span class="emoji" id="personaEmoji">🎓</span>
+            <div class="text">
+                <div id="personaTitle">—</div>
+                <small id="personaDesc">—</small>
+            </div>
+        </div>
+
+        <!-- Active Alerts -->
+        <div class="section" id="alertsSection" style="display:none">
+            <h2>⚠️ Mentor Alerts</h2>
+            <div id="alertsContainer"></div>
+        </div>
+
+        <div class="cards">
+            <div class="card">
+                <h3>Projects</h3>
+                <h2 class="purple" id="statProjects">—</h2>
+            </div>
+            <div class="card">
+                <h3>Certifications</h3>
+                <h2 class="blue" id="statCerts">—</h2>
+            </div>
+            <div class="card">
+                <h3>Hackathons</h3>
+                <h2 class="orange" id="statHackathons">—</h2>
+            </div>
+            <div class="card">
+                <h3>Growth Index</h3>
+                <h2 class="green" id="statGrowth">—</h2>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>About Me</h2>
+            <p class="large-text" id="aboutText">
+                Loading profile…
+            </p>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        const API    = 'http://localhost:8000';
+        const MY_ID  = 'STU001';
+
+        const personaEmoji = { Competitor:'⚔️', Builder:'🏗️', Leader:'🌟', Scholar:'📚' };
+        const personaDesc  = {
+            Competitor: 'You excel in competitive programming and DSA challenges.',
+            Builder:    'You love building real projects and shipping things that work.',
+            Leader:     'You thrive in team leadership, events, and community initiatives.',
+            Scholar:    'You shine in academics, research, and paper presentations.',
+        };
+
+        async function loadProfile() {
+            try {
+                const res = await fetch(`${API}/api/student/${MY_ID}`);
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+                renderProfile(data);
+            } catch {
+                // Static fallback
+                renderProfile({
+                    profile: {
+                        name: 'Sara Khan', department: 'Computer Science', year: 2,
+                        cgpa: 9.3, certifications_count: 4, leetcode_solved: 380,
+                        github_projects: 5, hackathons_participated: 4,
+                        internships: 0, leadership: 1, paper_presentations: 1,
+                    },
+                    persona: 'Competitor',
+                    growth_index: 72.0,
+                    alerts: [],
+                    skills: ['Python','SQL','Data Structures','Web Development','FastAPI'],
+                });
+            }
+        }
+
+        function renderProfile(data) {
+            const p = data.profile;
+
+            // Header
+            const initials = p.name.split(' ').map(n => n[0]).join('');
+            document.getElementById('profileAvatar').textContent = initials;
+            document.getElementById('profileName').textContent   = p.name;
+            document.getElementById('profileDept').textContent   =
+                `${p.department} — Year ${p.year} · CGPA ${p.cgpa}`;
+
+            // Persona banner
+            const banner = document.getElementById('personaBanner');
+            banner.style.display  = 'flex';
+            banner.className      = `persona-banner ${data.persona}`;
+            document.getElementById('personaEmoji').textContent  = personaEmoji[data.persona] || '🎓';
+            document.getElementById('personaTitle').textContent  = `${data.persona} Archetype`;
+            document.getElementById('personaDesc').textContent   = personaDesc[data.persona] || '';
+
+            // Stats cards
+            document.getElementById('statProjects').textContent   = p.github_projects;
+            document.getElementById('statCerts').textContent      = p.certifications_count || '—';
+            document.getElementById('statHackathons').textContent = p.hackathons_participated;
+            document.getElementById('statGrowth').textContent     = data.growth_index.toFixed(1);
+
+            // Alerts
+            if (data.alerts && data.alerts.length > 0) {
+                document.getElementById('alertsSection').style.display = 'block';
+                document.getElementById('alertsContainer').innerHTML = data.alerts.map(a =>
+                    `<span class="alert-chip alert-${a.severity}">⚠️ [${a.severity}] ${a.title}</span>`
+                ).join('');
+            }
+
+            // About text
+            document.getElementById('aboutText').textContent =
+                `${p.department} student in Year ${p.year} at Mahendra Engineering College. ` +
+                `${personaDesc[data.persona] || 'Passionate about technology and problem solving.'} ` +
+                `Has solved ${p.leetcode_solved} LeetCode problems, contributed ${p.github_projects} GitHub projects, ` +
+                `and participated in ${p.hackathons_participated} hackathons.`;
+        }
+
+        loadProfile();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillGraph - My Skills</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Chart.js for the radar chart -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .radar-wrapper {
+            max-width: 380px;
+            margin: 0 auto 30px;
+        }
+        .persona-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        .chip-Competitor { background:#ede9fe; color:#7c3aed; }
+        .chip-Builder    { background:#dbeafe; color:#1d4ed8; }
+        .chip-Leader     { background:#dcfce7; color:#15803d; }
+        .chip-Scholar    { background:#fef3c7; color:#92400e; }
+
+        /* Animated progress bars */
+        .bar { width: 0; transition: width 1s ease; }
+
+        .growth-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 18px 22px;
+            border-radius: 14px;
+            margin-bottom: 24px;
+        }
+        .growth-badge .gi-number {
+            font-size: 36px;
+            font-weight: 900;
+            line-height: 1;
+        }
+        .growth-badge .gi-label { font-size: 13px; opacity: 0.85; }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <div class="logo">Skill<span>Graph</span></div>
+        <ul class="menu">
+            <li onclick="goTo('index.html')">🏠 Dashboard</li>
+            <li onclick="goTo('profile.html')">👤 My Profile</li>
+            <li class="active">🧠 Skills</li>
+            <li onclick="goTo('certifications.html')">📜 Certifications</li>
+            <li onclick="goTo('projects.html')">🚀 Projects</li>
+            <li onclick="goTo('achievements.html')">🏆 Achievements</li>
+            <li onclick="goTo('team.html')">🤝 Team Match</li>
+            <li onclick="goTo('learning.html')">🎯 Learning Path</li>
+            <li onclick="goTo('graph.html')">🕸️ Skill Graph</li>
+            <li onclick="goTo('settings.html')">⚙️ Settings</li>
+        </ul>
+    </div>
+
+    <div class="main">
+
+        <div class="page-header">
+            <h1>🧠 My Skills</h1>
+            <p>Track your technical and soft skills with real-time persona analysis.</p>
+        </div>
+
+        <!-- Growth Index Banner -->
+        <div class="growth-badge" id="growthBanner">
+            <div>
+                <div class="gi-number" id="giNumber">—</div>
+                <div class="gi-label">Growth Index</div>
+            </div>
+            <div style="flex:1">
+                <div id="personaChip"></div>
+                <div id="radarSummary" style="font-size:12px; opacity:0.8; margin-top:4px;"></div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <!-- Left: Skill Bars -->
+            <div>
+                <div class="section">
+                    <h2>Technical Skills</h2>
+
+                    <div class="skill">
+                        <div><span>Python</span><b>85%</b></div>
+                        <div class="progress"><div class="bar python" id="barPython"></div></div>
+                    </div>
+
+                    <div class="skill">
+                        <div><span>SQL</span><b>70%</b></div>
+                        <div class="progress"><div class="bar sql" id="barSql"></div></div>
+                    </div>
+
+                    <div class="skill">
+                        <div><span>HTML &amp; CSS</span><b>80%</b></div>
+                        <div class="progress"><div class="bar html" id="barHtml"></div></div>
+                    </div>
+
+                    <div class="skill">
+                        <div><span>JavaScript</span><b>65%</b></div>
+                        <div class="progress"><div class="bar javascript" id="barJs"></div></div>
+                    </div>
+
+                    <div class="skill">
+                        <div><span id="dynamicSkillName">Data Structures</span><b id="dynamicSkillPct">72%</b></div>
+                        <div class="progress">
+                            <div class="bar" id="barDynamic" style="background:#0ea5e9;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Soft Skills</h2>
+
+                    <div class="skill">
+                        <div><span>Communication</span><b>60%</b></div>
+                        <div class="progress"><div class="bar communication" id="barComm"></div></div>
+                    </div>
+
+                    <div class="skill">
+                        <div><span>Leadership</span><b id="leadershipPct">75%</b></div>
+                        <div class="progress"><div class="bar leadership" id="barLead"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Radar Chart from API -->
+            <div class="section">
+                <h2>Competency Radar</h2>
+                <div class="radar-wrapper">
+                    <canvas id="radarChart"></canvas>
+                </div>
+                <div id="skillTags" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        const API = 'http://localhost:8000';
+        const MY_ID = 'STU001';
+
+        let radarChart = null;
+
+        async function loadSkillData() {
+            try {
+                const res = await fetch(`${API}/api/student/${MY_ID}`);
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+
+                const p = data.profile;
+                const radar = data.radar;
+                const gi = data.growth_index;
+                const persona = data.persona;
+
+                // Growth badge
+                document.getElementById('giNumber').textContent = gi.toFixed(1);
+                const personaEmoji = { Competitor:'⚔️', Builder:'🏗️', Leader:'🌟', Scholar:'📚' };
+                document.getElementById('personaChip').innerHTML =
+                    `<span style="font-size:15px">${personaEmoji[persona] || '🎓'} ${persona} Archetype</span>`;
+                document.getElementById('radarSummary').textContent =
+                    `CGPA ${p.cgpa} · ${p.leetcode_solved} LC · ${p.github_projects} projects · ${p.hackathons_participated} hackathons`;
+
+                // Leadership skill bar
+                const leadPct = p.leadership ? 85 : 45;
+                document.getElementById('leadershipPct').textContent = `${leadPct}%`;
+                document.getElementById('barLead').style.width = `${leadPct}%`;
+
+                // Dynamic 5th skill based on persona
+                const dynMap = {
+                    Competitor:  ['Data Structures', Math.min(99, Math.round((p.leetcode_solved/350)*100))],
+                    Builder:     ['GitHub Projects',  Math.min(99, Math.round((p.github_projects/8)*100))],
+                    Leader:      ['Public Speaking',  70],
+                    Scholar:     ['Research Writing', Math.min(99, Math.round((p.paper_presentations/3)*100) + 30)],
+                };
+                const [dName, dPct] = dynMap[persona] || ['Problem Solving', 72];
+                document.getElementById('dynamicSkillName').textContent = dName;
+                document.getElementById('dynamicSkillPct').textContent  = `${dPct}%`;
+                document.getElementById('barDynamic').style.width = `${dPct}%`;
+
+                // Animate static bars after short delay
+                setTimeout(() => {
+                    document.getElementById('barPython').style.width = '85%';
+                    document.getElementById('barSql').style.width    = '70%';
+                    document.getElementById('barHtml').style.width   = '80%';
+                    document.getElementById('barJs').style.width     = '65%';
+                    document.getElementById('barComm').style.width   = '60%';
+                }, 100);
+
+                // Skill tags
+                const tagsEl = document.getElementById('skillTags');
+                tagsEl.innerHTML = data.skills.map(s =>
+                    `<span style="padding:5px 12px;border-radius:20px;background:#eef2ff;color:#4f46e5;font-size:12px;font-weight:600">${s}</span>`
+                ).join('');
+
+                // Radar chart
+                drawRadar(radar, persona);
+            } catch {
+                // Fallback static data
+                setTimeout(() => {
+                    document.getElementById('barPython').style.width = '85%';
+                    document.getElementById('barSql').style.width    = '70%';
+                    document.getElementById('barHtml').style.width   = '80%';
+                    document.getElementById('barJs').style.width     = '65%';
+                    document.getElementById('barComm').style.width   = '60%';
+                    document.getElementById('barLead').style.width   = '75%';
+                    document.getElementById('barDynamic').style.width= '72%';
+                }, 100);
+                document.getElementById('giNumber').textContent = '73.6';
+                document.getElementById('personaChip').innerHTML = '<span>⚔️ Competitor Archetype</span>';
+
+                drawRadar({ academics:87, programming:80, projects:62, events:66, leadership:85 }, 'Competitor');
+
+                const tagsEl = document.getElementById('skillTags');
+                tagsEl.innerHTML = ['Python','SQL','Data Structures','Web Development','FastAPI'].map(s =>
+                    `<span style="padding:5px 12px;border-radius:20px;background:#eef2ff;color:#4f46e5;font-size:12px;font-weight:600">${s}</span>`
+                ).join('');
+            }
+        }
+
+        function drawRadar(radar, persona) {
+            const colorMap = {
+                Competitor: 'rgba(99,102,241,0.6)',
+                Builder:    'rgba(37,99,235,0.6)',
+                Leader:     'rgba(16,185,129,0.6)',
+                Scholar:    'rgba(245,158,11,0.6)',
+            };
+            const borderMap = {
+                Competitor:'#6366f1', Builder:'#2563eb',
+                Leader:'#10b981', Scholar:'#f59e0b'
+            };
+
+            if (radarChart) radarChart.destroy();
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            radarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Academics','Programming','Projects','Events','Leadership'],
+                    datasets: [{
+                        label: 'Your Profile',
+                        data: [
+                            radar.academics, radar.programming,
+                            radar.projects,  radar.events, radar.leadership
+                        ],
+                        backgroundColor: colorMap[persona] || 'rgba(99,102,241,0.5)',
+                        borderColor:     borderMap[persona] || '#6366f1',
+                        pointBackgroundColor: borderMap[persona] || '#6366f1',
+                        borderWidth: 2.5,
+                        pointRadius: 4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { stepSize: 25, font: { size: 10 } },
+                            grid: { color: 'rgba(0,0,0,0.06)' },
+                            pointLabels: { font: { size: 11, weight:'600' } }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        loadSkillData();
+    </script>
+
+</body>
+</html>

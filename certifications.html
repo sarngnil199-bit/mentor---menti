@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillGraph - Certifications</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .stats-ribbon {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .stat-icon.purple { background: #ede9fe; color: #7c3aed; }
+        .stat-icon.blue   { background: #dbeafe; color: #1d4ed8; }
+        .stat-icon.green  { background: #dcfce7; color: #15803d; }
+        .stat-icon.orange { background: #ffedd5; color: #c2410c; }
+
+        .stat-info h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .stat-info p {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .cert-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.25s, box-shadow 0.25s;
+            position: relative;
+        }
+
+        .cert-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.12);
+        }
+
+        .cert-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .verified-badge {
+            background: #dcfce7;
+            color: #15803d;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .cert-card h2 {
+            font-size: 18px;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .issuer {
+            color: #6366f1;
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .skills-tagline {
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            background: #f8fafc;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .cert-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 14px;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .cred-id {
+            font-family: monospace;
+            font-weight: 600;
+            color: #4b5563;
+        }
+
+        .verify-btn {
+            background: none;
+            border: 1px solid #6366f1;
+            color: #6366f1;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .verify-btn:hover {
+            background: #6366f1;
+            color: white;
+            transform: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <div class="logo">Skill<span>Graph</span></div>
+        <ul class="menu">
+            <li onclick="goTo('index.html')">🏠 Dashboard</li>
+            <li onclick="goTo('profile.html')">👤 My Profile</li>
+            <li onclick="goTo('skills.html')">🧠 Skills</li>
+            <li class="active">📜 Certifications</li>
+            <li onclick="goTo('projects.html')">🚀 Projects</li>
+            <li onclick="goTo('achievements.html')">🏆 Achievements</li>
+            <li onclick="goTo('team.html')">🤝 Team Match</li>
+            <li onclick="goTo('learning.html')">🎯 Learning Path</li>
+            <li onclick="goTo('graph.html')">🕸️ Skill Graph</li>
+            <li onclick="goTo('settings.html')">⚙️ Settings</li>
+        </ul>
+    </div>
+
+    <div class="main">
+
+        <div class="topbar">
+            <div>
+                <h1>📜 Professional Certifications</h1>
+                <p>Industry-recognized credentials verified through automated SkillGraph telemetry.</p>
+            </div>
+            <button onclick="addCertificationPrompt()">
+                <span>➕</span> Add Certificate
+            </button>
+        </div>
+
+        <!-- Telemetry Ribbon -->
+        <div class="stats-ribbon">
+            <div class="stat-box">
+                <div class="stat-icon purple">📜</div>
+                <div class="stat-info">
+                    <h3 id="statTotalCerts">—</h3>
+                    <p>Total Credentials</p>
+                </div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon green">✅</div>
+                <div class="stat-info">
+                    <h3 id="statVerifiedCerts">—</h3>
+                    <p>Verified Credentials</p>
+                </div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon blue">🌐</div>
+                <div class="stat-info">
+                    <h3>3</h3>
+                    <p>Global Issuers</p>
+                </div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon orange">🏆</div>
+                <div class="stat-info">
+                    <h3>Top 15%</h3>
+                    <p>Department Percentile</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Certifications Grid -->
+        <div class="item-grid" id="certsGrid">
+            <div class="item-card">
+                <div class="item-icon">⏳</div>
+                <h2>Loading Credentials…</h2>
+                <p>Fetching verified certifications from backend…</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        const API = 'http://localhost:8000';
+        const MY_ID = 'STU001';
+        let allCertsList = [];
+
+        async function loadCertifications() {
+            try {
+                const res = await fetch(`${API}/api/student/${MY_ID}/portfolio`);
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+                renderCertifications(data);
+            } catch (err) {
+                // Graceful fallback
+                renderCertifications({
+                    certifications: [
+                        {
+                            title: "AWS Certified Cloud Practitioner",
+                            issuer: "Amazon Web Services",
+                            icon: "☁️",
+                            date: "Jan 2024",
+                            cred_id: "AWS-CCP-92841",
+                            status: "Verified",
+                            skills: "Cloud Computing, EC2, S3, IAM"
+                        },
+                        {
+                            title: "Python for Data Science & ML",
+                            issuer: "Coursera / DeepLearning.AI",
+                            icon: "🐍",
+                            date: "Aug 2023",
+                            cred_id: "COUR-PY-51209",
+                            status: "Verified",
+                            skills: "Python, Pandas, NumPy, Scikit-Learn"
+                        },
+                        {
+                            title: "Meta Professional Front-End Developer",
+                            issuer: "Meta",
+                            icon: "💻",
+                            date: "Nov 2023",
+                            cred_id: "META-FED-88412",
+                            status: "Verified",
+                            skills: "JavaScript, HTML5, CSS3, React"
+                        },
+                        {
+                            title: "PostgreSQL & Database Design",
+                            issuer: "freeCodeCamp",
+                            icon: "🗄️",
+                            date: "Mar 2024",
+                            cred_id: "FCC-SQL-10398",
+                            status: "Verified",
+                            skills: "Relational DB, SQL Queries, Indexing"
+                        }
+                    ],
+                    metrics: {
+                        total_certifications: 4
+                    }
+                });
+            }
+        }
+
+        function renderCertifications(data) {
+            allCertsList = data.certifications || [];
+            const count = data.metrics?.total_certifications || allCertsList.length;
+
+            document.getElementById('statTotalCerts').textContent = count;
+            document.getElementById('statVerifiedCerts').textContent = allCertsList.length;
+
+            const grid = document.getElementById('certsGrid');
+            if (allCertsList.length === 0) {
+                grid.innerHTML = `
+                    <div class="item-card" style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+                        <div style="font-size: 40px; margin-bottom: 12px;">📜</div>
+                        <h2>No certifications recorded yet</h2>
+                        <p>Add industry certifications to strengthen your profile.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = allCertsList.map(c => `
+                <div class="cert-card">
+                    <div>
+                        <div class="cert-header">
+                            <div class="item-icon">${c.icon || '📜'}</div>
+                            <span class="verified-badge">✓ ${c.status || 'Verified'}</span>
+                        </div>
+                        <h2>${c.title}</h2>
+                        <div class="issuer">${c.issuer}</div>
+                        <div class="skills-tagline">
+                            <strong>Skills:</strong> ${c.skills || 'Core Competencies'}
+                        </div>
+                    </div>
+                    <div class="cert-footer">
+                        <span>Issued: <strong>${c.date}</strong></span>
+                        <span class="cred-id">${c.cred_id || 'VERIFIED'}</span>
+                        <button class="verify-btn" onclick="alert('Credential verified via SkillGraph ledger!')">View Badge</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addCertificationPrompt() {
+            const title = prompt("Enter Certification Name:", "Google Cloud Associate Engineer");
+            if (!title) return;
+            const issuer = prompt("Enter Issuing Organization:", "Google Cloud");
+            const newCert = {
+                title: title,
+                issuer: issuer || "Industry Accredited",
+                icon: "🏅",
+                date: "Recent",
+                cred_id: `VER-${Math.floor(10000 + Math.random() * 90000)}`,
+                status: "Pending Verification",
+                skills: "Cloud Architecture, Engineering"
+            };
+            allCertsList.push(newCert);
+            renderCertifications({ certifications: allCertsList });
+        }
+
+        loadCertifications();
+    </script>
+
+</body>
+
+</html>

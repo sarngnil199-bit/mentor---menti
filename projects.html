@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillGraph - Projects</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .stats-ribbon {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .stat-icon.purple { background: #ede9fe; color: #7c3aed; }
+        .stat-icon.blue   { background: #dbeafe; color: #1d4ed8; }
+        .stat-icon.orange { background: #ffedd5; color: #c2410c; }
+        .stat-icon.green  { background: #dcfce7; color: #15803d; }
+
+        .stat-info h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .stat-info p {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: white;
+            color: #4b5563;
+            border: 1px solid #e5e7eb;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: #6366f1;
+            color: white;
+            border-color: #6366f1;
+            transform: translateY(-1px);
+        }
+
+        .project-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.25s, box-shadow 0.25s;
+            position: relative;
+        }
+
+        .project-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.12);
+        }
+
+        .project-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .project-header .item-icon {
+            font-size: 26px;
+        }
+
+        .featured-badge {
+            background: #fef3c7;
+            color: #b45309;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .project-card h2 {
+            font-size: 18px;
+            margin-bottom: 6px;
+            color: #111827;
+        }
+
+        .project-card .desc {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            flex: 1;
+        }
+
+        .tech-pill-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .tech-pill {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .project-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 14px;
+            margin-top: auto;
+        }
+
+        .stars-count {
+            color: #64748b;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .repo-link {
+            color: #6366f1;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.2s;
+        }
+
+        .repo-link:hover {
+            color: #4f46e5;
+            text-decoration: underline;
+        }
+
+        .add-project-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <div class="logo">Skill<span>Graph</span></div>
+        <ul class="menu">
+            <li onclick="goTo('index.html')">🏠 Dashboard</li>
+            <li onclick="goTo('profile.html')">👤 My Profile</li>
+            <li onclick="goTo('skills.html')">🧠 Skills</li>
+            <li onclick="goTo('certifications.html')">📜 Certifications</li>
+            <li class="active">🚀 Projects</li>
+            <li onclick="goTo('achievements.html')">🏆 Achievements</li>
+            <li onclick="goTo('team.html')">🤝 Team Match</li>
+            <li onclick="goTo('learning.html')">🎯 Learning Path</li>
+            <li onclick="goTo('graph.html')">🕸️ Skill Graph</li>
+            <li onclick="goTo('settings.html')">⚙️ Settings</li>
+        </ul>
+    </div>
+
+    <div class="main">
+
+        <div class="topbar">
+            <div>
+                <h1>🚀 Practical Projects</h1>
+                <p>Real-world engineering projects demonstrating hands-on technical mastery.</p>
+            </div>
+            <button class="add-project-btn" onclick="openAddProjectModal()">
+                <span>➕</span> Add Project
+            </button>
+        </div>
+
+        <!-- Telemetry Ribbon -->
+        <div class="stats-ribbon">
+            <div class="stat-box">
+                <div class="stat-icon purple">📦</div>
+                <div class="stat-info">
+                    <h3 id="statTotalProjects">—</h3>
+                    <p>Total Repositories</p>
+                </div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon orange">⭐</div>
+                <div class="stat-info">
+                    <h3 id="statTotalStars">—</h3>
+                    <p>Total GitHub Stars</p>
+                </div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon blue">⚡</div>
+                <div class="stat-info">
+                    <h3 id="statTechStack">Python / Web</h3>
+                    <p>Primary Stack</p>
+                </div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon green">🎯</div>
+                <div class="stat-info">
+                    <h3 id="statProjectScore">High</h3>
+                    <p>Portfolio Velocity</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="filterProjects('all', this)">All Projects</button>
+            <button class="filter-btn" onclick="filterProjects('featured', this)">⭐ Featured</button>
+            <button class="filter-btn" onclick="filterProjects('Web', this)">🌐 Web Apps</button>
+            <button class="filter-btn" onclick="filterProjects('AI', this)">🤖 AI / Vision</button>
+            <button class="filter-btn" onclick="filterProjects('Systems', this)">⚙️ Systems & Backend</button>
+        </div>
+
+        <!-- Projects Grid -->
+        <div class="item-grid" id="projectsGrid">
+            <!-- Dynamically populated from API -->
+            <div class="item-card">
+                <div class="item-icon">⏳</div>
+                <h2>Loading Projects…</h2>
+                <p>Connecting to SkillGraph backend…</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        const API = 'http://localhost:8000';
+        const MY_ID = 'STU001';
+        let allProjectsList = [];
+
+        async function loadProjects() {
+            try {
+                const res = await fetch(`${API}/api/student/${MY_ID}/portfolio`);
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+                renderPortfolio(data);
+            } catch (err) {
+                // Graceful fallback
+                renderPortfolio({
+                    projects: [
+                        {
+                            id: "proj-1",
+                            title: "SkillGraph & Growth Intelligence",
+                            category: "Web Application & AI",
+                            icon: "📊",
+                            desc: "Student growth and skill tracking platform with balanced archetype detection and real-time mentor alerts.",
+                            tech: ["FastAPI", "Python", "Chart.js", "Vanilla CSS"],
+                            repo: "https://github.com/aaravmehta/skillgraph",
+                            stars: 42,
+                            featured: true
+                        },
+                        {
+                            id: "proj-2",
+                            title: "Industrial Fire Detection AI",
+                            category: "AI / Computer Vision",
+                            icon: "🔥",
+                            desc: "Real-time thermal anomaly identification using satellite imagery and convolutional neural networks.",
+                            tech: ["PyTorch", "OpenCV", "Flask", "Docker"],
+                            repo: "https://github.com/aaravmehta/fire-detect-sat",
+                            stars: 28,
+                            featured: true
+                        },
+                        {
+                            id: "proj-3",
+                            title: "Campus 360 Virtual Interactive Tour",
+                            category: "Interactive Web",
+                            icon: "🎓",
+                            desc: "Interactive virtual college tour platform featuring 3D panoramas of labs and classrooms.",
+                            tech: ["Three.js", "WebGL", "JavaScript"],
+                            repo: "https://github.com/aaravmehta/campus360",
+                            stars: 19,
+                            featured: false
+                        }
+                    ],
+                    metrics: {
+                        total_projects: 5
+                    }
+                });
+            }
+        }
+
+        function renderPortfolio(data) {
+            allProjectsList = data.projects || [];
+            
+            // Ribbon Stats
+            const totalCount = data.metrics?.total_projects || allProjectsList.length;
+            const totalStars = allProjectsList.reduce((acc, p) => acc + (p.stars || 0), 0);
+            
+            document.getElementById('statTotalProjects').textContent = totalCount;
+            document.getElementById('statTotalStars').textContent = totalStars;
+            document.getElementById('statProjectScore').textContent = totalCount >= 4 ? 'Elite' : 'Active';
+
+            renderProjectCards(allProjectsList);
+        }
+
+        function renderProjectCards(projects) {
+            const grid = document.getElementById('projectsGrid');
+            if (!projects || projects.length === 0) {
+                grid.innerHTML = `
+                    <div class="item-card" style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+                        <div style="font-size: 40px; margin-bottom: 12px;">📁</div>
+                        <h2>No projects match this filter</h2>
+                        <p>Try selecting another category or add a new project.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = projects.map(p => `
+                <div class="project-card">
+                    <div>
+                        <div class="project-header">
+                            <div class="item-icon">${p.icon || '🚀'}</div>
+                            ${p.featured ? `<span class="featured-badge">⭐ Featured</span>` : `<span class="tag">${p.category || 'Engineering'}</span>`}
+                        </div>
+                        <h2>${p.title}</h2>
+                        <p class="desc">${p.desc}</p>
+                        <div class="tech-pill-list">
+                            ${(p.tech || []).map(t => `<span class="tech-pill">${t}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div class="project-footer">
+                        <span class="stars-count">⭐ ${p.stars || 0} stars</span>
+                        <a href="${p.repo || '#'}" target="_blank" class="repo-link">
+                            GitHub Code →
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterProjects(category, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            if (category === 'all') {
+                renderProjectCards(allProjectsList);
+            } else if (category === 'featured') {
+                renderProjectCards(allProjectsList.filter(p => p.featured));
+            } else {
+                renderProjectCards(allProjectsList.filter(p => 
+                    (p.category && p.category.toLowerCase().includes(category.toLowerCase())) ||
+                    (p.tech && p.tech.some(t => t.toLowerCase().includes(category.toLowerCase())))
+                ));
+            }
+        }
+
+        function openAddProjectModal() {
+            const title = prompt("Enter project title:");
+            if (!title) return;
+            const tech = prompt("Enter primary technologies (comma separated):", "Python, FastAPI");
+            const newProj = {
+                id: `proj-${Date.now()}`,
+                title: title,
+                category: "Web Application",
+                icon: "🚀",
+                desc: "Custom project added via student portfolio manager.",
+                tech: tech ? tech.split(',').map(s => s.trim()) : ["Python"],
+                repo: "https://github.com",
+                stars: 1,
+                featured: false
+            };
+            allProjectsList.unshift(newProj);
+            renderProjectCards(allProjectsList);
+            document.getElementById('statTotalProjects').textContent = allProjectsList.length;
+        }
+
+        loadProjects();
+    </script>
+
+</body>
+
+</html>

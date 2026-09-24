@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SkillGraph - Advanced Settings</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+
+    <div class="sidebar">
+
+        <div class="logo">
+            Skill<span>Graph</span>
+        </div>
+
+        <ul class="menu">
+
+            <li onclick="goTo('index.html')">
+                🏠 Dashboard
+            </li>
+
+            <li onclick="goTo('profile.html')">
+                👤 My Profile
+            </li>
+
+            <li onclick="goTo('skills.html')">
+                🧠 Skills
+            </li>
+
+            <li onclick="goTo('certifications.html')">
+                📜 Certifications
+            </li>
+
+            <li onclick="goTo('projects.html')">
+                🚀 Projects
+            </li>
+
+            <li onclick="goTo('achievements.html')">
+                🏆 Achievements
+            </li>
+
+            <li onclick="goTo('team.html')">
+                🤝 Team Match
+            </li>
+
+            <li onclick="goTo('learning.html')">
+                🎯 Learning Path
+            </li>
+
+            <li onclick="goTo('graph.html')">
+                🕸️ Skill Graph
+            </li>
+
+            <li class="active">
+                ⚙️ Settings
+            </li>
+
+        </ul>
+
+    </div>
+
+
+    <!-- MAIN -->
+
+    <div class="main">
+
+        <div class="page-header">
+
+            <h1>⚙️ Settings</h1>
+
+            <p>
+                Manage your account, privacy and SkillGraph preferences.
+            </p>
+
+        </div>
+
+
+        <!-- ACCOUNT -->
+
+        <div class="settings-section">
+
+            <div class="settings-heading">
+
+                <div class="settings-icon">
+                    👤
+                </div>
+
+                <div>
+                    <h2>Account</h2>
+                    <p>Manage your personal account information.</p>
+                </div>
+
+            </div>
+
+
+            <div class="settings-row">
+
+                <div>
+                    <h3>Full Name</h3>
+                    <p>Sara.</p>
+                </div>
+
+                <button class="secondary-btn">
+                    Edit
+                </button>
+
+            </div>
+
+
+            <div class="settings-row">
+
+                <div>
+                    <h3>Email Address</h3>
+                    <p>sara@gmail.com</p>
+                </div>
+
+                <button class="secondary-btn">
+                    Change
+                </button>
+
+            </div>
+
+
+            <div class="settings-row">
+
+                <div>
+                    <h3>Password</h3>
+                    <p>Last changed recently</p>
+                </div>
+
+                <button class="secondary-btn">
+                    Change Password
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- PRIVACY -->
+
+        <div class="settings-section">
+
+            <div class="settings-heading">
+
+                <div class="settings-icon">
+                    🔐
+                </div>
+
+                <div>
+                    <h2>Privacy & Visibility</h2>
+
+                    <p>
+                        Control who can see your student profile.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="settings-row">
+
+                <div>
+
+                    <h3>Profile Visibility</h3>
+
+                    <p>
+                        Allow other students to discover your profile.
+                    </p>
+
+                </div>
+
+                <label class="switch">
+
+                    <input type="checkbox" checked>
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+
+            <div class="settings-row">
+
+                <div>
+
+                    <h3>Show Skills</h3>
+
+                    <p>
+                        Display your skills on your public profile.
+                    </p>
+
+                </div>
+
+                <label class="switch">
+
+                    <input type="checkbox" checked>
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+
+            <div class="settings-row">
+
+                <div>
+
+                    <h3>Show Achievements</h3>
+
+                    <p>
+                        Allow other students to view your achievements.
+                    </p>
+
+                </div>
+
+                <label class="switch">
+
+                    <input type="checkbox" checked>
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <!-- NOTIFICATIONS -->
+
+        <div class="settings-section">
+
+            <div class="settings-heading">
+
+                <div class="settings-icon">
+                    🔔
+                </div>
+
+                <div>
+
+                    <h2>Notifications</h2>
+
+                    <p>
+                        Choose what notifications you receive.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="settings-row">
+
+                <div>
+
+                    <h3>Team Recommendations</h3>
+
+                    <p>
+                        Get notified when a suitable teammate is found.
+                    </p>
+
+                </div>
+
+                <label class="switch">
+
+                    <input type="checkbox" checked>
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+
+            <div class="settings-row">
+
+                <div>
+
+                    <h3>Learning Recommendations</h3>
+
+                    <p>
+                        Receive personalized learning suggestions.
+                    </p>
+
+                </div>
+
+                <label class="switch">
+
+                    <input type="checkbox" checked>
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+
+            <div class="settings-row">
+
+                <div>
+
+                    <h3>Achievement Alerts</h3>
+
+                    <p>
+                        Get notified about milestones and achievements.
+                    </p>
+
+                </div>
+
+                <label class="switch">
+
+                    <input type="checkbox">
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <!-- TEAM MATCHING -->
+
+        <div class="settings-section">
+
+            <div class="settings-heading">
+
+                <div class="settings-icon">
+                    🤝
+                </div>
+
+                <div>
+
+                    <h2>Team Matching</h2>
+
+                    <p>
+                        Customize how SkillGraph finds teammates.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="settings-row">
+
+                <div>
+
+                    <h3>Enable Team Matching</h3>
+
+                    <p>
+                        Allow SkillGraph to recommend you for teams.
+                    </p>
+
+                </div>
+
+                <label class="switch">
+
+                    <input type="checkbox" checked>
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+
+            <div class="settings-row">
+
+                <div>
+
+                    <h3>Preferred Project Type</h3>
+
+                    <p>
+                        Select your preferred project category.
+                    </p>
+
+                </div>
+
+                <select class="setting-select">
+
+                    <option>AI / Machine Learning</option>
+
+                    <option>Web Development</option>
+
+                    <option>Data Science</option>
+
+                    <option>Cybersecurity</option>
+
+                    <option>Mobile Development</option>
+
+                </select>
+
+            </div>
+
+
+            <div class="settings-row">
+
+                <div>
+
+                    <h3>Minimum Match Score</h3>
+
+                    <p>
+                        Only show teams above this match percentage.
+                    </p>
+
+                </div>
+
+                <select class="setting-select">
+
+                    <option>70%</option>
+                    <option>80%</option>
+                    <option>90%</option>
+                    <option>95%</option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <!-- APPEARANCE -->
+
+        <div class="settings-section">
+
+            <div class="settings-heading">
+
+                <div class="settings-icon">
+                    🎨
+                </div>
+
+                <div>
+
+                    <h2>Appearance</h2>
+
+                    <p>
+                        Customize how SkillGraph looks.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="settings-row">
+
+                <div>
+
+                    <h3>Theme</h3>
+
+                    <p>
+                        Choose your preferred interface theme.
+                    </p>
+
+                </div>
+
+                <select class="setting-select">
+
+                    <option>Light</option>
+
+                    <option>Dark</option>
+
+                    <option>System Default</option>
+
+                </select>
+
+            </div>
+
+
+            <div class="settings-row">
+
+                <div>
+
+                    <h3>Compact Mode</h3>
+
+                    <p>
+                        Reduce spacing to display more information.
+                    </p>
+
+                </div>
+
+                <label class="switch">
+
+                    <input type="checkbox">
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <!-- DATA -->
+
+        <div class="settings-section">
+
+            <div class="settings-heading">
+
+                <div class="settings-icon">
+                    📦
+                </div>
+
+                <div>
+
+                    <h2>Data & Security</h2>
+
+                    <p>
+                        Manage your SkillGraph data.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="settings-row">
+
+                <div>
+
+                    <h3>Download My Data</h3>
+
+                    <p>
+                        Download your profile and achievement information.
+                    </p>
+
+                </div>
+
+                <button class="secondary-btn">
+                    Download
+                </button>
+
+            </div>
+
+
+            <div class="settings-row">
+
+                <div>
+
+                    <h3>Activity History</h3>
+
+                    <p>
+                        View your recent account activity.
+                    </p>
+
+                </div>
+
+                <button class="secondary-btn">
+                    View History
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- DANGER ZONE -->
+
+        <div class="danger-section">
+
+            <h2>⚠️ Danger Zone</h2>
+
+            <p>
+                These actions can permanently affect your account.
+            </p>
+
+
+            <div class="danger-row">
+
+                <div>
+
+                    <h3>Deactivate Account</h3>
+
+                    <p>
+                        Temporarily hide your SkillGraph profile.
+                    </p>
+
+                </div>
+
+                <button class="danger-btn">
+                    Deactivate
+                </button>
+
+            </div>
+
+
+            <div class="danger-row">
+
+                <div>
+
+                    <h3>Delete Account</h3>
+
+                    <p>
+                        Permanently delete your SkillGraph account and data.
+                    </p>
+
+                </div>
+
+                <button class="delete-btn">
+                    Delete Account
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- SAVE -->
+
+        <div class="save-container">
+
+            <button class="save-btn" onclick="saveSettings()">
+                Save Changes
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <script src="script.js"></script>
+
+    <script>
+
+        function saveSettings() {
+
+            alert("Your settings have been saved successfully! ✅");
+
+        }
+
+    </script>
+
+</body>
+
+</html>

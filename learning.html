@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillGraph - Learning Path</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .roadmap-header-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .roadmap-progress-box {
+            min-width: 260px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar-wrap {
+            height: 12px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            border-radius: 10px;
+            transition: width 0.4s ease;
+        }
+
+        .alert-callout {
+            background: #fef2f2;
+            border-left: 4px solid #ef4444;
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .alert-callout h4 {
+            color: #991b1b;
+            font-size: 15px;
+            margin-bottom: 2px;
+        }
+
+        .alert-callout p {
+            color: #b91c1c;
+            font-size: 13px;
+            margin: 0;
+        }
+
+        .step-item {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            transition: all 0.25s;
+            border: 2px solid transparent;
+        }
+
+        .step-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.08);
+        }
+
+        .step-item.is-completed {
+            border-color: #dcfce7;
+            background: #fcfdfd;
+            opacity: 0.85;
+        }
+
+        .step-num-circle {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #6366f1;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .step-item.is-completed .step-num-circle {
+            background: #16a34a;
+        }
+
+        .step-body {
+            flex: 1;
+        }
+
+        .step-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .step-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-title-wrap h2 {
+            font-size: 17px;
+            color: #111827;
+            margin: 0;
+        }
+
+        .urgency-pill {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+
+        .urgency-High { background: #fee2e2; color: #dc2626; }
+        .urgency-Medium { background: #fef3c7; color: #b45309; }
+        .urgency-Normal { background: #ede9fe; color: #6d28d9; }
+
+        .step-desc {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 14px;
+        }
+
+        .step-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .action-link-btn {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-link-btn:hover {
+            background: #6366f1;
+            color: white;
+            border-color: #6366f1;
+            transform: none;
+        }
+
+        .toggle-complete-btn {
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 7px 10px;
+        }
+
+        .toggle-complete-btn:hover {
+            color: #16a34a;
+            transform: none;
+            background: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <div class="logo">Skill<span>Graph</span></div>
+        <ul class="menu">
+            <li onclick="goTo('index.html')">🏠 Dashboard</li>
+            <li onclick="goTo('profile.html')">👤 My Profile</li>
+            <li onclick="goTo('skills.html')">🧠 Skills</li>
+            <li onclick="goTo('certifications.html')">📜 Certifications</li>
+            <li onclick="goTo('projects.html')">🚀 Projects</li>
+            <li onclick="goTo('achievements.html')">🏆 Achievements</li>
+            <li onclick="goTo('team.html')">🤝 Team Match</li>
+            <li class="active">🎯 Learning Path</li>
+            <li onclick="goTo('graph.html')">🕸️ Skill Graph</li>
+            <li onclick="goTo('settings.html')">⚙️ Settings</li>
+        </ul>
+    </div>
+
+    <div class="main">
+
+        <div class="page-header">
+            <h1>🎯 Personalized Adaptive Learning Roadmap</h1>
+            <p>Dynamically engineered based on your persona, skill telemetry, and mentor intervention alerts.</p>
+        </div>
+
+        <!-- Roadmap Progress Header -->
+        <div class="roadmap-header-card">
+            <div>
+                <h2 id="roadmapPersonaTitle">Loading Roadmap…</h2>
+                <p id="roadmapPersonaSub" style="color:#64748b; font-size:14px; margin-top:4px;">Connecting to SkillGraph Adaptive Engine…</p>
+            </div>
+            <div class="roadmap-progress-box">
+                <div class="progress-label">
+                    <span>Roadmap Completion</span>
+                    <span id="roadmapPercent">0%</span>
+                </div>
+                <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" id="roadmapProgressBar" style="width: 0%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert Callout if student has alerts -->
+        <div class="alert-callout" id="alertCallout" style="display:none;">
+            <div style="font-size:26px;">⚠️</div>
+            <div>
+                <h4>Proactive Intervention Activated</h4>
+                <p id="alertCalloutDesc">This roadmap includes prioritized milestones to remediate detected academic or skill gaps.</p>
+            </div>
+        </div>
+
+        <!-- Timeline Steps Container -->
+        <div class="timeline" id="learningStepsContainer">
+            <div class="step-item">
+                <div class="step-num-circle">⏳</div>
+                <div class="step-body">
+                    <h2>Synthesizing Growth Steps…</h2>
+                    <p class="step-desc">Analyzing LeetCode, GitHub, and academic scores to generate optimal next milestones.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        const API = 'http://localhost:8000';
+        const MY_ID = 'STU001';
+        let roadmapData = null;
+
+        async function loadLearningPath() {
+            try {
+                const res = await fetch(`${API}/api/learning-path/${MY_ID}`);
+                if (!res.ok) throw new Error();
+                roadmapData = await res.json();
+                renderRoadmap(roadmapData);
+            } catch (err) {
+                // Fallback
+                roadmapData = {
+                    student_id: 'STU001',
+                    name: 'Aarav Mehta',
+                    persona: 'Competitor',
+                    department: 'Computer Science',
+                    year: 3,
+                    total_steps: 3,
+                    completed_count: 1,
+                    steps: [
+                        {
+                            step: 1,
+                            title: "Advanced Graph & Dynamic Programming Mastery",
+                            category: "DSA",
+                            urgency: "Normal",
+                            description: "Solve 40 hard-tier LeetCode problems focusing on Dijkstra, Segment Trees, and Multi-Dimensional DP.",
+                            action: "Open LeetCode Study Plan",
+                            completed: true
+                        },
+                        {
+                            step: 2,
+                            title: "Weekly Rated Contest Ranking",
+                            category: "Contests",
+                            urgency: "Normal",
+                            description: "Compete in consecutive Codeforces / LeetCode global contests to maintain 1800+ rating percentile.",
+                            action: "Register for Next Contest",
+                            completed: false
+                        },
+                        {
+                            step: 3,
+                            title: "System Design & Low-Level Design (LLD)",
+                            category: "Engineering",
+                            urgency: "Normal",
+                            description: "Design an in-memory Key-Value store and rate limiter with concurrency locks in Python/Java.",
+                            action: "View Design Blueprint",
+                            completed: false
+                        }
+                    ]
+                };
+                renderRoadmap(roadmapData);
+            }
+        }
+
+        function renderRoadmap(data) {
+            document.getElementById('roadmapPersonaTitle').textContent = 
+                `${data.name} · ${data.persona} Growth Plan`;
+            document.getElementById('roadmapPersonaSub').textContent = 
+                `Curated for ${data.department} (Year ${data.year}) to accelerate technical velocity.`;
+
+            // Check if any high urgency steps
+            const hasHighUrgency = data.steps.some(s => s.urgency === 'High');
+            if (hasHighUrgency) {
+                document.getElementById('alertCallout').style.display = 'flex';
+            }
+
+            updateProgressBar();
+            renderSteps();
+        }
+
+        function updateProgressBar() {
+            const total = roadmapData.steps.length;
+            const completed = roadmapData.steps.filter(s => s.completed).length;
+            const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+            document.getElementById('roadmapPercent').textContent = `${pct}% (${completed}/${total} done)`;
+            document.getElementById('roadmapProgressBar').style.width = `${pct}%`;
+        }
+
+        function renderSteps() {
+            const container = document.getElementById('learningStepsContainer');
+            container.innerHTML = roadmapData.steps.map((s, idx) => `
+                <div class="step-item ${s.completed ? 'is-completed' : ''}" id="step-${idx}">
+                    <div class="step-num-circle" onclick="toggleStep(${idx})">
+                        ${s.completed ? '✓' : s.step}
+                    </div>
+                    <div class="step-body">
+                        <div class="step-top">
+                            <div class="step-title-wrap">
+                                <h2>${s.title}</h2>
+                                <span class="tag">${s.category}</span>
+                            </div>
+                            <span class="urgency-pill urgency-${s.urgency}">${s.urgency}</span>
+                        </div>
+                        <p class="step-desc">${s.description}</p>
+                        <div class="step-actions">
+                            <button class="action-link-btn" onclick="alert('Launching: ${s.action}')">
+                                ⚡ ${s.action}
+                            </button>
+                            <button class="toggle-complete-btn" onclick="toggleStep(${idx})">
+                                ${s.completed ? '↩ Mark Incomplete' : '✓ Mark as Completed'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleStep(idx) {
+            roadmapData.steps[idx].completed = !roadmapData.steps[idx].completed;
+            updateProgressBar();
+            renderSteps();
+        }
+
+        loadLearningPath();
+    </script>
+
+</body>
+
+</html>

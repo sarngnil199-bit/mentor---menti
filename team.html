@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillGraph - Team Match</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Persona badge colours */
+        .badge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; }
+        .badge-Competitor { background:#ede9fe; color:#7c3aed; }
+        .badge-Builder    { background:#dbeafe; color:#1d4ed8; }
+        .badge-Leader     { background:#dcfce7; color:#15803d; }
+        .badge-Scholar    { background:#fef3c7; color:#92400e; }
+
+        /* Match % ring */
+        .match-ring {
+            width:80px; height:80px; border-radius:50%;
+            background: conic-gradient(#6366f1 var(--pct,0%), #e5e7eb 0%);
+            display:flex; align-items:center; justify-content:center;
+            margin:0 auto 10px;
+            transition:all 0.6s ease;
+        }
+        .match-ring-inner {
+            width:60px; height:60px; border-radius:50%;
+            background:#fff; display:flex; align-items:center;
+            justify-content:center; font-weight:800; font-size:13px;
+            color:#6366f1;
+        }
+
+        .team-card {
+            display:flex; flex-direction:column; align-items:center;
+            gap:8px; transition:transform 0.2s;
+        }
+        .team-card:hover { transform:translateY(-4px); }
+        .team-card .big-avatar { margin:0 auto 5px; }
+        .team-card h2 { margin:0; font-size:16px; }
+        .team-card p  { margin:0; font-size:13px; }
+        .team-card button { margin-top:6px; width:100%; }
+
+        #loading {
+            text-align:center; padding:40px; color:#64748b;
+            font-style:italic;
+        }
+        #searchBar {
+            padding:10px 16px; border:1px solid #e5e7eb; border-radius:10px;
+            font-size:14px; width:100%; max-width:340px; margin-bottom:20px;
+            outline:none; transition:border-color 0.2s;
+        }
+        #searchBar:focus { border-color:#6366f1; }
+
+        .empty-state { text-align:center; padding:50px; color:#94a3b8; }
+        .empty-state h3 { font-size:22px; margin-bottom:8px; }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <div class="logo">Skill<span>Graph</span></div>
+        <ul class="menu">
+            <li onclick="goTo('index.html')">🏠 Dashboard</li>
+            <li onclick="goTo('profile.html')">👤 My Profile</li>
+            <li onclick="goTo('skills.html')">🧠 Skills</li>
+            <li onclick="goTo('certifications.html')">📜 Certifications</li>
+            <li onclick="goTo('projects.html')">🚀 Projects</li>
+            <li onclick="goTo('achievements.html')">🏆 Achievements</li>
+            <li class="active">🤝 Team Match</li>
+            <li onclick="goTo('learning.html')">🎯 Learning Path</li>
+            <li onclick="goTo('graph.html')">🕸️ Skill Graph</li>
+            <li onclick="goTo('settings.html')">⚙️ Settings</li>
+        </ul>
+    </div>
+
+    <div class="main">
+
+        <div class="page-header">
+            <h1>🤝 Team Match</h1>
+            <p>AI-powered teammate recommendations based on complementary personas &amp; skill gaps.</p>
+        </div>
+
+        <input type="text" id="searchBar" placeholder="🔍 Filter by name or department…" oninput="filterCards()">
+
+        <div id="loading">⏳ Fetching team recommendations from API…</div>
+
+        <div class="team-grid" id="teamGrid" style="display:none"></div>
+
+        <div class="empty-state" id="emptyState" style="display:none">
+            <h3>😕 No matches found</h3>
+            <p>Try a different search term or check the API server.</p>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        const API = 'http://localhost:8000';
+        // Default to STU001; in a real app this would come from auth context
+        const MY_ID = 'STU001';
+
+        let allCards = [];
+
+        const personaEmoji = {
+            Competitor: '⚔️',
+            Builder:    '🏗️',
+            Leader:     '🌟',
+            Scholar:    '📚'
+        };
+
+        async function loadTeamMatches() {
+            try {
+                const res = await fetch(`${API}/api/team-match/${MY_ID}`);
+                if (!res.ok) throw new Error('API error');
+                const data = await res.json();
+
+                allCards = data.recommendations;
+                document.getElementById('loading').style.display = 'none';
+                renderCards(allCards);
+            } catch (e) {
+                document.getElementById('loading').innerHTML =
+                    '⚠️ API offline — showing static demo data.<br><small>Run <code>uvicorn hackathon:app --port 8000</code> to enable live data.</small>';
+                // Fallback static data
+                allCards = [
+                    { student_id:'STU003', name:'Rohan Iyer',   department:'Electronics', year:4, persona:'Builder',    match_percentage:97, cgpa:7.8, leetcode_solved:80,  github_projects:7, hackathons_won:2 },
+                    { student_id:'STU010', name:'Myra Joshi',   department:'Electronics', year:4, persona:'Scholar',    match_percentage:95, cgpa:8.8, leetcode_solved:120, github_projects:4, hackathons_won:1 },
+                    { student_id:'STU008', name:'Saanvi Gupta', department:'Electrical',  year:3, persona:'Builder',    match_percentage:93, cgpa:8.5, leetcode_solved:60,  github_projects:5, hackathons_won:1 },
+                    { student_id:'STU002', name:'Diya Sharma',  department:'IT',          year:2, persona:'Leader',     match_percentage:88, cgpa:9.1, leetcode_solved:150, github_projects:3, hackathons_won:0 },
+                ];
+                setTimeout(() => {
+                    document.getElementById('loading').style.display = 'none';
+                    renderCards(allCards);
+                }, 800);
+            }
+        }
+
+        function renderCards(cards) {
+            const grid = document.getElementById('teamGrid');
+            const empty = document.getElementById('emptyState');
+
+            if (!cards.length) {
+                grid.style.display = 'none';
+                empty.style.display = 'block';
+                return;
+            }
+
+            empty.style.display = 'none';
+            grid.style.display = 'grid';
+
+            grid.innerHTML = cards.map(c => {
+                const initials = c.name.split(' ').map(n => n[0]).join('');
+                const pctVar = `--pct:${c.match_percentage * 3.6}deg`;
+                const emoji  = personaEmoji[c.persona] || '🎓';
+                return `
+                <div class="team-card section" data-name="${c.name.toLowerCase()}" data-dept="${c.department.toLowerCase()}">
+                    <div class="match-ring" style="${pctVar}">
+                        <div class="match-ring-inner">${c.match_percentage}%</div>
+                    </div>
+                    <div class="big-avatar">${initials}</div>
+                    <h2>${c.name}</h2>
+                    <p>${c.department} &bull; Year ${c.year}</p>
+                    <span class="badge badge-${c.persona}">${emoji} ${c.persona}</span>
+                    <div style="font-size:12px;color:#64748b;margin-top:6px;display:grid;grid-template-columns:1fr 1fr;gap:4px;text-align:left;width:100%">
+                        <span>📊 CGPA: <b>${c.cgpa}</b></span>
+                        <span>🏅 Wins: <b>${c.hackathons_won}</b></span>
+                        <span>💻 LC: <b>${c.leetcode_solved}</b></span>
+                        <span>🚀 Proj: <b>${c.github_projects}</b></span>
+                    </div>
+                    <button onclick="alert('Collaboration request sent to ${c.name}! 🎉')">Connect &amp; Collaborate</button>
+                </div>`;
+            }).join('');
+        }
+
+        function filterCards() {
+            const q = document.getElementById('searchBar').value.toLowerCase();
+            const filtered = allCards.filter(c =>
+                c.name.toLowerCase().includes(q) ||
+                c.department.toLowerCase().includes(q) ||
+                (c.persona || '').toLowerCase().includes(q)
+            );
+            renderCards(filtered);
+        }
+
+        loadTeamMatches();
+    </script>
+
+</body>
+</html>

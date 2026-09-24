@@ -1,0 +1,2874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Growth Intelligence — Mentor Console</title>
+  
+  <!-- Google Fonts: Poppins & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Chart.js via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Poppins', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            navy: {
+              DEFAULT: '#0A2540',
+              50: '#F0F5FA',
+              100: '#D9E5F2',
+              200: '#ADCBE5',
+              300: '#7BA4D0',
+              700: '#133E68',
+              800: '#0E2E4E',
+              900: '#0A2540',
+              950: '#061729'
+            },
+            electric: {
+              DEFAULT: '#2563EB',
+              50: '#EFF6FF',
+              100: '#DBEAFE',
+              500: '#3B82F6',
+              600: '#2563EB',
+              700: '#1D4ED8'
+            },
+            success: {
+              DEFAULT: '#10B981',
+              50: '#ECFDF5',
+              100: '#D1FAE5',
+              500: '#10B981',
+              600: '#059669',
+              700: '#047857'
+            },
+            warning: {
+              DEFAULT: '#F59E0B',
+              50: '#FFFBEB',
+              100: '#FEF3C7',
+              500: '#F59E0B',
+              600: '#D97706'
+            },
+            danger: {
+              DEFAULT: '#EF4444',
+              50: '#FEF2F2',
+              100: '#FEE2E2',
+              500: '#EF4444',
+              600: '#DC2626'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F1F5F9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
+    }
+
+    /* Subtle animations */
+    .drawer-backdrop {
+      transition: opacity 0.3s ease-in-out;
+    }
+    .drawer-content {
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .metric-card {
+      transition: all 0.2s ease;
+    }
+    .metric-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(10, 37, 64, 0.08), 0 8px 10px -6px rgba(10, 37, 64, 0.04);
+    }
+    .tab-active {
+      border-bottom: 2px solid #2563EB;
+      color: #2563EB;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body class="bg-[#F8FAFC] text-slate-800 font-sans antialiased min-h-screen flex flex-col selection:bg-electric-100 selection:text-electric-700">
+
+  <!-- ========================================================================= -->
+  <!-- TOP BAR (Fixed height 64px)                                               -->
+  <!-- ========================================================================= -->
+  <header class="h-16 bg-[#0A2540] text-white fixed top-0 left-0 right-0 z-40 px-6 flex items-center justify-between border-b border-navy-800 shadow-md">
+    <!-- Brand / Logo -->
+    <div class="flex items-center space-x-3 w-72">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-blue-500/30">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+        </svg>
+      </div>
+      <div>
+        <div class="font-bold text-sm tracking-wide text-white leading-tight">Student Growth Intelligence</div>
+        <div class="text-[11px] font-medium tracking-wider uppercase text-blue-300">Mentor Console</div>
+      </div>
+    </div>
+
+    <!-- Center Search Bar -->
+    <div class="flex-1 max-w-xl mx-8 relative">
+      <div class="relative">
+        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </span>
+        <input 
+          id="globalSearchInput" 
+          type="text" 
+          placeholder="Search students, IDs, skills, flags..." 
+          class="w-full pl-10 pr-10 py-2 bg-navy-800/80 hover:bg-navy-800 text-sm rounded-lg border border-navy-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-slate-400 transition-all"
+          oninput="handleGlobalSearch(this.value)"
+        >
+        <span class="absolute inset-y-0 right-0 pr-3 flex items-center">
+          <kbd class="text-[10px] bg-navy-700 text-slate-300 px-1.5 py-0.5 rounded font-mono border border-navy-600">Ctrl K</kbd>
+        </span>
+      </div>
+      <!-- Global Search Dropdown Results -->
+      <div id="globalSearchResults" class="hidden absolute left-0 right-0 mt-2 bg-white text-slate-800 rounded-xl shadow-2xl border border-slate-200 overflow-hidden z-50 max-h-80 overflow-y-auto">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+
+    <!-- Right Actions & Profile -->
+    <div class="flex items-center space-x-5">
+      <!-- Notification Bell -->
+      <div class="relative">
+        <button id="notificationBtn" onclick="toggleNotificationDropdown()" class="relative p-2 text-slate-300 hover:text-white rounded-lg hover:bg-navy-800 transition focus:outline-none">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+          </svg>
+          <span id="notificationBadge" class="absolute top-1.5 right-1.5 w-4 h-4 bg-danger text-white text-[10px] font-bold rounded-full flex items-center justify-center ring-2 ring-[#0A2540] animate-pulse">12</span>
+        </button>
+
+        <!-- Notification Dropdown -->
+        <div id="notificationDropdown" class="hidden absolute right-0 mt-3 w-80 bg-white rounded-xl shadow-2xl border border-slate-200 py-2 z-50 text-slate-800">
+          <div class="px-4 py-2 border-b border-slate-100 flex items-center justify-between">
+            <span class="font-semibold text-xs text-slate-900 uppercase tracking-wider">High Priority Alerts</span>
+            <span id="notifCountLabel" class="text-xs bg-red-100 text-danger font-medium px-2 py-0.5 rounded-full">3 Critical</span>
+          </div>
+          <div id="notificationList" class="max-h-64 overflow-y-auto divide-y divide-slate-100 text-xs">
+            <!-- Dynamic notifications -->
+          </div>
+          <div class="px-4 py-2 bg-slate-50 border-t border-slate-100 text-center">
+            <button onclick="navigateTo('alerts')" class="text-xs text-electric hover:underline font-medium">View all 12 alerts &rarr;</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="h-6 w-px bg-navy-800"></div>
+
+      <!-- Mentor Profile Dropdown -->
+      <div class="relative">
+        <button id="userMenuBtn" onclick="toggleUserMenu()" class="flex items-center space-x-3 text-left focus:outline-none group">
+          <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-amber-400 to-rose-500 text-white flex items-center justify-center font-bold text-xs shadow-md border-2 border-navy-700">
+            PR
+          </div>
+          <div class="hidden sm:block">
+            <div class="text-xs font-semibold text-white group-hover:text-blue-300 transition leading-tight">Dr. Priya Raman</div>
+            <div class="text-[10px] text-slate-400">Lead Faculty Mentor</div>
+          </div>
+          <svg class="w-4 h-4 text-slate-400 group-hover:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+
+        <!-- User Menu Dropdown -->
+        <div id="userMenuDropdown" class="hidden absolute right-0 mt-3 w-56 bg-white rounded-xl shadow-2xl border border-slate-200 py-2 z-50 text-slate-700 text-sm">
+          <div class="px-4 py-2.5 border-b border-slate-100">
+            <p class="font-medium text-slate-900">Dr. Priya Raman</p>
+            <p class="text-xs text-slate-500">priya.raman@college.edu</p>
+          </div>
+          <a href="#" onclick="showToast('Opened Mentor Preferences'); toggleUserMenu(); return false;" class="flex items-center px-4 py-2 text-xs hover:bg-slate-50 text-slate-700">
+            <svg class="w-4 h-4 mr-2.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+            Mentor Profile & Schedule
+          </a>
+          <a href="#" onclick="showToast('Exported Semester Growth Report'); toggleUserMenu(); return false;" class="flex items-center px-4 py-2 text-xs hover:bg-slate-50 text-slate-700">
+            <svg class="w-4 h-4 mr-2.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            Export All Data (CSV/PDF)
+          </a>
+          <div class="border-t border-slate-100 my-1"></div>
+          <button onclick="handleSignOut()" class="w-full text-left flex items-center px-4 py-2 text-xs text-danger hover:bg-red-50">
+            <svg class="w-4 h-4 mr-2.5 text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            Sign Out
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN APP WRAPPER: SIDEBAR + CONTENT                                      -->
+  <!-- ========================================================================= -->
+  <div class="flex flex-1 pt-16">
+    
+    <!-- LEFT SIDEBAR (Width 260px) -->
+    <aside class="w-[260px] bg-white border-r border-slate-200 fixed top-16 bottom-0 left-0 flex flex-col justify-between z-30 shadow-sm">
+      <div class="py-5 px-3 space-y-6 overflow-y-auto">
+        <!-- Main Navigation Section -->
+        <div>
+          <div class="px-3 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Core Navigation</div>
+          <nav class="space-y-1">
+            <!-- Dashboard Item -->
+            <button 
+              id="nav-dashboard" 
+              onclick="navigateTo('dashboard')" 
+              class="nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-electric bg-blue-50/80 hover:bg-blue-50"
+            >
+              <div class="flex items-center space-x-3">
+                <span class="text-lg">🏠</span>
+                <span class="font-medium">Dashboard</span>
+              </div>
+            </button>
+
+            <!-- All Students Item -->
+            <button 
+              id="nav-all" 
+              onclick="navigateTo('all')" 
+              class="nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-600 hover:text-navy hover:bg-slate-50"
+            >
+              <div class="flex items-center space-x-3">
+                <span class="text-lg">👥</span>
+                <span>All Students</span>
+              </div>
+              <span class="bg-slate-100 text-slate-600 text-xs px-2 py-0.5 rounded-full font-mono font-medium">100</span>
+            </button>
+          </nav>
+        </div>
+
+        <!-- Cohorts / Years Section -->
+        <div>
+          <div class="px-3 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Academic Cohorts</div>
+          <nav class="space-y-1">
+            <!-- Year 1 -->
+            <button 
+              id="nav-year1" 
+              onclick="navigateTo('year1')" 
+              class="nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-600 hover:text-navy hover:bg-slate-50"
+            >
+              <div class="flex items-center space-x-3">
+                <span class="text-base">📊</span>
+                <span>Year 1 (Freshmen)</span>
+              </div>
+              <span class="bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded-full font-mono font-medium">25</span>
+            </button>
+
+            <!-- Year 2 -->
+            <button 
+              id="nav-year2" 
+              onclick="navigateTo('year2')" 
+              class="nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-600 hover:text-navy hover:bg-slate-50"
+            >
+              <div class="flex items-center space-x-3">
+                <span class="text-base">📊</span>
+                <span>Year 2 (Sophomores)</span>
+              </div>
+              <span class="bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded-full font-mono font-medium">25</span>
+            </button>
+
+            <!-- Year 3 -->
+            <button 
+              id="nav-year3" 
+              onclick="navigateTo('year3')" 
+              class="nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-600 hover:text-navy hover:bg-slate-50"
+            >
+              <div class="flex items-center space-x-3">
+                <span class="text-base">📊</span>
+                <span>Year 3 (Juniors)</span>
+              </div>
+              <span class="bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded-full font-mono font-medium">25</span>
+            </button>
+
+            <!-- Year 4 -->
+            <button 
+              id="nav-year4" 
+              onclick="navigateTo('year4')" 
+              class="nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-600 hover:text-navy hover:bg-slate-50"
+            >
+              <div class="flex items-center space-x-3">
+                <span class="text-base">📊</span>
+                <span>Year 4 (Seniors)</span>
+              </div>
+              <span class="bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded-full font-mono font-medium">25</span>
+            </button>
+          </nav>
+        </div>
+
+        <!-- Management Section -->
+        <div>
+          <div class="px-3 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Intervention & Insights</div>
+          <nav class="space-y-1">
+            <!-- Alerts -->
+            <button 
+              id="nav-alerts" 
+              onclick="navigateTo('alerts')" 
+              class="nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-600 hover:text-navy hover:bg-slate-50"
+            >
+              <div class="flex items-center space-x-3">
+                <span class="text-base">🚨</span>
+                <span>Alerts Feed</span>
+              </div>
+              <span id="sidebarAlertBadge" class="bg-red-100 text-danger text-xs px-2 py-0.5 rounded-full font-mono font-semibold">12</span>
+            </button>
+
+            <!-- Reports -->
+            <button 
+              id="nav-reports" 
+              onclick="showToast('Generating AI Growth Trends PDF Report...')" 
+              class="nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-600 hover:text-navy hover:bg-slate-50"
+            >
+              <div class="flex items-center space-x-3">
+                <span class="text-base">📈</span>
+                <span>Semester Reports</span>
+              </div>
+            </button>
+
+            <!-- Settings -->
+            <button 
+              id="nav-settings" 
+              onclick="showToast('Mentor alert thresholds set to Z-score < -2.0')" 
+              class="nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-600 hover:text-navy hover:bg-slate-50"
+            >
+              <div class="flex items-center space-x-3">
+                <span class="text-base">⚙️</span>
+                <span>Intervention Rules</span>
+              </div>
+            </button>
+          </nav>
+        </div>
+
+        <!-- Student Portal Switcher -->
+        <div>
+          <div class="px-3 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Student Experience</div>
+          <nav class="space-y-1">
+            <a 
+              href="profile.html" 
+              class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition text-purple-700 bg-purple-50 hover:bg-purple-100"
+            >
+              <div class="flex items-center space-x-3">
+                <span class="text-base">👤</span>
+                <span>Student Portal (Aarav)</span>
+              </div>
+              <span class="text-xs">→</span>
+            </a>
+            <a 
+              href="analytics.html" 
+              class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-600 hover:text-navy hover:bg-slate-50"
+            >
+              <div class="flex items-center space-x-3">
+                <span class="text-base">📈</span>
+                <span>Cohort Analytics</span>
+              </div>
+            </a>
+            <a 
+              href="graph.html" 
+              class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-600 hover:text-navy hover:bg-slate-50"
+            >
+              <div class="flex items-center space-x-3">
+                <span class="text-base">🕸️</span>
+                <span>Visual Skill Graph</span>
+              </div>
+            </a>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Bottom User / Signout -->
+      <div class="p-4 border-t border-slate-100 bg-slate-50/70">
+        <div class="flex items-center justify-between text-xs text-slate-500">
+          <div class="flex items-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span class="font-medium text-slate-700">Online Mode</span>
+          </div>
+          <button onclick="handleSignOut()" class="text-danger hover:underline font-medium flex items-center space-x-1">
+            <span>Sign out</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA (Padded left 260px) -->
+    <main class="ml-[260px] flex-1 p-8 min-h-[calc(100vh-64px)] overflow-x-hidden">
+      
+      <!-- ===================================================================== -->
+      <!-- VIEW 1: DASHBOARD PAGE                                                -->
+      <!-- ===================================================================== -->
+      <div id="view-dashboard" class="space-y-8">
+        
+        <!-- Header Title Banner -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-200">
+          <div>
+            <div class="flex items-center space-x-3">
+              <h1 class="text-2xl font-bold text-navy tracking-tight">Faculty Mentor Intelligence Dashboard</h1>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                Academic Year 2026-27
+              </span>
+            </div>
+            <p class="text-sm text-slate-500 mt-1">Real-time holistic growth monitoring across academics, coding velocity, attendance & career readiness.</p>
+          </div>
+          <div class="flex items-center space-x-3">
+            <button onclick="openInterventionModal()" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-semibold rounded-xl shadow-sm text-white bg-electric hover:bg-blue-700 focus:outline-none transition">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+              Quick Intervention
+            </button>
+            <button onclick="refreshDashboardMetrics()" class="p-2 border border-slate-300 rounded-xl hover:bg-slate-100 text-slate-600 transition" title="Refresh metrics">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- SECTION A: TOP METRIC CARDS (4 cards in a row) -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <!-- Card 1: Total Students -->
+          <div class="metric-card bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between text-slate-500 mb-2">
+              <span class="text-xs font-semibold uppercase tracking-wider">Total Mentored</span>
+              <div class="p-2 bg-blue-50 text-electric rounded-xl">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+              </div>
+            </div>
+            <div class="text-3xl font-extrabold text-navy font-mono">100</div>
+            <div class="flex items-center mt-2 text-xs text-slate-500">
+              <span class="text-slate-600 font-medium">25 per year</span>
+              <span class="mx-1.5">&bull;</span>
+              <span class="text-emerald-600 font-medium">All cohorts active</span>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+          </div>
+
+          <!-- Card 2: Avg Attendance -->
+          <div class="metric-card bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between text-slate-500 mb-2">
+              <span class="text-xs font-semibold uppercase tracking-wider">Avg Attendance</span>
+              <div class="p-2 bg-emerald-50 text-success rounded-xl">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              </div>
+            </div>
+            <div class="text-3xl font-extrabold text-navy font-mono">84.2%</div>
+            <div class="flex items-center mt-2 text-xs text-emerald-600 font-medium">
+              <svg class="w-4 h-4 mr-1 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+              <span>+2.1% from last month</span>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 h-1 bg-emerald-500"></div>
+          </div>
+
+          <!-- Card 3: Active Alerts -->
+          <div class="metric-card bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between text-slate-500 mb-2">
+              <span class="text-xs font-semibold uppercase tracking-wider">Active Alerts</span>
+              <div class="p-2 bg-red-50 text-danger rounded-xl">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+              </div>
+            </div>
+            <div class="flex items-baseline space-x-2">
+              <div id="statAlertsTotal" class="text-3xl font-extrabold text-danger font-mono">12</div>
+              <span class="text-xs bg-red-100 text-danger px-2 py-0.5 rounded-full font-semibold">3 High Severity</span>
+            </div>
+            <div class="flex items-center mt-2 text-xs text-slate-500">
+              <span class="text-danger font-semibold">Needs attention this week</span>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 h-1 bg-danger"></div>
+          </div>
+
+          <!-- Card 4: Avg CGPA -->
+          <div class="metric-card bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between text-slate-500 mb-2">
+              <span class="text-xs font-semibold uppercase tracking-wider">Cohort Avg CGPA</span>
+              <div class="p-2 bg-amber-50 text-warning rounded-xl">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+              </div>
+            </div>
+            <div class="text-3xl font-extrabold text-navy font-mono">8.24</div>
+            <div class="flex items-center mt-2 text-xs text-slate-500">
+              <span class="text-slate-500 font-medium">↔ Steady across 4 terms</span>
+              <span class="mx-1">&bull;</span>
+              <span class="text-blue-600 font-semibold">Max 9.6</span>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 h-1 bg-amber-400"></div>
+          </div>
+        </section>
+
+        <!-- SECTION B: YEAR-WISE OVERVIEW (4 columns) -->
+        <section>
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-lg font-bold text-navy">Academic Year Cohorts Overview</h2>
+              <p class="text-xs text-slate-500">Aggregated health indicators across curriculum stages</p>
+            </div>
+            <span class="text-xs text-slate-400">Click any card to inspect year roster</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            <!-- Year 1 Card -->
+            <div onclick="navigateTo('year1')" class="metric-card bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-blue-300 group">
+              <div class="flex items-center justify-between mb-3">
+                <span class="px-2.5 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded-lg">Year 1 &bull; Freshmen</span>
+                <span class="text-xs text-slate-400 font-mono">2026 Batch</span>
+              </div>
+              <div class="space-y-2.5 my-4">
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-500">Enrolled Students:</span>
+                  <span class="font-bold font-mono text-slate-800">25</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-500">Avg CGPA:</span>
+                  <span class="font-bold font-mono text-emerald-600">8.12</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-500">Avg Attendance:</span>
+                  <span class="font-bold font-mono text-slate-800">86.4%</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-500">Flagged / Watch:</span>
+                  <span class="font-bold font-mono text-warning">2 / 4</span>
+                </div>
+              </div>
+              <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-electric group-hover:translate-x-1 transition-transform">
+                <span>View Year 1 Roster</span>
+                <span>&rarr;</span>
+              </div>
+            </div>
+
+            <!-- Year 2 Card -->
+            <div onclick="navigateTo('year2')" class="metric-card bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-blue-300 group">
+              <div class="flex items-center justify-between mb-3">
+                <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 text-xs font-semibold rounded-lg">Year 2 &bull; Sophomores</span>
+                <span class="text-xs text-slate-400 font-mono">2025 Batch</span>
+              </div>
+              <div class="space-y-2.5 my-4">
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-500">Enrolled Students:</span>
+                  <span class="font-bold font-mono text-slate-800">25</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-500">Avg CGPA:</span>
+                  <span class="font-bold font-mono text-emerald-600">8.31</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-500">Avg Attendance:</span>
+                  <span class="font-bold font-mono text-slate-800">82.8%</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-500">Flagged / Watch:</span>
+                  <span class="font-bold font-mono text-danger">3 / 5</span>
+                </div>
+              </div>
+              <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-electric group-hover:translate-x-1 transition-transform">
+                <span>View Year 2 Roster</span>
+                <span>&rarr;</span>
+              </div>
+            </div>
+
+            <!-- Year 3 Card -->
+            <div onclick="navigateTo('year3')" class="metric-card bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-blue-300 group ring-2 ring-blue-500/20">
+              <div class="flex items-center justify-between mb-3">
+                <span class="px-2.5 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-lg">Year 3 &bull; Juniors (Focus)</span>
+                <span class="text-xs text-slate-400 font-mono">2024 Batch</span>
+              </div>
+              <div class="space-y-2.5 my-4">
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-500">Enrolled Students:</span>
+                  <span class="font-bold font-mono text-slate-800">25</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-500">Avg CGPA:</span>
+                  <span class="font-bold font-mono text-emerald-600">8.42</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-500">Avg Attendance:</span>
+                  <span class="font-bold font-mono text-slate-800">85.1%</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-500">Flagged / Watch:</span>
+                  <span class="font-bold font-mono text-danger">4 / 3</span>
+                </div>
+              </div>
+              <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-electric group-hover:translate-x-1 transition-transform">
+                <span>View Year 3 Roster</span>
+                <span>&rarr;</span>
+              </div>
+            </div>
+
+            <!-- Year 4 Card -->
+            <div onclick="navigateTo('year4')" class="metric-card bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-blue-300 group">
+              <div class="flex items-center justify-between mb-3">
+                <span class="px-2.5 py-1 bg-purple-50 text-purple-700 text-xs font-semibold rounded-lg">Year 4 &bull; Seniors</span>
+                <span class="text-xs text-slate-400 font-mono">2023 Batch</span>
+              </div>
+              <div class="space-y-2.5 my-4">
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-500">Enrolled Students:</span>
+                  <span class="font-bold font-mono text-slate-800">25</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-500">Avg CGPA:</span>
+                  <span class="font-bold font-mono text-emerald-600">8.19</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-500">Avg Attendance:</span>
+                  <span class="font-bold font-mono text-slate-800">81.3%</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-500">Placement Ready:</span>
+                  <span class="font-bold font-mono text-emerald-600">18 / 25</span>
+                </div>
+              </div>
+              <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-electric group-hover:translate-x-1 transition-transform">
+                <span>View Year 4 Roster</span>
+                <span>&rarr;</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION C & SECTION D GRID -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          <!-- SECTION C: WEEKLY ALERTS PANEL (2 Columns) -->
+          <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
+            <div>
+              <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                <div class="flex items-center space-x-2">
+                  <div class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></div>
+                  <h2 class="font-bold text-navy text-base">Students Needing Attention This Week</h2>
+                </div>
+                <button onclick="navigateTo('alerts')" class="text-xs font-semibold text-electric hover:underline">
+                  View Full Alerts Queue &rarr;
+                </button>
+              </div>
+
+              <!-- Table with weekly alerts -->
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                  <thead class="bg-slate-50 text-slate-500 uppercase tracking-wider font-semibold border-b border-slate-200">
+                    <tr>
+                      <th class="py-3 px-4">Student</th>
+                      <th class="py-3 px-3">Year</th>
+                      <th class="py-3 px-3">Dimension</th>
+                      <th class="py-3 px-3">Severity</th>
+                      <th class="py-3 px-3">Detected Anomaly</th>
+                      <th class="py-3 px-4 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="dashboardAlertsTableBody" class="divide-y divide-slate-100">
+                    <!-- Populated dynamically via renderDashboardAlerts() -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="p-3 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+              <span>Showing high & medium severity flags detected in last 7 days</span>
+              <button onclick="showToast('Alert detection threshold refreshed.')" class="hover:text-navy underline">Refresh Anomalies</button>
+            </div>
+          </div>
+
+          <!-- SECTION D: RECENT ACTIVITY FEED (1 Column) -->
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
+                <h2 class="font-bold text-navy text-base">Mentor Interventions Log</h2>
+                <span class="text-[11px] text-slate-400">Audit Trail</span>
+              </div>
+              
+              <!-- Feed items list -->
+              <div id="recentActivityList" class="space-y-4 text-xs">
+                <!-- Activity 1 -->
+                <div class="flex items-start space-x-3">
+                  <div class="w-7 h-7 rounded-full bg-blue-100 text-electric flex-shrink-0 flex items-center justify-center font-bold text-[10px]">
+                    1:1
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-slate-800 font-medium">Scheduled a 1-on-1 with <span class="font-semibold text-navy cursor-pointer hover:underline" onclick="openStudentDrawer('STU051')">Aarav Mehta</span></p>
+                    <p class="text-slate-400 text-[11px] mt-0.5">3 days ago &bull; Discussed coding velocity slump</p>
+                  </div>
+                </div>
+
+                <!-- Activity 2 -->
+                <div class="flex items-start space-x-3">
+                  <div class="w-7 h-7 rounded-full bg-purple-100 text-purple-600 flex-shrink-0 flex items-center justify-center font-bold text-[10px]">
+                    PM
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-slate-800 font-medium">Assigned peer mentor to <span class="font-semibold text-navy cursor-pointer hover:underline" onclick="openStudentDrawer('STU052')">Diya Sharma</span></p>
+                    <p class="text-slate-400 text-[11px] mt-0.5">5 days ago &bull; Paired with Sneha K. (Year 4)</p>
+                  </div>
+                </div>
+
+                <!-- Activity 3 -->
+                <div class="flex items-start space-x-3">
+                  <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-600 flex-shrink-0 flex items-center justify-center font-bold text-[10px]">
+                    OK
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-slate-800 font-medium">Resolved Attendance alert for <span class="font-semibold text-navy cursor-pointer hover:underline" onclick="openStudentDrawer('STU004')">Ananya Iyer</span></p>
+                    <p class="text-slate-400 text-[11px] mt-0.5">6 days ago &bull; Medical certificate validated</p>
+                  </div>
+                </div>
+
+                <!-- Activity 4 -->
+                <div class="flex items-start space-x-3">
+                  <div class="w-7 h-7 rounded-full bg-amber-100 text-amber-600 flex-shrink-0 flex items-center justify-center font-bold text-[10px]">
+                    CR
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-slate-800 font-medium">Recommended System Design course to <span class="font-semibold text-navy cursor-pointer hover:underline" onclick="openStudentDrawer('STU077')">Vikramaditya Rao</span></p>
+                    <p class="text-slate-400 text-[11px] mt-0.5">1 week ago &bull; Placement acceleration prep</p>
+                  </div>
+                </div>
+
+                <!-- Activity 5 -->
+                <div class="flex items-start space-x-3">
+                  <div class="w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex-shrink-0 flex items-center justify-center font-bold text-[10px]">
+                    NT
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-slate-800 font-medium">Logged mentor evaluation for <span class="font-semibold text-navy cursor-pointer hover:underline" onclick="openStudentDrawer('STU026')">Rohan Verma</span></p>
+                    <p class="text-slate-400 text-[11px] mt-0.5">1 week ago &bull; Capstone project approved</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-100 text-center">
+              <button onclick="showToast('Loaded older activity logs')" class="text-xs text-electric hover:underline font-medium">View all mentor history</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ===================================================================== -->
+      <!-- VIEW 2: YEAR / ROSTER VIEW (Year 1, 2, 3, 4, All)                     -->
+      <!-- ===================================================================== -->
+      <div id="view-year" class="hidden space-y-6">
+        
+        <!-- Year View Header with Cohort Tabs -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center space-x-3">
+                <h1 id="yearViewTitle" class="text-2xl font-bold text-navy">Year 3 Students Cohort</h1>
+                <span id="yearStudentCountBadge" class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full font-mono">25 Students</span>
+              </div>
+              <p id="yearViewSubtitle" class="text-xs text-slate-500 mt-1">Default ordered by Attendance descending &bull; Hover columns or use dropdown to re-order</p>
+            </div>
+
+            <!-- Quick Stats in Header -->
+            <div class="flex items-center space-x-4 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100">
+              <div class="text-center">
+                <div class="text-[10px] text-slate-400 uppercase font-semibold">Cohort CGPA</div>
+                <div id="cohortAvgCgpa" class="text-sm font-bold font-mono text-emerald-600">8.42</div>
+              </div>
+              <div class="h-6 w-px bg-slate-200"></div>
+              <div class="text-center">
+                <div class="text-[10px] text-slate-400 uppercase font-semibold">Attendance</div>
+                <div id="cohortAvgAttendance" class="text-sm font-bold font-mono text-slate-800">85.1%</div>
+              </div>
+              <div class="h-6 w-px bg-slate-200"></div>
+              <div class="text-center">
+                <div class="text-[10px] text-slate-400 uppercase font-semibold">Flagged</div>
+                <div id="cohortFlaggedCount" class="text-sm font-bold font-mono text-danger">4</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Academic Cohort Tabs Navigation -->
+          <div class="flex items-center border-b border-slate-200 space-x-6 text-sm">
+            <button onclick="setYearTab('all')" id="tab-all" class="pb-3 px-1 text-slate-500 hover:text-navy font-medium transition">All Cohorts (100)</button>
+            <button onclick="setYearTab(1)" id="tab-1" class="pb-3 px-1 text-slate-500 hover:text-navy font-medium transition">Year 1 (Freshmen)</button>
+            <button onclick="setYearTab(2)" id="tab-2" class="pb-3 px-1 text-slate-500 hover:text-navy font-medium transition">Year 2 (Sophomores)</button>
+            <button onclick="setYearTab(3)" id="tab-3" class="pb-3 px-1 tab-active font-semibold transition">Year 3 (Juniors)</button>
+            <button onclick="setYearTab(4)" id="tab-4" class="pb-3 px-1 text-slate-500 hover:text-navy font-medium transition">Year 4 (Seniors)</button>
+          </div>
+
+          <!-- TOP CONTROLS BAR -->
+          <div class="flex flex-wrap items-center justify-between gap-4 pt-2">
+            <!-- Left: Filter chips -->
+            <div class="flex items-center space-x-2">
+              <span class="text-xs text-slate-400 font-medium">Filter:</span>
+              <button onclick="setFilterChip('all')" id="filter-all" class="px-3 py-1 text-xs rounded-lg font-medium bg-blue-50 text-electric border border-blue-200 transition">All</button>
+              <button onclick="setFilterChip('flagged')" id="filter-flagged" class="px-3 py-1 text-xs rounded-lg font-medium bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition">🔴 Flagged</button>
+              <button onclick="setFilterChip('watch')" id="filter-watch" class="px-3 py-1 text-xs rounded-lg font-medium bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition">🟡 At Risk (Watch)</button>
+              <button onclick="setFilterChip('top')" id="filter-top" class="px-3 py-1 text-xs rounded-lg font-medium bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition">🟢 Top Performers</button>
+            </div>
+
+            <!-- Right: Search + Sort Dropdown + Grouping Toggle + View Toggle -->
+            <div class="flex flex-wrap items-center gap-3">
+              <!-- Filter Students Search Box -->
+              <div class="relative">
+                <input 
+                  id="tableFilterInput" 
+                  type="text" 
+                  placeholder="Filter students in view..." 
+                  class="pl-8 pr-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 w-48 text-slate-700 placeholder-slate-400"
+                  oninput="handleTableFilter(this.value)"
+                >
+                <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              </div>
+
+              <!-- Sort Dropdown -->
+              <div class="flex items-center space-x-1 text-xs text-slate-500">
+                <span>Sort by:</span>
+                <select id="sortSelect" onchange="handleSortChange(this.value)" class="bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 font-medium text-slate-700 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500">
+                  <option value="attendance-desc">Attendance (High &rarr; Low) ▼</option>
+                  <option value="attendance-asc">Attendance (Low &rarr; High) ▲</option>
+                  <option value="cgpa-desc">CGPA (High &rarr; Low)</option>
+                  <option value="cgpa-asc">CGPA (Low &rarr; High)</option>
+                  <option value="leetcode-desc">LeetCode Solves (30d)</option>
+                  <option value="alerts-desc">Active Alerts Count</option>
+                  <option value="name-asc">Student Name (A &rarr; Z)</option>
+                </select>
+              </div>
+
+              <!-- Grouping Option Toggle: "Group students in batches of 10" -->
+              <label class="flex items-center space-x-2 text-xs text-slate-700 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200 cursor-pointer select-none hover:bg-slate-100 transition">
+                <input type="checkbox" id="batchGroupingToggle" onchange="toggleBatchGrouping(this.checked)" class="rounded text-electric focus:ring-blue-400 h-3.5 w-3.5">
+                <span class="font-medium">Group in batches of 10</span>
+              </label>
+
+              <!-- View Switcher (Table / Cards / Timeline) -->
+              <div class="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+                <button onclick="setViewMode('table')" id="viewModeTableBtn" class="px-2.5 py-1 text-xs rounded-md font-medium bg-white text-navy shadow-sm transition">Table</button>
+                <button onclick="setViewMode('cards')" id="viewModeCardsBtn" class="px-2.5 py-1 text-xs rounded-md font-medium text-slate-500 hover:text-navy transition">Cards</button>
+                <button onclick="setViewMode('timeline')" id="viewModeTimelineBtn" class="px-2.5 py-1 text-xs rounded-md font-medium text-slate-500 hover:text-navy transition">Milestones</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MAIN STUDENTS CONTAINER -->
+        <div id="studentsContainer" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          
+          <!-- TABLE VIEW (Default) -->
+          <div id="tableViewWrapper" class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 text-slate-600 uppercase tracking-wider font-semibold border-b border-slate-200 select-none">
+                <tr>
+                  <th class="py-3.5 px-4 w-12 text-center cursor-pointer hover:bg-slate-100" onclick="handleSortHeader('rank')">#</th>
+                  <th class="py-3.5 px-3 cursor-pointer hover:bg-slate-100" onclick="handleSortHeader('id')">Student ID</th>
+                  <th class="py-3.5 px-4 cursor-pointer hover:bg-slate-100" onclick="handleSortHeader('name')">Name</th>
+                  <th class="py-3.5 px-4 cursor-pointer hover:bg-slate-100" onclick="handleSortHeader('attendance')">
+                    <div class="flex items-center space-x-1">
+                      <span>Attendance</span>
+                      <span id="sortIndicator-attendance" class="text-electric">▼</span>
+                    </div>
+                  </th>
+                  <th class="py-3.5 px-3 cursor-pointer hover:bg-slate-100" onclick="handleSortHeader('cgpa')">CGPA</th>
+                  <th class="py-3.5 px-3 cursor-pointer hover:bg-slate-100" onclick="handleSortHeader('leetcode')">LeetCode (30d)</th>
+                  <th class="py-3.5 px-3 text-center cursor-pointer hover:bg-slate-100" onclick="handleSortHeader('hackathons')">Hackathons</th>
+                  <th class="py-3.5 px-3 text-center cursor-pointer hover:bg-slate-100" onclick="handleSortHeader('internships')">Internships</th>
+                  <th class="py-3.5 px-3">Status</th>
+                  <th class="py-3.5 px-4 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody id="studentsTableBody" class="divide-y divide-slate-100">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- CARDS VIEW (Optional toggle) -->
+          <div id="cardsViewWrapper" class="hidden p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <!-- Dynamic student cards -->
+          </div>
+
+          <!-- TIMELINE VIEW (Optional toggle) -->
+          <div id="timelineViewWrapper" class="hidden p-6 space-y-6">
+            <!-- Dynamic milestones timeline -->
+          </div>
+
+          <!-- PAGINATION CONTROLS -->
+          <div id="paginationBar" class="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">
+            <div id="paginationInfo">
+              Showing <span class="font-bold text-navy">1</span> to <span class="font-bold text-navy">10</span> of <span class="font-bold text-navy" id="totalFilteredCount">25</span> students
+            </div>
+            <div class="flex items-center space-x-1.5" id="paginationButtons">
+              <!-- Dynamically generated pagination -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ===================================================================== -->
+      <!-- VIEW 3: ALL ALERTS PAGE                                               -->
+      <!-- ===================================================================== -->
+      <div id="view-alerts" class="hidden space-y-6">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center space-x-3">
+                <h1 class="text-2xl font-bold text-navy">All Active Academic & Velocity Alerts</h1>
+                <span id="alertsTotalPill" class="bg-red-100 text-danger text-xs font-bold px-2.5 py-0.5 rounded-full font-mono">12 Active</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-1">Statistical outlier anomalies (Z-score &lt; -2.0) detected across Attendance, LeetCode velocity, and Academics.</p>
+            </div>
+            <button onclick="resolveAllSafeAlerts()" class="px-4 py-2 border border-slate-300 text-xs font-semibold rounded-xl hover:bg-slate-50 text-slate-700 transition">
+              Mark Non-Critical as Reviewed
+            </button>
+          </div>
+
+          <!-- Filters: Severity, Year, Dimension -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-3 border-t border-slate-100 text-xs">
+            <div>
+              <label class="block font-semibold text-slate-600 mb-1">Filter by Severity:</label>
+              <select id="alertFilterSeverity" onchange="renderAlertsPage()" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 font-medium">
+                <option value="all">All Severities</option>
+                <option value="High">🔴 High Severity</option>
+                <option value="Medium">🟡 Medium Severity</option>
+                <option value="Low">🔵 Low Severity</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-600 mb-1">Filter by Academic Year:</label>
+              <select id="alertFilterYear" onchange="renderAlertsPage()" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 font-medium">
+                <option value="all">All Cohorts (1 to 4)</option>
+                <option value="1">Year 1 (Freshmen)</option>
+                <option value="2">Year 2 (Sophomores)</option>
+                <option value="3">Year 3 (Juniors)</option>
+                <option value="4">Year 4 (Seniors)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-600 mb-1">Filter by Dimension:</label>
+              <select id="alertFilterDimension" onchange="renderAlertsPage()" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 font-medium">
+                <option value="all">All Dimensions</option>
+                <option value="Academics">Academics</option>
+                <option value="Programming">Programming</option>
+                <option value="Attendance">Attendance</option>
+                <option value="Events">Events & Hackathons</option>
+                <option value="Career">Career & Placement</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alerts Table -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 text-slate-600 uppercase tracking-wider font-semibold border-b border-slate-200">
+                <tr>
+                  <th class="py-3.5 px-4">Severity</th>
+                  <th class="py-3.5 px-4">Student</th>
+                  <th class="py-3.5 px-3">Year</th>
+                  <th class="py-3.5 px-3">Dimension</th>
+                  <th class="py-3.5 px-4">Root Cause / Reason</th>
+                  <th class="py-3.5 px-3">Detected</th>
+                  <th class="py-3.5 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="allAlertsTableBody" class="divide-y divide-slate-100">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- PAGE 3: STUDENT PROFILE DRAWER (Slide-in from right)                     -->
+  <!-- ========================================================================= -->
+  <div id="drawerOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300" onclick="closeStudentDrawer()"></div>
+
+  <div id="studentDrawer" class="fixed top-0 right-0 bottom-0 w-full max-w-2xl bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+    <!-- Drawer Header -->
+    <div class="p-6 bg-[#0A2540] text-white flex-shrink-0 relative border-b border-navy-800">
+      <button onclick="closeStudentDrawer()" class="absolute top-5 right-5 text-slate-300 hover:text-white p-1.5 rounded-lg bg-navy-800/80 hover:bg-navy-800 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+
+      <div class="flex items-start space-x-4">
+        <!-- Initials Avatar -->
+        <div id="drawerAvatar" class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-white flex items-center justify-center text-xl font-bold font-mono shadow-xl border-2 border-navy-700">
+          AM
+        </div>
+
+        <div class="flex-1 min-w-0 pr-8">
+          <div class="flex items-center space-x-3">
+            <h2 id="drawerStudentName" class="text-xl font-bold text-white truncate">Aarav Mehta</h2>
+            <span id="drawerStatusPill" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-500/20 text-red-300 border border-red-500/40">🔴 Flagged</span>
+          </div>
+          <div class="flex items-center space-x-2 text-xs text-slate-300 mt-1 font-mono">
+            <span id="drawerStudentID" class="font-bold text-blue-300">STU051</span>
+            <span>&bull;</span>
+            <span id="drawerStudentYear">Year 3</span>
+            <span>&bull;</span>
+            <span id="drawerStudentDept">Computer Science & Engineering</span>
+          </div>
+          <div class="text-[11px] text-slate-400 mt-1 flex items-center space-x-1.5">
+            <span>Faculty Mentor:</span>
+            <span class="text-white font-medium">Dr. Priya Raman</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons (Top Right/Header) -->
+      <div class="flex flex-wrap items-center gap-2 mt-5 pt-4 border-t border-navy-800/80 text-xs">
+        <button onclick="openScheduleModalFromDrawer()" class="flex-1 inline-flex items-center justify-center px-3 py-2 bg-electric hover:bg-blue-700 text-white font-medium rounded-xl shadow-sm transition">
+          <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+          Schedule 1-on-1
+        </button>
+        <button onclick="openAssignMentorModalFromDrawer()" class="inline-flex items-center px-3 py-2 bg-navy-800 hover:bg-navy-700 text-white font-medium rounded-xl border border-navy-700 transition">
+          <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+          Assign Peer Mentor
+        </button>
+        <button onclick="showToast('Message thread opened with student')" class="inline-flex items-center px-3 py-2 bg-navy-800 hover:bg-navy-700 text-white font-medium rounded-xl border border-navy-700 transition">
+          <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+          Message
+        </button>
+        <button onclick="openAddNoteModalFromDrawer()" class="inline-flex items-center px-3 py-2 bg-navy-800 hover:bg-navy-700 text-white font-medium rounded-xl border border-navy-700 transition">
+          <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+          Add Note
+        </button>
+      </div>
+    </div>
+
+    <!-- Drawer Scrollable Content -->
+    <div class="flex-1 overflow-y-auto p-6 space-y-6 text-slate-800">
+
+      <!-- SECTION 1: 4 KEY METRIC CARDS -->
+      <div>
+        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Holistic Performance Snapshot</div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <!-- Metric 1: CGPA -->
+          <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+            <div class="text-[11px] text-slate-500">CGPA</div>
+            <div id="drawerMetricCgpa" class="text-xl font-bold font-mono text-emerald-600 mt-0.5">8.7</div>
+            <div class="text-[10px] text-emerald-600 font-medium flex items-center mt-1">
+              <span>↑ +0.3 vs sem 4</span>
+            </div>
+          </div>
+
+          <!-- Metric 2: Attendance -->
+          <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+            <div class="text-[11px] text-slate-500">Attendance</div>
+            <div id="drawerMetricAttendance" class="text-xl font-bold font-mono text-slate-800 mt-0.5">91%</div>
+            <div class="text-[10px] text-emerald-600 font-medium flex items-center mt-1">
+              <span>Steady &bull; Safe</span>
+            </div>
+          </div>
+
+          <!-- Metric 3: LeetCode (30d) -->
+          <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+            <div class="text-[11px] text-slate-500">LeetCode (30d)</div>
+            <div id="drawerMetricLeetcode" class="text-xl font-bold font-mono text-danger mt-0.5">27 solves</div>
+            <div id="drawerMetricLeetcodeTrend" class="text-[10px] text-danger font-semibold flex items-center mt-1">
+              <span>↓ -40% drop</span>
+            </div>
+          </div>
+
+          <!-- Metric 4: Hackathons -->
+          <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+            <div class="text-[11px] text-slate-500">Hackathons</div>
+            <div id="drawerMetricHackathons" class="text-xl font-bold font-mono text-blue-600 mt-0.5">4 events</div>
+            <div class="text-[10px] text-blue-600 font-medium flex items-center mt-1">
+              <span>2 podium wins</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: FIVE DIMENSIONS RADAR CHART -->
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h3 class="font-bold text-navy text-sm">Five Dimensions Growth Radar</h3>
+            <p class="text-[11px] text-slate-400">Comparing Current Level vs Personal Baseline</p>
+          </div>
+          <div class="flex items-center space-x-3 text-[11px]">
+            <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-blue-600 mr-1.5"></span>Current</span>
+            <span class="flex items-center"><span class="w-2.5 h-0.5 bg-slate-400 mr-1.5"></span>Baseline</span>
+          </div>
+        </div>
+        <div class="relative h-64 w-full">
+          <canvas id="drawerRadarChart"></canvas>
+        </div>
+        <div id="drawerRadarInsight" class="mt-3 p-2.5 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-800 flex items-start space-x-2">
+          <span class="text-base">⚠️</span>
+          <span class="text-[11px]"><strong>Key Vulnerability:</strong> Visible drop on <strong>Programming Velocity</strong> while Academics and Attendance remain strong. Indicates potential burnout or interview anxiety.</span>
+        </div>
+      </div>
+
+      <!-- SECTION 3: 6-MONTH TREND LINE CHART -->
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h3 class="font-bold text-navy text-sm">6-Month Coding Velocity (LeetCode Solves)</h3>
+            <p class="text-[11px] text-slate-400">Monthly solves against personal target baseline</p>
+          </div>
+          <span class="px-2 py-0.5 bg-red-100 text-danger text-[10px] font-bold rounded-full">Anomalous Drop</span>
+        </div>
+        <div class="relative h-52 w-full">
+          <canvas id="drawerLineChart"></canvas>
+        </div>
+      </div>
+
+      <!-- SECTION 4: ACTIVE ALERTS FOR THIS STUDENT -->
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-navy text-sm">Active Flags & Diagnostic Triggers</h3>
+          <span id="drawerAlertCount" class="text-xs bg-red-100 text-danger font-semibold px-2 py-0.5 rounded-full">1 Alert</span>
+        </div>
+
+        <div id="drawerAlertsList" class="space-y-2.5">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+
+      <!-- SECTION 5: ACTIVITY TIMELINE -->
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+        <h3 class="font-bold text-navy text-sm mb-4">Milestone & Engagement Timeline</h3>
+        <div id="drawerTimelineList" class="relative pl-6 space-y-6 before:content-[''] before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200 text-xs">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+
+      <!-- SECTION 6: QUICK ACTIONS PANEL -->
+      <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
+        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">Execute Guided Intervention</div>
+        <div class="grid grid-cols-2 gap-3 text-xs">
+          <button onclick="openScheduleModalFromDrawer()" class="p-3 bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-300 rounded-xl font-semibold text-slate-700 hover:text-electric text-left transition flex items-center space-x-2">
+            <span class="text-lg">📅</span>
+            <span>Schedule a check-in</span>
+          </button>
+          <button onclick="openAssignMentorModalFromDrawer()" class="p-3 bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-300 rounded-xl font-semibold text-slate-700 hover:text-electric text-left transition flex items-center space-x-2">
+            <span class="text-lg">🤝</span>
+            <span>Assign a peer mentor</span>
+          </button>
+          <button onclick="openRecommendCourseModal()" class="p-3 bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-300 rounded-xl font-semibold text-slate-700 hover:text-electric text-left transition flex items-center space-x-2">
+            <span class="text-lg">📚</span>
+            <span>Recommend a course</span>
+          </button>
+          <button onclick="openAddNoteModalFromDrawer()" class="p-3 bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-300 rounded-xl font-semibold text-slate-700 hover:text-electric text-left transition flex items-center space-x-2">
+            <span class="text-lg">📝</span>
+            <span>Log a mentor note</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODALS (Schedule 1-on-1, Assign Peer Mentor, Add Note, Course)            -->
+  <!-- ========================================================================= -->
+
+  <!-- Modal 1: Schedule 1-on-1 -->
+  <div id="modalSchedule" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200 animate-scaleIn">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 class="font-bold text-navy text-lg">Schedule Mentoring Session</h3>
+        <button onclick="closeModal('modalSchedule')" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <form onsubmit="handleScheduleSubmit(event)" class="space-y-4 mt-4 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Student</label>
+          <input type="text" id="scheduleModalStudent" class="w-full bg-slate-100 border border-slate-200 rounded-lg p-2.5 font-medium text-slate-800" readonly>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Date</label>
+            <input type="date" id="scheduleDate" class="w-full border border-slate-300 rounded-lg p-2 text-slate-700" required>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Time Slot</label>
+            <select class="w-full border border-slate-300 rounded-lg p-2 text-slate-700">
+              <option>10:00 AM - 10:30 AM</option>
+              <option>02:00 PM - 02:30 PM</option>
+              <option>04:30 PM - 05:00 PM</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Meeting Mode</label>
+          <div class="flex space-x-4">
+            <label class="flex items-center space-x-1.5"><input type="radio" name="mode" checked class="text-electric"> <span>Faculty Cabin (A-204)</span></label>
+            <label class="flex items-center space-x-1.5"><input type="radio" name="mode" class="text-electric"> <span>Google Meet Video</span></label>
+          </div>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Agenda / Discussion Goals</label>
+          <textarea id="scheduleAgenda" rows="3" class="w-full border border-slate-300 rounded-lg p-2.5 text-slate-700" placeholder="Review programming velocity drop, address placement concerns, outline 2-week sprint..."></textarea>
+        </div>
+        <div class="pt-3 flex justify-end space-x-2">
+          <button type="button" onclick="closeModal('modalSchedule')" class="px-4 py-2 border border-slate-300 rounded-xl text-slate-600 hover:bg-slate-50 font-medium">Cancel</button>
+          <button type="submit" class="px-4 py-2 bg-electric hover:bg-blue-700 text-white rounded-xl font-semibold shadow-sm">Confirm 1-on-1</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 2: Assign Peer Mentor -->
+  <div id="modalAssignMentor" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 class="font-bold text-navy text-lg">Assign Senior Peer Mentor</h3>
+        <button onclick="closeModal('modalAssignMentor')" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <form onsubmit="handleAssignMentorSubmit(event)" class="space-y-4 mt-4 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Mentee</label>
+          <input type="text" id="assignModalMentee" class="w-full bg-slate-100 border border-slate-200 rounded-lg p-2.5 font-medium text-slate-800" readonly>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Select Senior Peer Mentor (High Velocity)</label>
+          <select id="peerMentorSelect" class="w-full border border-slate-300 rounded-lg p-2.5 text-slate-700 font-medium">
+            <option>Sneha Kulkarni (Year 4 &bull; 85 LeetCode &bull; 3 Internships)</option>
+            <option>Aditya Nair (Year 4 &bull; 9.4 CGPA &bull; GSOC Fellow)</option>
+            <option>Tanvi Shah (Year 4 &bull; Hackathon Lead &bull; Microsoft Offer)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Focus Domain</label>
+          <select class="w-full border border-slate-300 rounded-lg p-2.5 text-slate-700">
+            <option>Data Structures & Algorithms (LeetCode Velocity)</option>
+            <option>Academic Recovery & Exam Prep</option>
+            <option>Hackathon Teaming & Ideation</option>
+            <option>Interview Anxiety & Soft Skills</option>
+          </select>
+        </div>
+        <div class="pt-3 flex justify-end space-x-2">
+          <button type="button" onclick="closeModal('modalAssignMentor')" class="px-4 py-2 border border-slate-300 rounded-xl text-slate-600 hover:bg-slate-50 font-medium">Cancel</button>
+          <button type="submit" class="px-4 py-2 bg-electric hover:bg-blue-700 text-white rounded-xl font-semibold shadow-sm">Assign Peer Mentor</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 3: Add Mentor Note -->
+  <div id="modalAddNote" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 class="font-bold text-navy text-lg">Log Confidential Mentor Note</h3>
+        <button onclick="closeModal('modalAddNote')" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <form onsubmit="handleAddNoteSubmit(event)" class="space-y-4 mt-4 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Student</label>
+          <input type="text" id="noteModalStudent" class="w-full bg-slate-100 border border-slate-200 rounded-lg p-2 font-medium" readonly>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Note Category</label>
+          <select class="w-full border border-slate-300 rounded-lg p-2 text-slate-700">
+            <option>Academic Counseling</option>
+            <option>Coding Velocity Slump Review</option>
+            <option>Personal & Health Circumstance</option>
+            <option>Career Guidance & Placement</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Notes & Observations</label>
+          <textarea id="mentorNoteText" rows="4" class="w-full border border-slate-300 rounded-lg p-2.5 text-slate-700" placeholder="Enter detailed confidential remarks regarding progress, agreed goals, or personal context..." required></textarea>
+        </div>
+        <div class="pt-3 flex justify-end space-x-2">
+          <button type="button" onclick="closeModal('modalAddNote')" class="px-4 py-2 border border-slate-300 rounded-xl text-slate-600 hover:bg-slate-50 font-medium">Cancel</button>
+          <button type="submit" class="px-4 py-2 bg-navy hover:bg-slate-800 text-white rounded-xl font-semibold shadow-sm">Save Note to File</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 4: Recommend Course -->
+  <div id="modalRecommendCourse" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 class="font-bold text-navy text-lg">Recommend Upskilling Course</h3>
+        <button onclick="closeModal('modalRecommendCourse')" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <form onsubmit="handleCourseSubmit(event)" class="space-y-4 mt-4 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Recommended Pathway</label>
+          <select class="w-full border border-slate-300 rounded-lg p-2.5 text-slate-700 font-medium">
+            <option>Advanced Dynamic Programming & Graphs (NPTEL / LeetCode)</option>
+            <option>Distributed Systems Architecture & Docker/K8s</option>
+            <option>Foundations of Fullstack Next.js & Cloud Deployment</option>
+            <option>Competitive Math & Quantitative Aptitude</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Personal Note to Student</label>
+          <textarea rows="3" class="w-full border border-slate-300 rounded-lg p-2 text-slate-700" placeholder="Hey, this 3-week module will help you ramp back up to your target velocity before the campus placement drives!"></textarea>
+        </div>
+        <div class="pt-3 flex justify-end space-x-2">
+          <button type="button" onclick="closeModal('modalRecommendCourse')" class="px-4 py-2 border border-slate-300 rounded-xl text-slate-600 hover:bg-slate-50 font-medium">Cancel</button>
+          <button type="submit" class="px-4 py-2 bg-electric hover:bg-blue-700 text-white rounded-xl font-semibold shadow-sm">Send Recommendation</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="fixed bottom-6 right-6 z-50 space-y-2 pointer-events-none"></div>
+
+  <!-- ========================================================================= -->
+  <!-- JAVASCRIPT LOGIC & SAMPLE DATA (100 Students Hardcoded)                   -->
+  <!-- ========================================================================= -->
+  <script>
+    /**
+     * STUDENT GROWTH INTELLIGENCE — MENTOR CONSOLE
+     * Single-file Application Logic
+     * Data: 100 Students (25 per year), 5 Dimensions, Real-world variances
+     */
+
+    // Indian Name bank for authentic generation
+    const firstNames = [
+      "Aarav", "Diya", "Rohan", "Ananya", "Vikramaditya", "Sneha", "Aditya", "Pooja", "Arjun", "Kavya",
+      "Karthik", "Meera", "Rishabh", "Tanvi", "Siddharth", "Riya", "Nikhil", "Ishaan", "Priya", "Rahul",
+      "Divya", "Varun", "Neha", "Harsh", "Sanya", "Pranav", "Shruti", "Akash", "Tanya", "Gaurav",
+      "Karan", "Simran", "Dev", "Swati", "Abhishek", "Tara", "Mihir", "Nandini", "Kunal", "Isha",
+      "Manish", "Aditi", "Sameer", "Ritika", "Vivek", "Pallavi", "Suraj", "Shreya", "Deepak", "Payal"
+    ];
+    const lastNames = [
+      "Mehta", "Sharma", "Verma", "Iyer", "Rao", "Kulkarni", "Nair", "Patel", "Deshmukh", "Reddy",
+      "Sundaram", "Joshi", "Gupta", "Shah", "Malhotra", "Sen", "Choudhary", "Singhania", "Swaminathan", "Nambiar",
+      "Pillai", "Dhawan", "Agarwal", "Vardhan", "Kapoor", "Bose", "Menon", "Bhatia", "Chatterjee", "Mishra"
+    ];
+
+    // Core 100 students dataset
+    const studentsData = [];
+
+    // Pre-configured highlight students to precisely match prompt examples
+    const specificHighlightStudents = {
+      1: { id: "STU001", name: "Kavya Reddy", attendance: 94, cgpa: 9.1, leetcode: 52, hackathons: 3, internships: 1, status: "On Track" },
+      4: { id: "STU004", name: "Ananya Iyer", attendance: 68, cgpa: 7.4, leetcode: 14, hackathons: 1, internships: 0, status: "Flagged" },
+      26: { id: "STU026", name: "Rohan Verma", attendance: 78, cgpa: 8.3, leetcode: 38, hackathons: 2, internships: 1, status: "Watch" },
+      51: { id: "STU051", name: "Aarav Mehta", attendance: 91, cgpa: 8.7, leetcode: 27, hackathons: 4, internships: 1, status: "Flagged" }, // Focus Student
+      52: { id: "STU052", name: "Diya Sharma", attendance: 72, cgpa: 7.1, leetcode: 11, hackathons: 0, internships: 0, status: "Watch" },
+      77: { id: "STU077", name: "Vikramaditya Rao", attendance: 92, cgpa: 9.3, leetcode: 62, hackathons: 5, internships: 2, status: "On Track" },
+      80: { id: "STU080", name: "Sneha Kulkarni", attendance: 96, cgpa: 9.5, leetcode: 58, hackathons: 4, internships: 2, status: "On Track" }
+    };
+
+    // Generate 100 students (25 per year, STU001 to STU100)
+    for (let i = 1; i <= 100; i++) {
+      const year = Math.ceil(i / 25);
+      const id = "STU" + String(i).padStart(3, '0');
+      
+      let studentName;
+      let attendance;
+      let cgpa;
+      let leetcode;
+      let hackathons;
+      let internships;
+      let status;
+
+      if (specificHighlightStudents[i]) {
+        const spec = specificHighlightStudents[i];
+        studentName = spec.name;
+        attendance = spec.attendance;
+        cgpa = spec.cgpa;
+        leetcode = spec.leetcode;
+        hackathons = spec.hackathons;
+        internships = spec.internships;
+        status = spec.status;
+      } else {
+        studentName = firstNames[(i * 3 + 7) % firstNames.length] + " " + lastNames[(i * 5 + 11) % lastNames.length];
+        
+        // Realistic distribution
+        // 12 flagged students across dataset, 20 watch, remainder on track
+        if (i % 8 === 0 || i === 12 || i === 33 || i === 65 || i === 90) {
+          status = "Flagged";
+          attendance = 58 + ((i * 7) % 20); // 58% to 77%
+          cgpa = Number((6.5 + ((i * 3) % 18) / 10).toFixed(2)); // 6.5 to 8.2
+          leetcode = 4 + (i % 18);
+        } else if (i % 4 === 0) {
+          status = "Watch";
+          attendance = 73 + ((i * 5) % 12); // 73% to 84%
+          cgpa = Number((7.2 + ((i * 4) % 15) / 10).toFixed(2));
+          leetcode = 18 + (i % 25);
+        } else {
+          status = "On Track";
+          attendance = 82 + ((i * 3) % 17); // 82% to 98%
+          cgpa = Number((8.1 + ((i * 2) % 16) / 10).toFixed(2));
+          leetcode = 32 + (i % 34);
+        }
+
+        hackathons = (i % 5);
+        internships = year >= 3 ? (i % 3) : (i % 2 === 0 ? 1 : 0);
+      }
+
+      // 6-month LeetCode history & baseline
+      let leetcode6m;
+      let baseline = Math.round(leetcode * 1.3);
+      if (status === "Flagged" || i === 51) {
+        // Obvious drop in last month
+        baseline = 45;
+        leetcode6m = [38, 42, 48, 52, 45, leetcode];
+      } else if (status === "Watch") {
+        baseline = 32;
+        leetcode6m = [24, 28, 30, 31, 28, leetcode];
+      } else {
+        baseline = Math.max(30, Math.round(leetcode * 0.9));
+        leetcode6m = [
+          Math.max(10, leetcode - 18),
+          Math.max(12, leetcode - 12),
+          Math.max(15, leetcode - 8),
+          Math.max(18, leetcode - 4),
+          Math.max(20, leetcode - 2),
+          leetcode
+        ];
+      }
+
+      // Radar dimensions (Academics, Programming, Events, Attendance, Career)
+      const academicsScore = Math.min(98, Math.round(cgpa * 10));
+      const attendanceScore = attendance;
+      const programmingScore = status === "Flagged" && i === 51 ? 42 : Math.min(95, Math.round((leetcode / 60) * 90) + 10);
+      const eventsScore = Math.min(95, hackathons * 18 + 35);
+      const careerScore = Math.min(95, internships * 25 + (year * 15) + 20);
+
+      // Baseline radar
+      const radarBaseline = {
+        academics: Math.min(92, academicsScore + 3),
+        programming: status === "Flagged" && i === 51 ? 85 : Math.max(50, programmingScore - 5),
+        events: Math.max(40, eventsScore - 5),
+        attendance: Math.max(75, attendanceScore),
+        career: Math.max(45, careerScore)
+      };
+
+      // Alerts list
+      const alerts = [];
+      if (status === "Flagged") {
+        if (i === 51) {
+          alerts.push({
+            id: `alt-${i}-1`,
+            severity: "High",
+            dimension: "Programming",
+            title: "Programming disengagement",
+            reason: "Z-score of -2.4 over last 4 weeks (solves down 40% vs baseline)",
+            detected: "3 days ago",
+            resolved: false
+          });
+        } else if (attendance < 75) {
+          alerts.push({
+            id: `alt-${i}-2`,
+            severity: "High",
+            dimension: "Attendance",
+            title: "Attendance below university threshold",
+            reason: `Overall attendance at ${attendance}%, 3 lab absences logged`,
+            detected: "4 days ago",
+            resolved: false
+          });
+        } else {
+          alerts.push({
+            id: `alt-${i}-3`,
+            severity: "High",
+            dimension: "Academics",
+            title: "Internal Assessment score variance",
+            reason: "Midterm test dropped 2.1 standard deviations below class mean",
+            detected: "5 days ago",
+            resolved: false
+          });
+        }
+      } else if (status === "Watch") {
+        alerts.push({
+          id: `alt-${i}-4`,
+          severity: "Medium",
+          dimension: i % 2 === 0 ? "Events" : "Programming",
+          title: i % 2 === 0 ? "Hackathon participation plateau" : "Coding streak interrupted",
+          reason: "Zero commits or submissions logged across 14 consecutive days",
+          detected: "6 days ago",
+          resolved: false
+        });
+      }
+
+      // Milestones for timeline
+      const timeline = [
+        { year: `${2026 - year}`, title: "Joined B.Tech College", desc: "Admitted under Computer Science & Engineering" },
+        { year: `${2026 - year + 1}`, title: "Completed Data Structures Core", desc: "Achieved grade 'A' in Algorithmic Lab" },
+        { year: `${2025}`, title: "Smart Hackathon Runner-up", desc: "Developed AI health screening assistant in team of 4" },
+        { year: `${2025}`, title: "Open Source Milestone", desc: "Merged 5 PRs in community developer tooling" }
+      ];
+
+      if (status === "Flagged" && i === 51) {
+        timeline.push({
+          year: "2026 (Recent)",
+          title: "Activity Drop Detected",
+          desc: "LeetCode weekly solve volume dropped from 14/wk to 2/wk",
+          isAlert: true
+        });
+      }
+
+      studentsData.push({
+        id,
+        name: studentName,
+        year,
+        dept: "Computer Science & Engineering",
+        attendance,
+        cgpa,
+        leetcode,
+        leetcode6m,
+        baseline,
+        hackathons,
+        internships,
+        status,
+        radar: {
+          academics: academicsScore,
+          programming: programmingScore,
+          events: eventsScore,
+          attendance: attendanceScore,
+          career: careerScore
+        },
+        radarBaseline,
+        alerts,
+        timeline,
+        notes: [
+          { date: "12 Feb 2026", note: "Student requested review of semester project scope." }
+        ]
+      });
+    }
+
+    // =========================================================================
+    // APPLICATION STATE
+    // =========================================================================
+    let currentView = 'dashboard'; // 'dashboard', 'year', 'alerts'
+    let currentYearFilter = 3;     // 1, 2, 3, 4, or 'all'
+    let currentFilterChip = 'all'; // 'all', 'flagged', 'watch', 'top'
+    let currentSearchTerm = '';
+    let currentSortColumn = 'attendance';
+    let currentSortOrder = 'desc'; // 'desc' or 'asc'
+    let isBatchGrouping = false;
+    let currentViewMode = 'table'; // 'table', 'cards', 'timeline'
+    let currentPage = 1;
+    const pageSize = 10;
+
+    let selectedStudentId = null;
+    let radarChartInstance = null;
+    let lineChartInstance = null;
+
+    // =========================================================================
+    // INITIALIZATION ON LOAD
+    // =========================================================================
+    async function syncWithBackendAPI() {
+      try {
+        const res = await fetch('http://localhost:8000/api/students');
+        if (!res.ok) return;
+        const apiStudents = await res.json();
+        if (Array.isArray(apiStudents) && apiStudents.length > 0) {
+          apiStudents.forEach((as) => {
+            const local = studentsData.find(s => s.id === as.student_id);
+            if (local) {
+              local.name = as.name;
+              local.cgpa = as.cgpa;
+              local.dept = as.department;
+              local.year = as.year;
+              local.persona = as.persona;
+              local.growth_index = as.growth_index;
+              local.hackathons = as.hackathons_participated;
+              local.internships = as.internships;
+              local.leetcode = as.leetcode_solved;
+              if (as.alerts && as.alerts.length > 0) {
+                local.status = as.alerts.some(a => a.severity === 'HIGH') ? 'Flagged' : 'Watch';
+              }
+            }
+          });
+          renderDashboardAlerts();
+          if (currentView === 'year') renderYearView();
+          else if (currentView === 'alerts') renderAlertsPage();
+          showToast(`⚡ Live API Connected: ${apiStudents.length} students synchronized with Python backend.`);
+        }
+      } catch (e) {
+        // Standalone offline mode continues smoothly
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Set today's date for date input default
+      const todayStr = new Date().toISOString().split('T')[0];
+      const dateInput = document.getElementById('scheduleDate');
+      if (dateInput) dateInput.value = todayStr;
+
+      // Render initial dashboard view
+      renderDashboardAlerts();
+      updateGlobalNotificationBadge();
+      syncWithBackendAPI();
+      
+      // Setup keyboard shortcuts (Ctrl+K for search, ESC to close drawer/modals)
+      document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+          e.preventDefault();
+          const searchInput = document.getElementById('globalSearchInput');
+          searchInput.focus();
+        }
+        if (e.key === 'Escape') {
+          closeStudentDrawer();
+          closeAllModals();
+          document.getElementById('globalSearchResults').classList.add('hidden');
+          document.getElementById('notificationDropdown').classList.add('hidden');
+          document.getElementById('userMenuDropdown').classList.add('hidden');
+        }
+      });
+    });
+
+    // =========================================================================
+    // NAVIGATION & VIEW SWITCHER
+    // =========================================================================
+    function navigateTo(target) {
+      // Close any search results or dropdowns
+      document.getElementById('globalSearchResults').classList.add('hidden');
+      document.getElementById('notificationDropdown').classList.add('hidden');
+      document.getElementById('userMenuDropdown').classList.add('hidden');
+
+      // Update sidebar nav items styling
+      document.querySelectorAll('.nav-item').forEach(el => {
+        el.classList.remove('bg-blue-50/80', 'text-electric', 'bg-blue-50');
+        el.classList.add('text-slate-600');
+      });
+
+      // Hide all main views
+      document.getElementById('view-dashboard').classList.add('hidden');
+      document.getElementById('view-year').classList.add('hidden');
+      document.getElementById('view-alerts').classList.add('hidden');
+
+      if (target === 'dashboard') {
+        currentView = 'dashboard';
+        document.getElementById('view-dashboard').classList.remove('hidden');
+        const navEl = document.getElementById('nav-dashboard');
+        if (navEl) {
+          navEl.classList.add('bg-blue-50/80', 'text-electric');
+          navEl.classList.remove('text-slate-600');
+        }
+        renderDashboardAlerts();
+      } else if (target === 'alerts') {
+        currentView = 'alerts';
+        document.getElementById('view-alerts').classList.remove('hidden');
+        const navEl = document.getElementById('nav-alerts');
+        if (navEl) {
+          navEl.classList.add('bg-blue-50/80', 'text-electric');
+          navEl.classList.remove('text-slate-600');
+        }
+        renderAlertsPage();
+      } else if (target === 'all') {
+        currentView = 'year';
+        currentYearFilter = 'all';
+        document.getElementById('view-year').classList.remove('hidden');
+        const navEl = document.getElementById('nav-all');
+        if (navEl) {
+          navEl.classList.add('bg-blue-50/80', 'text-electric');
+          navEl.classList.remove('text-slate-600');
+        }
+        updateYearTabsUI();
+        currentPage = 1;
+        renderYearView();
+      } else if (target.startsWith('year')) {
+        currentView = 'year';
+        const yearNum = parseInt(target.replace('year', ''));
+        currentYearFilter = yearNum;
+        document.getElementById('view-year').classList.remove('hidden');
+        const navEl = document.getElementById(`nav-year${yearNum}`);
+        if (navEl) {
+          navEl.classList.add('bg-blue-50/80', 'text-electric');
+          navEl.classList.remove('text-slate-600');
+        }
+        updateYearTabsUI();
+        currentPage = 1;
+        renderYearView();
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function setYearTab(year) {
+      currentYearFilter = year;
+      currentPage = 1;
+      updateYearTabsUI();
+      renderYearView();
+    }
+
+    function updateYearTabsUI() {
+      // Reset tab button styles
+      ['all', 1, 2, 3, 4].forEach(y => {
+        const btn = document.getElementById(`tab-${y}`);
+        if (btn) {
+          if (String(y) === String(currentYearFilter)) {
+            btn.className = "pb-3 px-1 tab-active font-semibold transition";
+          } else {
+            btn.className = "pb-3 px-1 text-slate-500 hover:text-navy font-medium transition";
+          }
+        }
+      });
+
+      // Update titles
+      const titleEl = document.getElementById('yearViewTitle');
+      const countEl = document.getElementById('yearStudentCountBadge');
+      const subtitleEl = document.getElementById('yearViewSubtitle');
+
+      if (currentYearFilter === 'all') {
+        titleEl.textContent = "All Students Roster (Years 1 - 4)";
+        countEl.textContent = "100 Students";
+        subtitleEl.textContent = "Complete college roster &bull; Sorted by Attendance descending";
+      } else {
+        const cohortNames = { 1: "Freshmen", 2: "Sophomores", 3: "Juniors", 4: "Seniors" };
+        titleEl.textContent = `Year ${currentYearFilter} Students (${cohortNames[currentYearFilter]})`;
+        countEl.textContent = "25 Students";
+        subtitleEl.textContent = `Default ordered by Attendance descending &bull; Hover columns or use dropdown to re-order`;
+      }
+    }
+
+    // =========================================================================
+    // DASHBOARD RENDERING (PAGE 1)
+    // =========================================================================
+    function renderDashboardAlerts() {
+      const tbody = document.getElementById('dashboardAlertsTableBody');
+      if (!tbody) return;
+
+      // Collect all active alerts from all students
+      const allActiveAlerts = [];
+      studentsData.forEach(student => {
+        student.alerts.forEach(alert => {
+          if (!alert.resolved) {
+            allActiveAlerts.push({
+              student,
+              alert
+            });
+          }
+        });
+      });
+
+      // Sort by High severity first
+      allActiveAlerts.sort((a, b) => (a.alert.severity === 'High' ? -1 : 1));
+
+      // Show top 6 alerts for dashboard
+      const displayAlerts = allActiveAlerts.slice(0, 6);
+
+      if (displayAlerts.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400">All alerts resolved. Excellent work!</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = displayAlerts.map(item => {
+        const s = item.student;
+        const a = item.alert;
+        const isHigh = a.severity === 'High';
+
+        const severityDot = isHigh 
+          ? `<span class="inline-flex items-center text-danger font-semibold"><span class="w-2 h-2 rounded-full bg-danger mr-1.5 animate-pulse"></span>High</span>`
+          : `<span class="inline-flex items-center text-warning font-semibold"><span class="w-2 h-2 rounded-full bg-warning mr-1.5"></span>Medium</span>`;
+
+        return `
+          <tr class="hover:bg-slate-50/80 transition group ${isHigh ? 'border-l-4 border-l-danger' : ''}">
+            <td class="py-3 px-4">
+              <div class="flex items-center space-x-2.5">
+                <div class="w-7 h-7 rounded-lg bg-slate-100 text-navy font-bold font-mono text-[11px] flex items-center justify-center">
+                  ${s.name.split(' ').map(n=>n[0]).join('')}
+                </div>
+                <div>
+                  <div class="font-bold text-slate-900 group-hover:text-electric transition cursor-pointer" onclick="openStudentDrawer('${s.id}')">
+                    ${s.name}
+                  </div>
+                  <div class="text-[10px] text-slate-400 font-mono">${s.id}</div>
+                </div>
+              </div>
+            </td>
+            <td class="py-3 px-3">
+              <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold font-mono">Yr ${s.year}</span>
+            </td>
+            <td class="py-3 px-3 font-medium text-slate-700">
+              <span class="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-md">${a.dimension}</span>
+            </td>
+            <td class="py-3 px-3">
+              ${severityDot}
+            </td>
+            <td class="py-3 px-3 max-w-xs truncate text-slate-600" title="${a.reason}">
+              <div class="font-semibold text-slate-800">${a.title}</div>
+              <div class="text-[11px] text-slate-400 truncate">${a.reason}</div>
+            </td>
+            <td class="py-3 px-4 text-right">
+              <button onclick="openStudentDrawer('${s.id}')" class="px-2.5 py-1 bg-white hover:bg-blue-50 text-electric border border-blue-200 rounded-lg font-semibold hover:border-blue-400 transition text-[11px]">
+                Open &rarr;
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // =========================================================================
+    // YEAR VIEW RENDERING & CONTROLS (PAGE 2)
+    // =========================================================================
+    function getFilteredAndSortedStudents() {
+      let list = [...studentsData];
+
+      // 1. Year Filter
+      if (currentYearFilter !== 'all') {
+        list = list.filter(s => s.year === Number(currentYearFilter));
+      }
+
+      // 2. Filter Chips (all, flagged, watch, top)
+      if (currentFilterChip === 'flagged') {
+        list = list.filter(s => s.status === 'Flagged');
+      } else if (currentFilterChip === 'watch') {
+        list = list.filter(s => s.status === 'Watch');
+      } else if (currentFilterChip === 'top') {
+        list = list.filter(s => s.cgpa >= 8.5 && s.attendance >= 85);
+      }
+
+      // 3. Search Term Filter
+      if (currentSearchTerm.trim()) {
+        const query = currentSearchTerm.toLowerCase();
+        list = list.filter(s => 
+          s.name.toLowerCase().includes(query) ||
+          s.id.toLowerCase().includes(query) ||
+          s.dept.toLowerCase().includes(query) ||
+          s.status.toLowerCase().includes(query)
+        );
+      }
+
+      // 4. Sorting
+      list.sort((a, b) => {
+        let valA, valB;
+        if (currentSortColumn === 'attendance') {
+          valA = a.attendance;
+          valB = b.attendance;
+        } else if (currentSortColumn === 'cgpa') {
+          valA = a.cgpa;
+          valB = b.cgpa;
+        } else if (currentSortColumn === 'leetcode') {
+          valA = a.leetcode;
+          valB = b.leetcode;
+        } else if (currentSortColumn === 'alerts') {
+          valA = a.alerts.filter(x => !x.resolved).length;
+          valB = b.alerts.filter(x => !x.resolved).length;
+        } else if (currentSortColumn === 'name') {
+          valA = a.name;
+          valB = b.name;
+          return currentSortOrder === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        } else if (currentSortColumn === 'id') {
+          valA = a.id;
+          valB = b.id;
+          return currentSortOrder === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        } else if (currentSortColumn === 'hackathons') {
+          valA = a.hackathons;
+          valB = b.hackathons;
+        } else if (currentSortColumn === 'internships') {
+          valA = a.internships;
+          valB = b.internships;
+        } else {
+          valA = a.attendance;
+          valB = b.attendance;
+        }
+
+        return currentSortOrder === 'desc' ? valB - valA : valA - valB;
+      });
+
+      return list;
+    }
+
+    function renderYearView() {
+      const allFiltered = getFilteredAndSortedStudents();
+
+      // Update Cohort Summary numbers
+      if (allFiltered.length > 0) {
+        const avgC = (allFiltered.reduce((sum, s) => sum + s.cgpa, 0) / allFiltered.length).toFixed(2);
+        const avgA = (allFiltered.reduce((sum, s) => sum + s.attendance, 0) / allFiltered.length).toFixed(1);
+        const flaggedCount = allFiltered.filter(s => s.status === 'Flagged').length;
+
+        document.getElementById('cohortAvgCgpa').textContent = avgC;
+        document.getElementById('cohortAvgAttendance').textContent = `${avgA}%`;
+        document.getElementById('cohortFlaggedCount').textContent = flaggedCount;
+      }
+
+      document.getElementById('totalFilteredCount').textContent = allFiltered.length;
+
+      // Handle View Modes (Table vs Cards vs Timeline)
+      if (currentViewMode === 'table') {
+        renderTableView(allFiltered);
+      } else if (currentViewMode === 'cards') {
+        renderCardsView(allFiltered);
+      } else if (currentViewMode === 'timeline') {
+        renderCohortTimelineView(allFiltered);
+      }
+
+      renderPaginationControls(allFiltered.length);
+    }
+
+    function renderTableView(students) {
+      const tbody = document.getElementById('studentsTableBody');
+      if (!tbody) return;
+
+      if (students.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" class="p-8 text-center text-slate-400">No students match current filter criteria.</td></tr>`;
+        return;
+      }
+
+      // If Batch Grouping is enabled: Group in batches of 10
+      if (isBatchGrouping) {
+        renderBatchedTable(tbody, students);
+        return;
+      }
+
+      // Normal Paginated Rendering
+      const startIndex = (currentPage - 1) * pageSize;
+      const endIndex = Math.min(startIndex + pageSize, students.length);
+      const pageStudents = students.slice(startIndex, endIndex);
+
+      tbody.innerHTML = pageStudents.map((s, idx) => {
+        const rank = startIndex + idx + 1;
+        return generateStudentTableRowHtml(s, rank);
+      }).join('');
+    }
+
+    function renderBatchedTable(tbody, students) {
+      // When batch grouping is toggled on, we display batch headers
+      const batchNames = ["Batch A", "Batch B", "Batch C", "Batch D", "Batch E", "Batch F", "Batch G", "Batch H", "Batch I", "Batch J"];
+      const batchColors = [
+        "border-l-blue-600 bg-blue-50/40 text-blue-900",
+        "border-l-indigo-600 bg-indigo-50/40 text-indigo-900",
+        "border-l-purple-600 bg-purple-50/40 text-purple-900",
+        "border-l-emerald-600 bg-emerald-50/40 text-emerald-900",
+        "border-l-amber-600 bg-amber-50/40 text-amber-900"
+      ];
+
+      // Batches of 10
+      let html = '';
+      const totalBatches = Math.ceil(students.length / 10);
+
+      // On pagination with batching: show the current page's batch
+      const currentBatchIdx = currentPage - 1;
+      const start = currentBatchIdx * 10;
+      const end = Math.min(start + 10, students.length);
+      const batchSlice = students.slice(start, end);
+
+      const batchName = batchNames[currentBatchIdx] || `Batch ${currentBatchIdx + 1}`;
+      const colorClass = batchColors[currentBatchIdx % batchColors.length];
+
+      // Batch Header
+      html += `
+        <tr class="border-l-4 ${colorClass}">
+          <td colspan="10" class="py-2.5 px-4 font-bold text-xs">
+            <div class="flex items-center justify-between">
+              <span class="tracking-wide">${batchName} &bull; Rank ${start + 1} to ${end}</span>
+              <span class="text-[11px] font-mono opacity-80">${batchSlice.length} Students &bull; Internal Sort Active</span>
+            </div>
+          </td>
+        </tr>
+      `;
+
+      html += batchSlice.map((s, idx) => generateStudentTableRowHtml(s, start + idx + 1)).join('');
+      tbody.innerHTML = html;
+    }
+
+    function generateStudentTableRowHtml(s, rank) {
+      // Attendance Visual bar
+      const attendanceColor = s.attendance >= 85 ? 'bg-emerald-500' : s.attendance >= 75 ? 'bg-amber-400' : 'bg-red-500';
+      const attendanceTextColor = s.attendance >= 85 ? 'text-emerald-700' : s.attendance >= 75 ? 'text-amber-700' : 'text-danger';
+
+      // Status Pill
+      let statusBadge = '';
+      if (s.status === 'On Track') {
+        statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1"></span>On Track</span>`;
+      } else if (s.status === 'Watch') {
+        statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1"></span>Watch</span>`;
+      } else {
+        statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-red-50 text-danger border border-red-200"><span class="w-1.5 h-1.5 rounded-full bg-danger mr-1 animate-pulse"></span>Flagged</span>`;
+      }
+
+      // LeetCode trend
+      const isDropping = s.status === 'Flagged' || s.id === 'STU051';
+      const lcTrend = isDropping
+        ? `<span class="text-danger font-semibold flex items-center">↓ <span class="ml-0.5">${s.leetcode}</span></span>`
+        : `<span class="text-emerald-600 font-semibold flex items-center">↑ <span class="ml-0.5">${s.leetcode}</span></span>`;
+
+      return `
+        <tr class="hover:bg-slate-50/90 transition group cursor-pointer" onclick="openStudentDrawer('${s.id}')">
+          <td class="py-3 px-4 text-center font-mono font-bold text-slate-400 group-hover:text-navy">
+            ${rank}
+          </td>
+          <td class="py-3 px-3 font-mono font-semibold text-slate-600 text-xs">
+            ${s.id}
+          </td>
+          <td class="py-3 px-4">
+            <div class="font-bold text-slate-900 group-hover:text-electric transition">${s.name}</div>
+            <div class="text-[10px] text-slate-400 font-mono">Year ${s.year} &bull; CSE</div>
+          </td>
+          <td class="py-3 px-4">
+            <div class="flex items-center space-x-2">
+              <div class="w-16 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                <div class="${attendanceColor} h-1.5 rounded-full" style="width: ${s.attendance}%"></div>
+              </div>
+              <span class="font-mono font-bold ${attendanceTextColor}">${s.attendance}%</span>
+            </div>
+          </td>
+          <td class="py-3 px-3 font-mono font-bold ${s.cgpa >= 8.5 ? 'text-emerald-600' : s.cgpa >= 7.5 ? 'text-slate-800' : 'text-danger'}">
+            ${s.cgpa.toFixed(2)}
+          </td>
+          <td class="py-3 px-3 font-mono">
+            ${lcTrend}
+          </td>
+          <td class="py-3 px-3 text-center font-mono text-slate-700">
+            ${s.hackathons > 0 ? `<span class="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-md font-bold">${s.hackathons}</span>` : `<span class="text-slate-300">0</span>`}
+          </td>
+          <td class="py-3 px-3 text-center font-mono text-slate-700">
+            ${s.internships > 0 ? `<span class="px-2 py-0.5 bg-purple-50 text-purple-700 rounded-md font-bold">${s.internships}</span>` : `<span class="text-slate-300">0</span>`}
+          </td>
+          <td class="py-3 px-3">
+            ${statusBadge}
+          </td>
+          <td class="py-3 px-4 text-right" onclick="event.stopPropagation()">
+            <button onclick="openStudentDrawer('${s.id}')" class="px-3 py-1 bg-white hover:bg-blue-50 text-electric border border-blue-200 rounded-lg font-semibold hover:border-blue-400 transition text-[11px] shadow-2xs">
+              Open &rarr;
+            </button>
+          </td>
+        </tr>
+      `;
+    }
+
+    function renderCardsView(students) {
+      const wrapper = document.getElementById('cardsViewWrapper');
+      if (!wrapper) return;
+
+      const startIndex = (currentPage - 1) * pageSize;
+      const endIndex = Math.min(startIndex + pageSize, students.length);
+      const pageStudents = students.slice(startIndex, endIndex);
+
+      wrapper.innerHTML = pageStudents.map(s => {
+        return `
+          <div onclick="openStudentDrawer('${s.id}')" class="metric-card bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-blue-300 group">
+            <div class="flex items-start justify-between">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-slate-100 text-navy font-bold text-sm flex items-center justify-center font-mono">
+                  ${s.name.split(' ').map(n=>n[0]).join('')}
+                </div>
+                <div>
+                  <h4 class="font-bold text-slate-900 group-hover:text-electric transition text-sm">${s.name}</h4>
+                  <div class="text-[11px] text-slate-400 font-mono">${s.id} &bull; Year ${s.year}</div>
+                </div>
+              </div>
+              <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full ${s.status === 'On Track' ? 'bg-emerald-50 text-emerald-700' : s.status === 'Watch' ? 'bg-amber-50 text-amber-700' : 'bg-red-50 text-danger'}">${s.status}</span>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 my-4 text-center">
+              <div class="bg-slate-50 p-2 rounded-lg">
+                <div class="text-[10px] text-slate-400">Attendance</div>
+                <div class="font-bold font-mono text-xs text-slate-800">${s.attendance}%</div>
+              </div>
+              <div class="bg-slate-50 p-2 rounded-lg">
+                <div class="text-[10px] text-slate-400">CGPA</div>
+                <div class="font-bold font-mono text-xs text-emerald-600">${s.cgpa}</div>
+              </div>
+              <div class="bg-slate-50 p-2 rounded-lg">
+                <div class="text-[10px] text-slate-400">LeetCode</div>
+                <div class="font-bold font-mono text-xs ${s.status === 'Flagged' ? 'text-danger' : 'text-blue-600'}">${s.leetcode}</div>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-electric group-hover:translate-x-1 transition-transform">
+              <span>Inspect Profile & Analytics</span>
+              <span>&rarr;</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderCohortTimelineView(students) {
+      const wrapper = document.getElementById('timelineViewWrapper');
+      if (!wrapper) return;
+
+      wrapper.innerHTML = `
+        <div class="max-w-2xl mx-auto space-y-6">
+          <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Recent Cohort Milestones & Anomalies</div>
+          <div class="relative pl-6 space-y-6 before:content-[''] before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200 text-xs">
+            <div class="relative">
+              <div class="w-3.5 h-3.5 rounded-full bg-danger absolute -left-6 top-0.5 ring-4 ring-white"></div>
+              <div class="font-bold text-slate-800 text-sm">LeetCode Slump Detected (Year 3)</div>
+              <p class="text-slate-500 mt-0.5">Automated crawler detected a 40% velocity drop for Aarav Mehta (STU051) over 4 weeks.</p>
+              <button onclick="openStudentDrawer('STU051')" class="text-electric font-semibold hover:underline mt-1">Review Aarav's Profile &rarr;</button>
+            </div>
+            <div class="relative">
+              <div class="w-3.5 h-3.5 rounded-full bg-emerald-500 absolute -left-6 top-0.5 ring-4 ring-white"></div>
+              <div class="font-bold text-slate-800 text-sm">Smart India Hackathon Internal Round</div>
+              <p class="text-slate-500 mt-0.5">14 teams submitted prototypes. 4 teams from Year 3 qualified for national finals.</p>
+            </div>
+            <div class="relative">
+              <div class="w-3.5 h-3.5 rounded-full bg-blue-500 absolute -left-6 top-0.5 ring-4 ring-white"></div>
+              <div class="font-bold text-slate-800 text-sm">Placement Acceleration Coding Bootcamps</div>
+              <p class="text-slate-500 mt-0.5">Year 4 seniors initiated peer mentoring sessions for dynamic programming.</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPaginationControls(totalItems) {
+      const paginationButtons = document.getElementById('paginationButtons');
+      const paginationInfo = document.getElementById('paginationInfo');
+      if (!paginationButtons || !paginationInfo) return;
+
+      const totalPages = Math.ceil(totalItems / pageSize) || 1;
+      if (currentPage > totalPages) currentPage = totalPages;
+
+      const start = (currentPage - 1) * pageSize + 1;
+      const end = Math.min(currentPage * pageSize, totalItems);
+
+      paginationInfo.innerHTML = `Showing <span class="font-bold text-navy">${totalItems > 0 ? start : 0}</span> to <span class="font-bold text-navy">${end}</span> of <span class="font-bold text-navy">${totalItems}</span> students`;
+
+      let btnsHtml = `
+        <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled class="opacity-40 cursor-not-allowed"' : 'class="hover:bg-slate-200"'} class="px-2.5 py-1 rounded border border-slate-300 font-medium">Prev</button>
+      `;
+
+      for (let p = 1; p <= totalPages; p++) {
+        if (p === currentPage) {
+          btnsHtml += `<button class="px-2.5 py-1 rounded bg-electric text-white font-bold">${p}</button>`;
+        } else {
+          btnsHtml += `<button onclick="changePage(${p})" class="px-2.5 py-1 rounded border border-slate-300 hover:bg-slate-100 font-medium">${p}</button>`;
+        }
+      }
+
+      btnsHtml += `
+        <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled class="opacity-40 cursor-not-allowed"' : 'class="hover:bg-slate-200"'} class="px-2.5 py-1 rounded border border-slate-300 font-medium">Next</button>
+      `;
+
+      paginationButtons.innerHTML = btnsHtml;
+    }
+
+    function changePage(page) {
+      const totalFiltered = getFilteredAndSortedStudents().length;
+      const totalPages = Math.ceil(totalFiltered / pageSize) || 1;
+      if (page >= 1 && page <= totalPages) {
+        currentPage = page;
+        renderYearView();
+        window.scrollTo({ top: 120, behavior: 'smooth' });
+      }
+    }
+
+    // Filter Chips logic
+    function setFilterChip(chip) {
+      currentFilterChip = chip;
+      currentPage = 1;
+      
+      const chips = ['all', 'flagged', 'watch', 'top'];
+      chips.forEach(c => {
+        const btn = document.getElementById(`filter-${c}`);
+        if (btn) {
+          if (c === chip) {
+            btn.className = "px-3 py-1 text-xs rounded-lg font-medium bg-blue-50 text-electric border border-blue-200 transition";
+          } else {
+            btn.className = "px-3 py-1 text-xs rounded-lg font-medium bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition";
+          }
+        }
+      });
+
+      renderYearView();
+    }
+
+    function handleTableFilter(value) {
+      currentSearchTerm = value;
+      currentPage = 1;
+      renderYearView();
+    }
+
+    function handleSortChange(value) {
+      const [col, order] = value.split('-');
+      currentSortColumn = col;
+      currentSortOrder = order;
+      currentPage = 1;
+      updateHeaderSortIndicators();
+      renderYearView();
+    }
+
+    function handleSortHeader(col) {
+      if (currentSortColumn === col) {
+        currentSortOrder = currentSortOrder === 'desc' ? 'asc' : 'desc';
+      } else {
+        currentSortColumn = col;
+        currentSortOrder = (col === 'name' || col === 'id') ? 'asc' : 'desc';
+      }
+
+      // Sync with select dropdown if matching
+      const sel = document.getElementById('sortSelect');
+      if (sel) {
+        const matchVal = `${col}-${currentSortOrder}`;
+        for (let opt of sel.options) {
+          if (opt.value === matchVal) {
+            sel.value = matchVal;
+            break;
+          }
+        }
+      }
+
+      updateHeaderSortIndicators();
+      renderYearView();
+    }
+
+    function updateHeaderSortIndicators() {
+      // Clear indicators
+      ['attendance'].forEach(c => {
+        const el = document.getElementById(`sortIndicator-${c}`);
+        if (el) {
+          if (currentSortColumn === c) {
+            el.textContent = currentSortOrder === 'desc' ? '▼' : '▲';
+          } else {
+            el.textContent = '';
+          }
+        }
+      });
+    }
+
+    function toggleBatchGrouping(checked) {
+      isBatchGrouping = checked;
+      currentPage = 1;
+      renderYearView();
+      showToast(checked ? "Grouped students in batches of 10" : "Ungrouped table view");
+    }
+
+    function setViewMode(mode) {
+      currentViewMode = mode;
+      
+      const tableWrapper = document.getElementById('tableViewWrapper');
+      const cardsWrapper = document.getElementById('cardsViewWrapper');
+      const timelineWrapper = document.getElementById('timelineViewWrapper');
+
+      const btnT = document.getElementById('viewModeTableBtn');
+      const btnC = document.getElementById('viewModeCardsBtn');
+      const btnL = document.getElementById('viewModeTimelineBtn');
+
+      // Reset buttons
+      [btnT, btnC, btnL].forEach(b => {
+        b.className = "px-2.5 py-1 text-xs rounded-md font-medium text-slate-500 hover:text-navy transition";
+      });
+
+      tableWrapper.classList.add('hidden');
+      cardsWrapper.classList.add('hidden');
+      timelineWrapper.classList.add('hidden');
+
+      if (mode === 'table') {
+        tableWrapper.classList.remove('hidden');
+        btnT.className = "px-2.5 py-1 text-xs rounded-md font-medium bg-white text-navy shadow-sm transition";
+      } else if (mode === 'cards') {
+        cardsWrapper.classList.remove('hidden');
+        btnC.className = "px-2.5 py-1 text-xs rounded-md font-medium bg-white text-navy shadow-sm transition";
+      } else if (mode === 'timeline') {
+        timelineWrapper.classList.remove('hidden');
+        btnL.className = "px-2.5 py-1 text-xs rounded-md font-medium bg-white text-navy shadow-sm transition";
+      }
+
+      renderYearView();
+    }
+
+    // =========================================================================
+    // STUDENT PROFILE DRAWER (PAGE 3)
+    // =========================================================================
+    function openStudentDrawer(studentId) {
+      const student = studentsData.find(s => s.id === studentId);
+      if (!student) return;
+
+      selectedStudentId = studentId;
+
+      // Populate Header
+      document.getElementById('drawerAvatar').textContent = student.name.split(' ').map(n=>n[0]).join('');
+      document.getElementById('drawerStudentName').textContent = student.name;
+      document.getElementById('drawerStudentID').textContent = student.id;
+      document.getElementById('drawerStudentYear').textContent = `Year ${student.year}`;
+      document.getElementById('drawerStudentDept').textContent = student.dept;
+
+      // Status Pill
+      const statusPill = document.getElementById('drawerStatusPill');
+      if (student.status === 'On Track') {
+        statusPill.className = "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+        statusPill.textContent = "🟢 On Track";
+      } else if (student.status === 'Watch') {
+        statusPill.className = "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40";
+        statusPill.textContent = "🟡 Watch List";
+      } else {
+        statusPill.className = "px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-500/20 text-red-300 border border-red-500/40";
+        statusPill.textContent = "🔴 Flagged Anomaly";
+      }
+
+      // Section 1: 4 Key Metric Cards
+      document.getElementById('drawerMetricCgpa').textContent = student.cgpa.toFixed(2);
+      document.getElementById('drawerMetricAttendance').textContent = `${student.attendance}%`;
+      document.getElementById('drawerMetricLeetcode').textContent = `${student.leetcode} solves`;
+      
+      const lcTrendEl = document.getElementById('drawerMetricLeetcodeTrend');
+      if (student.status === 'Flagged' || student.id === 'STU051') {
+        lcTrendEl.className = "text-[10px] text-danger font-semibold flex items-center mt-1";
+        lcTrendEl.innerHTML = `<span>↓ -40% vs baseline</span>`;
+      } else {
+        lcTrendEl.className = "text-[10px] text-emerald-600 font-semibold flex items-center mt-1";
+        lcTrendEl.innerHTML = `<span>↑ +15% healthy pace</span>`;
+      }
+
+      document.getElementById('drawerMetricHackathons').textContent = `${student.hackathons} events`;
+
+      // Section 4: Alerts for this student
+      const activeAlerts = student.alerts.filter(a => !a.resolved);
+      document.getElementById('drawerAlertCount').textContent = `${activeAlerts.length} Active`;
+      const alertsContainer = document.getElementById('drawerAlertsList');
+
+      if (activeAlerts.length === 0) {
+        alertsContainer.innerHTML = `<div class="p-3 bg-emerald-50 text-emerald-800 rounded-xl text-xs flex items-center space-x-2"><span>✅</span><span>No active flags detected. Performance indicators are within standard variance.</span></div>`;
+      } else {
+        alertsContainer.innerHTML = activeAlerts.map(a => {
+          return `
+            <div class="p-3.5 rounded-xl border border-red-200 bg-red-50/70 flex items-start justify-between space-x-3">
+              <div class="space-y-1">
+                <div class="flex items-center space-x-2">
+                  <span class="text-xs font-bold text-danger">⚠️ ${a.title}</span>
+                  <span class="text-[10px] bg-red-100 text-danger px-1.5 py-0.5 rounded font-bold uppercase">${a.severity}</span>
+                </div>
+                <div class="text-[11px] text-slate-700">${a.reason}</div>
+                <div class="text-[10px] text-slate-400">Detected: ${a.detected}</div>
+              </div>
+              <button onclick="resolveStudentAlert('${student.id}', '${a.id}')" class="px-3 py-1.5 bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border border-slate-300 hover:border-emerald-300 rounded-lg text-xs font-semibold transition whitespace-nowrap shadow-2xs">
+                Resolve
+              </button>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Section 5: Timeline
+      const timelineContainer = document.getElementById('drawerTimelineList');
+      timelineContainer.innerHTML = student.timeline.map(m => {
+        return `
+          <div class="relative">
+            <div class="w-3.5 h-3.5 rounded-full ${m.isAlert ? 'bg-danger animate-pulse' : 'bg-electric'} absolute -left-6 top-0.5 ring-4 ring-white"></div>
+            <div class="font-bold text-slate-900">${m.title} <span class="text-[10px] font-mono text-slate-400 font-normal ml-1">(${m.year})</span></div>
+            <p class="text-slate-500 mt-0.5">${m.desc}</p>
+          </div>
+        `;
+      }).join('');
+
+      // Open Drawer Animation
+      const drawer = document.getElementById('studentDrawer');
+      const backdrop = document.getElementById('drawerOverlay');
+      backdrop.classList.remove('hidden');
+      setTimeout(() => {
+        backdrop.classList.remove('opacity-0');
+        drawer.classList.remove('translate-x-full');
+      }, 10);
+
+      // Render Charts
+      setTimeout(() => {
+        renderDrawerCharts(student);
+      }, 150);
+    }
+
+    function closeStudentDrawer() {
+      const drawer = document.getElementById('studentDrawer');
+      const backdrop = document.getElementById('drawerOverlay');
+      drawer.classList.add('translate-x-full');
+      backdrop.classList.add('opacity-0');
+      setTimeout(() => {
+        backdrop.classList.add('hidden');
+      }, 300);
+    }
+
+    function renderDrawerCharts(student) {
+      // 1. Radar Chart (Section 2)
+      const radarCtx = document.getElementById('drawerRadarChart').getContext('2d');
+      if (radarChartInstance) radarChartInstance.destroy();
+
+      radarChartInstance = new Chart(radarCtx, {
+        type: 'radar',
+        data: {
+          labels: ['Academics', 'Programming', 'Events', 'Attendance', 'Career'],
+          datasets: [
+            {
+              label: 'Current Status',
+              data: [
+                student.radar.academics,
+                student.radar.programming,
+                student.radar.events,
+                student.radar.attendance,
+                student.radar.career
+              ],
+              borderColor: '#2563EB',
+              backgroundColor: 'rgba(37, 99, 235, 0.25)',
+              pointBackgroundColor: '#2563EB',
+              pointBorderColor: '#fff',
+              pointHoverBackgroundColor: '#fff',
+              pointHoverBorderColor: '#2563EB',
+              pointRadius: 4,
+              borderWidth: 2.5
+            },
+            {
+              label: 'Personal Baseline',
+              data: [
+                student.radarBaseline.academics,
+                student.radarBaseline.programming,
+                student.radarBaseline.events,
+                student.radarBaseline.attendance,
+                student.radarBaseline.career
+              ],
+              borderColor: '#94A3B8',
+              backgroundColor: 'rgba(148, 163, 184, 0.1)',
+              borderDash: [5, 5],
+              pointBackgroundColor: '#94A3B8',
+              pointRadius: 3,
+              borderWidth: 1.5
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            r: {
+              min: 0,
+              max: 100,
+              ticks: { stepSize: 20, display: false },
+              grid: { color: '#E2E8F0' },
+              pointLabels: {
+                font: { family: 'Poppins', size: 11, weight: '600' },
+                color: '#334155'
+              }
+            }
+          },
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+
+      // 2. Line Chart (Section 3: 6-month LeetCode history)
+      const lineCtx = document.getElementById('drawerLineChart').getContext('2d');
+      if (lineChartInstance) lineChartInstance.destroy();
+
+      const months = ['Oct 2025', 'Nov 2025', 'Dec 2025', 'Jan 2026', 'Feb 2026', 'Mar 2026 (Cur)'];
+      const solvesData = student.leetcode6m;
+      const baselineData = Array(6).fill(student.baseline);
+
+      // Gradient fill
+      const gradient = lineCtx.createLinearGradient(0, 0, 0, 180);
+      gradient.addColorStop(0, 'rgba(37, 99, 235, 0.25)');
+      gradient.addColorStop(1, 'rgba(37, 99, 235, 0.0)');
+
+      lineChartInstance = new Chart(lineCtx, {
+        type: 'line',
+        data: {
+          labels: months,
+          datasets: [
+            {
+              label: 'Monthly Solves',
+              data: solvesData,
+              borderColor: '#2563EB',
+              backgroundColor: gradient,
+              fill: true,
+              tension: 0.35,
+              borderWidth: 2.5,
+              pointRadius: (ctx) => (ctx.dataIndex === 5 ? 7 : 4),
+              pointBackgroundColor: (ctx) => (ctx.dataIndex === 5 && student.status === 'Flagged' ? '#EF4444' : '#2563EB'),
+              pointBorderColor: '#fff',
+              pointBorderWidth: 2
+            },
+            {
+              label: 'Personal Baseline Target',
+              data: baselineData,
+              borderColor: '#94A3B8',
+              borderDash: [6, 6],
+              borderWidth: 1.5,
+              pointRadius: 0,
+              fill: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: {
+                boxWidth: 12,
+                font: { family: 'Poppins', size: 10 }
+              }
+            },
+            tooltip: {
+              callbacks: {
+                afterLabel: function(ctx) {
+                  if (ctx.dataIndex === 5 && (student.status === 'Flagged' || student.id === 'STU051')) {
+                    return 'Alert: -40% drop vs baseline';
+                  }
+                  return '';
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: { color: '#F1F5F9' },
+              ticks: { font: { family: 'JetBrains Mono', size: 10 } }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { font: { family: 'Poppins', size: 10 } }
+            }
+          }
+        }
+      });
+    }
+
+    // =========================================================================
+    // ALERTS PAGE RENDERING (PAGE 4)
+    // =========================================================================
+    function renderAlertsPage() {
+      const tbody = document.getElementById('allAlertsTableBody');
+      if (!tbody) return;
+
+      const sevFilter = document.getElementById('alertFilterSeverity').value;
+      const yrFilter = document.getElementById('alertFilterYear').value;
+      const dimFilter = document.getElementById('alertFilterDimension').value;
+
+      const alertRows = [];
+      studentsData.forEach(student => {
+        student.alerts.forEach(alert => {
+          if (!alert.resolved) {
+            // Apply filters
+            if (sevFilter !== 'all' && alert.severity !== sevFilter) return;
+            if (yrFilter !== 'all' && student.year !== parseInt(yrFilter)) return;
+            if (dimFilter !== 'all' && alert.dimension !== dimFilter) return;
+
+            alertRows.push({ student, alert });
+          }
+        });
+      });
+
+      // Update badge
+      document.getElementById('alertsTotalPill').textContent = `${alertRows.length} Active`;
+
+      if (alertRows.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400">No active alerts match current filters.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = alertRows.map(item => {
+        const s = item.student;
+        const a = item.alert;
+        const isHigh = a.severity === 'High';
+
+        return `
+          <tr class="hover:bg-slate-50 transition group ${isHigh ? 'border-l-4 border-l-danger bg-red-50/10' : ''}">
+            <td class="py-3.5 px-4 font-semibold">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold ${isHigh ? 'bg-red-100 text-danger' : 'bg-amber-100 text-warning'}">
+                ${isHigh ? '🔴 High' : '🟡 Medium'}
+              </span>
+            </td>
+            <td class="py-3.5 px-4">
+              <div class="font-bold text-slate-900 cursor-pointer hover:text-electric transition" onclick="openStudentDrawer('${s.id}')">
+                ${s.name}
+              </div>
+              <div class="text-[10px] text-slate-400 font-mono">${s.id}</div>
+            </td>
+            <td class="py-3.5 px-3 font-mono font-medium">Year ${s.year}</td>
+            <td class="py-3.5 px-3">
+              <span class="px-2 py-0.5 bg-slate-100 rounded text-slate-700 font-medium">${a.dimension}</span>
+            </td>
+            <td class="py-3.5 px-4">
+              <div class="font-bold text-slate-800">${a.title}</div>
+              <div class="text-[11px] text-slate-500">${a.reason}</div>
+            </td>
+            <td class="py-3.5 px-3 font-mono text-slate-500">${a.detected}</td>
+            <td class="py-3.5 px-4 text-right space-x-1.5 whitespace-nowrap">
+              <button onclick="resolveStudentAlert('${s.id}', '${a.id}')" class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg font-semibold transition">
+                Resolve
+              </button>
+              <button onclick="snoozeAlert('${s.id}', '${a.id}')" class="px-2.5 py-1 bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 rounded-lg transition">
+                Snooze
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // =========================================================================
+    // ALERT INTERVENTIONS & ACTIONS
+    // =========================================================================
+    function resolveStudentAlert(studentId, alertId) {
+      const student = studentsData.find(s => s.id === studentId);
+      if (!student) return;
+
+      const alert = student.alerts.find(a => a.id === alertId);
+      if (alert) {
+        alert.resolved = true;
+      }
+
+      // Check if student still has flags
+      const remaining = student.alerts.filter(a => !a.resolved);
+      if (remaining.length === 0) {
+        student.status = "On Track";
+      }
+
+      // Update badges
+      updateGlobalNotificationBadge();
+
+      // Refresh current views
+      if (currentView === 'dashboard') renderDashboardAlerts();
+      if (currentView === 'alerts') renderAlertsPage();
+      if (currentView === 'year') renderYearView();
+      if (selectedStudentId === studentId) openStudentDrawer(studentId);
+
+      showToast(`Resolved alert: "${alert.title}" for ${student.name}`);
+    }
+
+    function snoozeAlert(studentId, alertId) {
+      showToast(`Alert snoozed for 7 days. Will resurface if metric stays outside threshold.`);
+    }
+
+    function resolveAllSafeAlerts() {
+      let count = 0;
+      studentsData.forEach(s => {
+        s.alerts.forEach(a => {
+          if (!a.resolved && a.severity !== 'High') {
+            a.resolved = true;
+            count++;
+          }
+        });
+        if (s.alerts.filter(a => !a.resolved).length === 0) {
+          s.status = "On Track";
+        }
+      });
+      updateGlobalNotificationBadge();
+      renderAlertsPage();
+      showToast(`Marked ${count} medium severity alerts as reviewed.`);
+    }
+
+    function updateGlobalNotificationBadge() {
+      let activeCount = 0;
+      let highCount = 0;
+      studentsData.forEach(s => {
+        s.alerts.forEach(a => {
+          if (!a.resolved) {
+            activeCount++;
+            if (a.severity === 'High') highCount++;
+          }
+        });
+      });
+
+      const badge = document.getElementById('notificationBadge');
+      if (badge) badge.textContent = activeCount;
+
+      const sidebarBadge = document.getElementById('sidebarAlertBadge');
+      if (sidebarBadge) sidebarBadge.textContent = activeCount;
+
+      const statAlertsTotal = document.getElementById('statAlertsTotal');
+      if (statAlertsTotal) statAlertsTotal.textContent = activeCount;
+
+      const notifCountLabel = document.getElementById('notifCountLabel');
+      if (notifCountLabel) notifCountLabel.textContent = `${highCount} Critical`;
+
+      // Update dropdown items
+      const notifList = document.getElementById('notificationList');
+      if (notifList) {
+        const topHigh = [];
+        studentsData.forEach(s => {
+          s.alerts.forEach(a => {
+            if (!a.resolved && a.severity === 'High') topHigh.push({ student: s, alert: a });
+          });
+        });
+
+        if (topHigh.length === 0) {
+          notifList.innerHTML = `<div class="p-4 text-center text-slate-400">All alerts reviewed.</div>`;
+        } else {
+          notifList.innerHTML = topHigh.slice(0, 4).map(item => `
+            <div class="p-3 hover:bg-slate-50 cursor-pointer" onclick="openStudentDrawer('${item.student.id}')">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-danger">⚠️ ${item.alert.title}</span>
+                <span class="text-[10px] text-slate-400">${item.alert.detected}</span>
+              </div>
+              <p class="text-slate-600 mt-0.5 truncate">${item.student.name} (${item.student.id})</p>
+            </div>
+          `).join('');
+        }
+      }
+    }
+
+    // =========================================================================
+    // MODALS & ACTIONS
+    // =========================================================================
+    function openModal(modalId) {
+      const el = document.getElementById(modalId);
+      if (el) el.classList.remove('hidden');
+    }
+
+    function closeModal(modalId) {
+      const el = document.getElementById(modalId);
+      if (el) el.classList.add('hidden');
+    }
+
+    function closeAllModals() {
+      ['modalSchedule', 'modalAssignMentor', 'modalAddNote', 'modalRecommendCourse'].forEach(m => closeModal(m));
+    }
+
+    function openInterventionModal() {
+      const s = studentsData.find(st => st.id === 'STU051') || studentsData[0];
+      document.getElementById('scheduleModalStudent').value = `${s.name} (${s.id}) &bull; Year ${s.year}`;
+      openModal('modalSchedule');
+    }
+
+    function openScheduleModalFromDrawer() {
+      if (!selectedStudentId) return;
+      const s = studentsData.find(st => st.id === selectedStudentId);
+      if (s) {
+        document.getElementById('scheduleModalStudent').value = `${s.name} (${s.id}) &bull; Year ${s.year}`;
+        openModal('modalSchedule');
+      }
+    }
+
+    function handleScheduleSubmit(e) {
+      e.preventDefault();
+      closeModal('modalSchedule');
+      showToast(`1-on-1 Mentoring session scheduled! Calendar invitation sent.`);
+    }
+
+    function openAssignMentorModalFromDrawer() {
+      if (!selectedStudentId) return;
+      const s = studentsData.find(st => st.id === selectedStudentId);
+      if (s) {
+        document.getElementById('assignModalMentee').value = `${s.name} (${s.id}) &bull; Year ${s.year}`;
+        openModal('modalAssignMentor');
+      }
+    }
+
+    function handleAssignMentorSubmit(e) {
+      e.preventDefault();
+      const mentorVal = document.getElementById('peerMentorSelect').value.split(' ')[0];
+      closeModal('modalAssignMentor');
+      showToast(`Assigned ${mentorVal} as senior peer mentor. Both students notified.`);
+    }
+
+    function openAddNoteModalFromDrawer() {
+      if (!selectedStudentId) return;
+      const s = studentsData.find(st => st.id === selectedStudentId);
+      if (s) {
+        document.getElementById('noteModalStudent').value = `${s.name} (${s.id})`;
+        openModal('modalAddNote');
+      }
+    }
+
+    function handleAddNoteSubmit(e) {
+      e.preventDefault();
+      closeModal('modalAddNote');
+      showToast(`Mentor note saved to student academic record.`);
+    }
+
+    function openRecommendCourseModal() {
+      openModal('modalRecommendCourse');
+    }
+
+    function handleCourseSubmit(e) {
+      e.preventDefault();
+      closeModal('modalRecommendCourse');
+      showToast(`Course recommendation sent to student portal.`);
+    }
+
+    // =========================================================================
+    // GLOBAL SEARCH & NOTIFICATION DROPDOWNS
+    // =========================================================================
+    function handleGlobalSearch(query) {
+      const dropdown = document.getElementById('globalSearchResults');
+      if (!query.trim()) {
+        dropdown.classList.add('hidden');
+        return;
+      }
+
+      const q = query.toLowerCase();
+      const matches = studentsData.filter(s => 
+        s.name.toLowerCase().includes(q) ||
+        s.id.toLowerCase().includes(q) ||
+        s.status.toLowerCase().includes(q)
+      ).slice(0, 7);
+
+      if (matches.length === 0) {
+        dropdown.innerHTML = `<div class="p-4 text-center text-xs text-slate-400">No students found matching "${query}"</div>`;
+      } else {
+        dropdown.innerHTML = matches.map(s => `
+          <div class="px-4 py-2.5 hover:bg-slate-50 cursor-pointer flex items-center justify-between border-b border-slate-100 last:border-0" onclick="selectSearchStudent('${s.id}')">
+            <div class="flex items-center space-x-3">
+              <span class="font-mono text-xs font-bold text-electric">${s.id}</span>
+              <div>
+                <span class="text-xs font-bold text-slate-800">${s.name}</span>
+                <span class="text-[10px] text-slate-400 ml-1.5">Year ${s.year} &bull; ${s.dept}</span>
+              </div>
+            </div>
+            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full ${s.status === 'On Track' ? 'bg-emerald-50 text-emerald-700' : s.status === 'Watch' ? 'bg-amber-50 text-amber-700' : 'bg-red-50 text-danger'}">${s.status}</span>
+          </div>
+        `).join('');
+      }
+
+      dropdown.classList.remove('hidden');
+    }
+
+    function selectSearchStudent(studentId) {
+      document.getElementById('globalSearchResults').classList.add('hidden');
+      document.getElementById('globalSearchInput').value = '';
+      openStudentDrawer(studentId);
+    }
+
+    function toggleNotificationDropdown() {
+      const drop = document.getElementById('notificationDropdown');
+      drop.classList.toggle('hidden');
+      document.getElementById('userMenuDropdown').classList.add('hidden');
+    }
+
+    function toggleUserMenu() {
+      const menu = document.getElementById('userMenuDropdown');
+      menu.classList.toggle('hidden');
+      document.getElementById('notificationDropdown').classList.add('hidden');
+    }
+
+    function handleSignOut() {
+      showToast("Mentor session securely signed out.");
+    }
+
+    function refreshDashboardMetrics() {
+      showToast("Real-time telemetry refreshed from college analytics server.");
+    }
+
+    // Toast notification utility
+    function showToast(message) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = "pointer-events-auto flex items-center space-x-2 bg-navy-950 text-white text-xs px-4 py-3 rounded-xl shadow-2xl border border-navy-700 transition-all duration-300 transform translate-y-4 opacity-0";
+      toast.innerHTML = `
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-4', 'opacity-0');
+      }, 10);
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+  </script>
+
+</body>
+</html>

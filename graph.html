@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillGraph - Interactive Skill Graph</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .graph-wrapper {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .graph-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .domain-filter {
+            display: flex;
+            gap: 8px;
+        }
+
+        .domain-btn {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .domain-btn:hover,
+        .domain-btn.active {
+            background: #6366f1;
+            color: white;
+            border-color: #6366f1;
+        }
+
+        .canvas-container {
+            width: 100%;
+            height: 540px;
+            background: radial-gradient(circle at center, #fbfbfe 0%, #f1f5f9 100%);
+            border-radius: 16px;
+            position: relative;
+            border: 1px solid #e2e8f0;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            border-radius: 16px;
+            cursor: grab;
+        }
+
+        canvas:active {
+            cursor: grabbing;
+        }
+
+        .node-inspector {
+            position: absolute;
+            bottom: 24px;
+            right: 24px;
+            width: 280px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            transition: all 0.3s;
+        }
+
+        .node-inspector h3 {
+            font-size: 16px;
+            color: #111827;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .node-inspector .category {
+            font-size: 12px;
+            color: #6366f1;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .node-inspector .score-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 6px;
+            color: #475569;
+        }
+
+        .node-inspector .progress {
+            margin-top: 4px;
+            margin-bottom: 10px;
+        }
+
+        .graph-legend {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 14px;
+            align-items: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <div class="logo">Skill<span>Graph</span></div>
+        <ul class="menu">
+            <li onclick="goTo('index.html')">🏠 Dashboard</li>
+            <li onclick="goTo('profile.html')">👤 My Profile</li>
+            <li onclick="goTo('skills.html')">🧠 Skills</li>
+            <li onclick="goTo('certifications.html')">📜 Certifications</li>
+            <li onclick="goTo('projects.html')">🚀 Projects</li>
+            <li onclick="goTo('achievements.html')">🏆 Achievements</li>
+            <li onclick="goTo('team.html')">🤝 Team Match</li>
+            <li onclick="goTo('learning.html')">🎯 Learning Path</li>
+            <li class="active">🕸️ Skill Graph</li>
+            <li onclick="goTo('settings.html')">⚙️ Settings</li>
+        </ul>
+    </div>
+
+    <div class="main">
+
+        <div class="page-header">
+            <h1>🕸️ Visual Student SkillGraph</h1>
+            <p>An interactive, multi-dimensional topological graph of your technical competencies and knowledge branches.</p>
+        </div>
+
+        <div class="graph-wrapper">
+            <div class="graph-toolbar">
+                <div class="domain-filter">
+                    <button class="domain-btn active" onclick="filterGraph('all', this)">All Clusters</button>
+                    <button class="domain-btn" onclick="filterGraph('core', this)">DSA & Programming</button>
+                    <button class="domain-btn" onclick="filterGraph('web', this)">Web & Systems</button>
+                    <button class="domain-btn" onclick="filterGraph('soft', this)">Leadership & Soft Skills</button>
+                </div>
+                <div style="font-size:13px; color:#64748b;">
+                    💡 Drag to pan • Click any node to inspect proficiency
+                </div>
+            </div>
+
+            <div class="canvas-container" id="canvasContainer">
+                <canvas id="skillCanvas"></canvas>
+
+                <!-- Floating Node Details Card -->
+                <div class="node-inspector" id="nodeInspector">
+                    <h3 id="inspectNodeName">Python</h3>
+                    <span class="category" id="inspectNodeCategory">Programming Core</span>
+                    <div class="score-row">
+                        <span>Proficiency</span>
+                        <strong id="inspectNodeScore">88%</strong>
+                    </div>
+                    <div class="progress">
+                        <div class="bar" id="inspectProgressBar" style="width: 88%; background:#6366f1;"></div>
+                    </div>
+                    <p id="inspectNodeDesc" style="font-size:12px; color:#64748b; line-height:1.4;">
+                        Primary language used for algorithms, backend APIs, and problem solving.
+                    </p>
+                </div>
+            </div>
+
+            <div class="graph-legend">
+                <span style="font-weight:600; color:#111827;">Clusters:</span>
+                <div class="legend-item"><div class="legend-dot" style="background:#6366f1;"></div> Student Center</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6;"></div> Core Algorithms</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#2563eb;"></div> Web & Backend</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#16a34a;"></div> Databases & Cloud</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#f97316;"></div> Leadership & Events</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        const API = 'http://localhost:8000';
+        const MY_ID = 'STU001';
+
+        const canvas = document.getElementById('skillCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+
+        function resize() {
+            width = canvas.parentElement.clientWidth;
+            height = canvas.parentElement.clientHeight;
+            canvas.width = width * window.devicePixelRatio;
+            canvas.height = height * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        }
+        window.addEventListener('resize', resize);
+
+        // Nodes dataset
+        let centerNode = { id: 'center', label: 'Aarav Mehta', role: 'Competitor', x: 0, y: 0, r: 42, color: '#6366f1' };
+        
+        let nodes = [
+            // Core Algorithms Cluster
+            { id: 'n1', cluster: 'core', label: 'Python', score: 88, desc: 'Advanced algorithmic fluency and backend API engine development.', color: '#8b5cf6', dist: 130, angle: -0.8 },
+            { id: 'n2', cluster: 'core', label: 'Data Structures', score: 82, desc: 'Trees, Graphs, DP, Heaps, and HashMaps problem solving.', color: '#8b5cf6', dist: 210, angle: -0.6 },
+            { id: 'n3', cluster: 'core', label: 'LeetCode (320+)', score: 85, desc: 'Consistent competitive programming velocity and ranking.', color: '#8b5cf6', dist: 170, angle: -1.3 },
+
+            // Web & Systems Cluster
+            { id: 'n4', cluster: 'web', label: 'FastAPI', score: 78, desc: 'High-performance asynchronous Python REST APIs and OpenAPI docs.', color: '#2563eb', dist: 140, angle: 0.5 },
+            { id: 'n5', cluster: 'web', label: 'Web Dev & JS', score: 75, desc: 'Responsive user interfaces, DOM scripting, and modern layouts.', color: '#2563eb', dist: 220, angle: 0.8 },
+            { id: 'n6', cluster: 'web', label: 'Docker & Git', score: 72, desc: 'Version control workflows and containerized deployments.', color: '#2563eb', dist: 180, angle: 1.2 },
+
+            // Data & Cloud Cluster
+            { id: 'n7', cluster: 'web', label: 'SQL / PostgreSQL', score: 74, desc: 'Relational data modeling, indexing, joins, and aggregations.', color: '#16a34a', dist: 140, angle: 2.2 },
+            { id: 'n8', cluster: 'web', label: 'Cloud (AWS)', score: 70, desc: 'Cloud practitioner fundamentals: S3, EC2, IAM, and Lambda.', color: '#16a34a', dist: 210, angle: 2.5 },
+
+            // Soft Skills & Events Cluster
+            { id: 'n9', cluster: 'soft', label: 'Hackathons', score: 80, desc: 'Rapid product prototyping, 24-hr sprints, and winning pitches.', color: '#f97316', dist: 150, angle: 3.5 },
+            { id: 'n10', cluster: 'soft', label: 'Leadership', score: 85, desc: 'Coding club coordination and cross-functional team direction.', color: '#f97316', dist: 210, angle: 3.9 }
+        ];
+
+        let selectedNode = nodes[0];
+        let activeCluster = 'all';
+
+        async function initData() {
+            try {
+                const res = await fetch(`${API}/api/student/${MY_ID}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    centerNode.label = data.profile.name;
+                    centerNode.role = data.persona;
+                }
+            } catch (e) {
+                // Keep default
+            }
+            resize();
+            updateNodePositions();
+            requestAnimationFrame(renderLoop);
+        }
+
+        function updateNodePositions() {
+            const cx = width / 2;
+            const cy = height / 2;
+            centerNode.x = cx;
+            centerNode.y = cy;
+
+            nodes.forEach(n => {
+                n.x = cx + Math.cos(n.angle) * n.dist;
+                n.y = cy + Math.sin(n.angle) * n.dist;
+                n.r = 22 + (n.score / 100) * 12;
+            });
+        }
+
+        let animTime = 0;
+        function renderLoop() {
+            animTime += 0.02;
+            ctx.clearRect(0, 0, width, height);
+
+            const cx = width / 2;
+            const cy = height / 2;
+
+            // Draw connection lines from center
+            nodes.forEach(n => {
+                if (activeCluster !== 'all' && n.cluster !== activeCluster) return;
+
+                // Subtle organic pulse
+                const pulse = Math.sin(animTime + n.angle) * 3;
+                const targetX = n.x + (Math.cos(animTime + n.angle) * pulse);
+                const targetY = n.y + (Math.sin(animTime + n.angle) * pulse);
+
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(targetX, targetY);
+                ctx.strokeStyle = n === selectedNode ? n.color : '#e2e8f0';
+                ctx.lineWidth = n === selectedNode ? 3 : 1.5;
+                ctx.stroke();
+
+                // Draw secondary mesh lines between nearby cluster neighbors
+                nodes.forEach(neighbor => {
+                    if (neighbor !== n && neighbor.cluster === n.cluster) {
+                        const dist = Math.hypot(neighbor.x - n.x, neighbor.y - n.y);
+                        if (dist < 120) {
+                            ctx.beginPath();
+                            ctx.moveTo(n.x, n.y);
+                            ctx.lineTo(neighbor.x, neighbor.y);
+                            ctx.strokeStyle = 'rgba(203, 213, 225, 0.4)';
+                            ctx.lineWidth = 1;
+                            ctx.stroke();
+                        }
+                    }
+                });
+            });
+
+            // Draw outer nodes
+            nodes.forEach(n => {
+                if (activeCluster !== 'all' && n.cluster !== activeCluster) return;
+
+                const pulse = Math.sin(animTime + n.angle) * 3;
+                const nx = n.x + (Math.cos(animTime + n.angle) * pulse);
+                const ny = n.y + (Math.sin(animTime + n.angle) * pulse);
+
+                // Glow ring if selected
+                if (n === selectedNode) {
+                    ctx.beginPath();
+                    ctx.arc(nx, ny, n.r + 6, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(99, 102, 241, 0.2)';
+                    ctx.fill();
+                }
+
+                // Node circle
+                ctx.beginPath();
+                ctx.arc(nx, ny, n.r, 0, Math.PI * 2);
+                ctx.fillStyle = 'white';
+                ctx.fill();
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = n.color;
+                ctx.stroke();
+
+                // Score ring arc
+                ctx.beginPath();
+                ctx.arc(nx, ny, n.r + 3, -Math.PI / 2, (-Math.PI / 2) + (Math.PI * 2 * (n.score / 100)));
+                ctx.strokeStyle = n.color;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Text
+                ctx.fillStyle = '#1e293b';
+                ctx.font = 'bold 11px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(n.label, nx, ny + 3);
+
+                // Small score
+                ctx.fillStyle = '#64748b';
+                ctx.font = '9px Arial';
+                ctx.fillText(`${n.score}%`, nx, ny + n.r + 12);
+            });
+
+            // Draw Center Node
+            ctx.beginPath();
+            ctx.arc(cx, cy, centerNode.r + 8, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(99, 102, 241, 0.15)';
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, centerNode.r, 0, Math.PI * 2);
+            ctx.fillStyle = centerNode.color;
+            ctx.fill();
+
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 13px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(centerNode.label.split(' ')[0], cx, cy - 3);
+
+            ctx.font = '10px Arial';
+            ctx.fillStyle = '#e0e7ff';
+            ctx.fillText(centerNode.role, cx, cy + 12);
+
+            requestAnimationFrame(renderLoop);
+        }
+
+        // Click to select node
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            for (let n of nodes) {
+                if (activeCluster !== 'all' && n.cluster !== activeCluster) continue;
+                const d = Math.hypot(n.x - mouseX, n.y - mouseY);
+                if (d < n.r + 8) {
+                    selectedNode = n;
+                    inspectNode(n);
+                    break;
+                }
+            }
+        });
+
+        function inspectNode(n) {
+            document.getElementById('inspectNodeName').textContent = n.label;
+            const catMap = { core: 'DSA & Programming Core', web: 'Web & Systems Architecture', soft: 'Leadership & Collaborative Skills' };
+            document.getElementById('inspectNodeCategory').textContent = catMap[n.cluster] || 'Skill';
+            document.getElementById('inspectNodeScore').textContent = `${n.score}%`;
+            document.getElementById('inspectProgressBar').style.width = `${n.score}%`;
+            document.getElementById('inspectProgressBar').style.background = n.color;
+            document.getElementById('inspectNodeDesc').textContent = n.desc;
+        }
+
+        function filterGraph(cluster, btn) {
+            activeCluster = cluster;
+            document.querySelectorAll('.domain-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        initData();
+        inspectNode(selectedNode);
+    </script>
+
+</body>
+
+</html>

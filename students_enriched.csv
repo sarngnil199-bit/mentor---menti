@@ -1,0 +1,101 @@
+student_id,name,department,year,cgpa,certifications_count,leetcode_solved,hackerrank_solved,github_projects,hackathons_participated,hackathons_won,ideathons_participated,ideathons_won,paper_presentations,internships,leadership,persona,growth_index,alerts
+STU001,Aarav Mehta,Computer Science,3,8.7,4,320,180,5,4,1,2,0,1,1,1,Competitor,73.6,[]
+STU002,Diya Sharma,Information Technology,2,9.1,2,150,220,3,2,0,1,1,0,0,1,Leader,49.2,[]
+STU003,Rohan Iyer,Electronics,4,7.8,5,80,90,7,6,2,3,1,2,2,0,Builder,70.9,[]
+STU004,Ananya Nair,Computer Science,1,8.2,1,45,60,2,1,0,0,0,0,0,0,Scholar,34.9,[]
+STU005,Kabir Singh,Mechanical,3,7.4,3,30,40,4,3,0,2,0,1,1,1,Leader,46.6,"[{'severity': 'HIGH', 'code': 'CGPA_DROP', 'title': 'Low Academic Standing', 'reason': 'CGPA is 7.40, below department target (7.50)'}, {'severity': 'MEDIUM', 'code': 'CODING_VELOCITY', 'title': 'Low DSA Velocity', 'reason': 'Only 30 LeetCode problems solved by Year 3'}]"
+STU006,Ishita Rao,Computer Science,4,9.4,6,450,300,8,7,3,4,2,3,2,1,Competitor,98.2,[]
+STU007,Arjun Verma,Information Technology,2,8.0,2,210,110,3,2,1,1,0,0,1,0,Competitor,54.6,[]
+STU008,Saanvi Gupta,Electrical,3,8.5,4,60,150,5,4,1,2,0,1,1,1,Builder,56.8,[]
+STU009,Aditya Kulkarni,Computer Science,2,7.9,3,280,130,6,5,2,3,1,1,1,0,Builder,73.7,[]
+STU010,Myra Joshi,Electronics,4,8.8,5,120,200,4,3,1,2,0,2,2,1,Scholar,61.4,[]
+STU011,Vihaan Reddy,Mechanical,1,7.2,0,15,25,1,0,0,0,0,0,0,0,Builder,25.0,"[{'severity': 'HIGH', 'code': 'CGPA_DROP', 'title': 'Low Academic Standing', 'reason': 'CGPA is 7.20, below department target (7.50)'}]"
+STU012,Anika Desai,Computer Science,3,9.0,4,390,250,7,6,2,3,1,2,1,1,Competitor,88.9,[]
+STU013,Reyansh Patel,Information Technology,4,8.3,3,170,140,5,4,1,2,0,1,1,0,Builder,63.0,[]
+STU014,Kavya Menon,Electrical,2,8.6,2,55,100,3,2,0,1,0,0,0,1,Leader,41.7,[]
+STU015,Advait Choudhury,Computer Science,1,7.6,1,90,70,2,1,0,0,0,0,0,0,Competitor,35.9,[]
+STU016,Nitya Shetty,Electronics,3,8.9,6,200,280,6,5,2,3,1,2,2,1,Builder,76.7,[]
+STU017,Aryan Bhatt,Mechanical,4,7.5,4,40,60,5,4,0,2,0,1,1,1,Leader,52.5,"[{'severity': 'MEDIUM', 'code': 'CODING_VELOCITY', 'title': 'Low DSA Velocity', 'reason': 'Only 40 LeetCode problems solved by Year 4'}]"
+STU018,Siya Kapoor,Computer Science,2,9.2,3,410,230,4,3,1,2,1,1,0,0,Competitor,70.1,[]
+STU019,Krishna Pillai,Information Technology,3,8.1,2,130,120,3,2,0,1,0,0,1,0,Competitor,49.9,[]
+STU020,Riya Malhotra,Electrical,4,8.7,5,75,170,6,5,2,3,1,2,2,1,Builder,68.3,[]
+STU021,Ishaan Bose,Computer Science,1,7.8,0,60,50,1,0,0,0,0,0,0,0,Competitor,29.6,[]
+STU022,Aadhya Krishnan,Electronics,2,8.4,3,100,190,4,3,1,2,0,1,0,1,Leader,49.0,[]
+STU023,Vivaan Jain,Mechanical,3,7.1,2,20,35,3,2,0,1,0,0,0,0,Builder,35.0,"[{'severity': 'HIGH', 'code': 'CGPA_DROP', 'title': 'Low Academic Standing', 'reason': 'CGPA is 7.10, below department target (7.50)'}, {'severity': 'MEDIUM', 'code': 'CODING_VELOCITY', 'title': 'Low DSA Velocity', 'reason': 'Only 20 LeetCode problems solved by Year 3'}, {'severity': 'HIGH', 'code': 'CAREER_READINESS', 'title': 'No Internship Experience', 'reason': 'Year 3 student has 0 recorded corporate internships'}]"
+STU024,Meera Subramanian,Computer Science,4,9.5,7,500,350,9,8,4,5,2,4,3,1,Competitor,98.5,[]
+STU025,Arnav Saxena,Information Technology,2,8.0,1,180,100,2,1,0,0,0,0,0,0,Competitor,42.8,[]
+STU026,Anvi Trivedi,Electrical,3,8.3,4,65,130,5,4,1,2,0,1,1,1,Builder,56.5,[]
+STU027,Rudra Ghosh,Computer Science,3,8.8,5,350,210,6,5,2,3,1,2,1,0,Competitor,80.8,[]
+STU028,Pari Rathore,Electronics,4,8.6,4,140,240,5,4,1,2,0,1,2,1,Competitor,67.0,[]
+STU029,Darsh Vardhan,Mechanical,1,7.0,0,10,20,1,0,0,0,0,0,0,0,Builder,24.1,"[{'severity': 'HIGH', 'code': 'CGPA_DROP', 'title': 'Low Academic Standing', 'reason': 'CGPA is 7.00, below department target (7.50)'}]"
+STU030,Aarohi Sen,Computer Science,2,9.1,3,300,180,4,3,1,2,1,1,0,1,Competitor,63.5,[]
+STU031,Veer Chopra,Information Technology,4,8.2,3,160,110,4,3,1,1,0,1,1,0,Builder,57.1,[]
+STU032,Tara Bhatia,Electrical,2,8.5,2,50,95,3,2,0,1,0,0,0,1,Leader,41.1,[]
+STU033,Kiaan Sharma,Computer Science,1,7.4,1,70,65,2,1,0,0,0,0,0,0,Competitor,34.1,"[{'severity': 'HIGH', 'code': 'CGPA_DROP', 'title': 'Low Academic Standing', 'reason': 'CGPA is 7.40, below department target (7.50)'}]"
+STU034,Avni Mishra,Electronics,3,8.9,5,190,260,6,5,2,3,1,2,2,1,Builder,76.1,[]
+STU035,Yuvan Nanda,Mechanical,4,7.6,3,35,55,4,3,0,2,0,1,1,0,Scholar,47.5,"[{'severity': 'MEDIUM', 'code': 'CODING_VELOCITY', 'title': 'Low DSA Velocity', 'reason': 'Only 35 LeetCode problems solved by Year 4'}]"
+STU036,Sara Khan,Computer Science,2,9.3,4,380,240,5,4,2,2,1,1,0,1,Competitor,74.2,[]
+STU037,Neel Kapadia,Information Technology,3,8.1,2,140,115,3,2,0,1,0,0,1,0,Competitor,50.5,[]
+STU038,Riyaaz Ahmed,Electrical,4,8.8,5,85,160,6,5,2,3,1,2,2,1,Builder,69.2,[]
+STU039,Mahika Rane,Computer Science,1,7.9,0,55,45,1,0,0,0,0,0,0,0,Competitor,29.6,[]
+STU040,Omkar Joshi,Electronics,2,8.3,3,95,185,4,3,1,2,0,1,0,1,Leader,48.3,[]
+STU041,Viraj Deshmukh,Mechanical,3,7.2,2,25,30,3,2,0,1,0,0,0,0,Builder,35.7,"[{'severity': 'HIGH', 'code': 'CGPA_DROP', 'title': 'Low Academic Standing', 'reason': 'CGPA is 7.20, below department target (7.50)'}, {'severity': 'MEDIUM', 'code': 'CODING_VELOCITY', 'title': 'Low DSA Velocity', 'reason': 'Only 25 LeetCode problems solved by Year 3'}, {'severity': 'HIGH', 'code': 'CAREER_READINESS', 'title': 'No Internship Experience', 'reason': 'Year 3 student has 0 recorded corporate internships'}]"
+STU042,Naina Pillai,Computer Science,4,9.6,8,520,360,10,9,5,6,3,4,3,1,Competitor,98.8,[]
+STU043,Abeer Gupta,Information Technology,2,7.8,1,170,95,2,1,0,0,0,0,0,0,Competitor,41.5,[]
+STU044,Shanaya Bose,Electrical,3,8.4,4,70,125,5,4,1,2,0,1,1,1,Builder,57.1,[]
+STU045,Devansh Rao,Computer Science,3,8.7,5,330,200,6,5,2,3,1,2,1,0,Builder,79.2,[]
+STU046,Anaya Kulkarni,Electronics,4,8.5,4,130,230,5,4,1,2,0,1,2,1,Builder,66.1,[]
+STU047,Kabir Verma,Mechanical,1,7.1,0,12,18,1,0,0,0,0,0,0,0,Builder,24.6,"[{'severity': 'HIGH', 'code': 'CGPA_DROP', 'title': 'Low Academic Standing', 'reason': 'CGPA is 7.10, below department target (7.50)'}]"
+STU048,Ira Bhattacharya,Computer Science,2,9.0,3,290,170,4,3,1,2,1,1,0,1,Leader,62.6,[]
+STU049,Rishaan Malhotra,Information Technology,4,8.0,2,150,105,4,3,1,1,0,1,1,0,Builder,55.9,[]
+STU050,Saanvi Iyer,Electrical,2,8.6,2,48,90,3,2,0,1,0,0,0,1,Leader,41.3,"[{'severity': 'MEDIUM', 'code': 'CODING_VELOCITY', 'title': 'Low DSA Velocity', 'reason': 'Only 48 LeetCode problems solved by Year 2'}]"
+STU051,Aryan Sheikh,Computer Science,1,7.7,1,65,55,2,1,0,0,0,0,0,0,Competitor,34.7,[]
+STU052,Zoya Khan,Electronics,3,8.8,5,180,250,6,5,2,3,1,2,2,1,Builder,75.2,[]
+STU053,Vihaan Reddy,Mechanical,4,7.7,3,30,50,4,3,0,2,0,1,1,0,Scholar,47.5,"[{'severity': 'MEDIUM', 'code': 'CODING_VELOCITY', 'title': 'Low DSA Velocity', 'reason': 'Only 30 LeetCode problems solved by Year 4'}]"
+STU054,Aadya Nair,Computer Science,2,9.2,4,370,220,5,4,2,2,1,1,0,1,Competitor,73.2,[]
+STU055,Krish Menon,Information Technology,3,8.2,2,135,118,3,2,0,1,0,0,1,0,Competitor,50.5,[]
+STU056,Anvi Desai,Electrical,4,8.7,5,80,155,6,5,2,3,1,2,2,1,Builder,68.6,[]
+STU057,Rudra Patel,Computer Science,1,7.5,0,50,40,1,0,0,0,0,0,0,0,Competitor,28.1,[]
+STU058,Diya Choudhury,Electronics,2,8.4,3,105,195,4,3,1,2,0,1,0,1,Leader,49.3,[]
+STU059,Arnav Singh,Mechanical,3,7.3,2,22,32,3,2,0,1,0,0,0,0,Builder,35.8,"[{'severity': 'HIGH', 'code': 'CGPA_DROP', 'title': 'Low Academic Standing', 'reason': 'CGPA is 7.30, below department target (7.50)'}, {'severity': 'MEDIUM', 'code': 'CODING_VELOCITY', 'title': 'Low DSA Velocity', 'reason': 'Only 22 LeetCode problems solved by Year 3'}, {'severity': 'HIGH', 'code': 'CAREER_READINESS', 'title': 'No Internship Experience', 'reason': 'Year 3 student has 0 recorded corporate internships'}]"
+STU060,Myra Joshi,Computer Science,4,9.4,6,460,310,8,7,3,4,2,3,2,1,Competitor,98.2,[]
+STU061,Aditya Rao,Information Technology,2,8.1,1,175,98,2,1,0,0,0,0,0,0,Competitor,42.7,[]
+STU062,Ishita Gupta,Electrical,3,8.5,4,68,128,5,4,1,2,0,1,1,1,Builder,57.2,[]
+STU063,Reyansh Kulkarni,Computer Science,3,8.9,5,360,215,6,5,2,3,1,2,1,0,Competitor,81.7,[]
+STU064,Kavya Shetty,Electronics,4,8.6,4,145,235,5,4,1,2,0,1,2,1,Competitor,67.4,[]
+STU065,Advait Verma,Mechanical,1,7.0,0,11,19,1,0,0,0,0,0,0,0,Builder,24.2,"[{'severity': 'HIGH', 'code': 'CGPA_DROP', 'title': 'Low Academic Standing', 'reason': 'CGPA is 7.00, below department target (7.50)'}]"
+STU066,Nitya Bose,Computer Science,2,9.1,3,310,185,4,3,1,2,1,1,0,1,Competitor,64.2,[]
+STU067,Aryan Pillai,Information Technology,4,8.2,3,165,112,4,3,1,1,0,1,1,0,Builder,57.4,[]
+STU068,Siya Kapoor,Electrical,2,8.5,2,52,92,3,2,0,1,0,0,0,1,Leader,41.2,[]
+STU069,Krishna Reddy,Computer Science,1,7.8,1,72,62,2,1,0,0,0,0,0,0,Competitor,35.4,[]
+STU070,Riya Malhotra,Electronics,3,8.9,5,195,265,6,5,2,3,1,2,2,1,Builder,76.4,[]
+STU071,Ishaan Bhatt,Mechanical,4,7.6,3,33,52,4,3,0,2,0,1,1,0,Scholar,47.4,"[{'severity': 'MEDIUM', 'code': 'CODING_VELOCITY', 'title': 'Low DSA Velocity', 'reason': 'Only 33 LeetCode problems solved by Year 4'}]"
+STU072,Aadhya Menon,Computer Science,2,9.3,4,395,245,5,4,2,2,1,1,0,1,Competitor,75.1,[]
+STU073,Vivaan Jain,Information Technology,3,8.1,2,138,116,3,2,0,1,0,0,1,0,Competitor,50.4,[]
+STU074,Meera Subramanian,Electrical,4,8.8,5,88,162,6,5,2,3,1,2,2,1,Builder,69.4,[]
+STU075,Arnav Saxena,Computer Science,1,7.9,0,58,48,1,0,0,0,0,0,0,0,Competitor,29.8,[]
+STU076,Anvi Trivedi,Electronics,2,8.3,3,98,188,4,3,1,2,0,1,0,1,Leader,48.5,[]
+STU077,Rudra Ghosh,Mechanical,3,7.4,2,28,38,3,2,0,1,0,0,0,0,Builder,36.4,"[{'severity': 'HIGH', 'code': 'CGPA_DROP', 'title': 'Low Academic Standing', 'reason': 'CGPA is 7.40, below department target (7.50)'}, {'severity': 'MEDIUM', 'code': 'CODING_VELOCITY', 'title': 'Low DSA Velocity', 'reason': 'Only 28 LeetCode problems solved by Year 3'}, {'severity': 'HIGH', 'code': 'CAREER_READINESS', 'title': 'No Internship Experience', 'reason': 'Year 3 student has 0 recorded corporate internships'}]"
+STU078,Pari Rathore,Computer Science,4,9.5,7,490,340,9,8,4,5,2,4,3,1,Competitor,98.5,[]
+STU079,Darsh Vardhan,Information Technology,2,7.9,1,172,96,2,1,0,0,0,0,0,0,Competitor,42.0,[]
+STU080,Aarohi Sen,Electrical,3,8.4,4,72,122,5,4,1,2,0,1,1,1,Builder,57.2,[]
+STU081,Veer Chopra,Computer Science,3,8.8,5,340,205,6,5,2,3,1,2,1,0,Builder,80.2,[]
+STU082,Tara Bhatia,Electronics,4,8.5,4,135,225,5,4,1,2,0,1,2,1,Builder,66.4,[]
+STU083,Kiaan Sharma,Mechanical,1,7.1,0,13,21,1,0,0,0,0,0,0,0,Builder,24.6,"[{'severity': 'HIGH', 'code': 'CGPA_DROP', 'title': 'Low Academic Standing', 'reason': 'CGPA is 7.10, below department target (7.50)'}]"
+STU084,Avni Mishra,Computer Science,2,9.0,3,285,175,4,3,1,2,1,1,0,1,Leader,62.3,[]
+STU085,Yuvan Nanda,Information Technology,4,8.0,2,155,108,4,3,1,1,0,1,1,0,Builder,56.2,[]
+STU086,Sara Khan,Electrical,2,8.6,2,53,94,3,2,0,1,0,0,0,1,Leader,41.6,[]
+STU087,Neel Kapadia,Computer Science,1,7.7,1,68,58,2,1,0,0,0,0,0,0,Competitor,34.8,[]
+STU088,Riyaaz Ahmed,Electronics,3,8.7,5,185,255,6,5,2,3,1,2,2,1,Builder,75.2,[]
+STU089,Mahika Rane,Mechanical,4,7.5,3,31,48,4,3,0,2,0,1,1,0,Scholar,46.9,"[{'severity': 'MEDIUM', 'code': 'CODING_VELOCITY', 'title': 'Low DSA Velocity', 'reason': 'Only 31 LeetCode problems solved by Year 4'}]"
+STU090,Omkar Joshi,Computer Science,2,9.2,4,400,235,5,4,2,2,1,1,0,1,Competitor,75.1,[]
+STU091,Viraj Deshmukh,Information Technology,3,8.2,2,132,114,3,2,0,1,0,0,1,0,Competitor,50.3,[]
+STU092,Naina Pillai,Electrical,4,8.9,5,82,158,6,5,2,3,1,2,2,1,Builder,69.3,[]
+STU093,Abeer Gupta,Computer Science,1,7.6,0,54,44,1,0,0,0,0,0,0,0,Competitor,28.7,[]
+STU094,Shanaya Bose,Electronics,2,8.4,3,102,192,4,3,1,2,0,1,0,1,Leader,49.1,[]
+STU095,Devansh Rao,Mechanical,3,7.2,2,24,34,3,2,0,1,0,0,0,0,Builder,35.6,"[{'severity': 'HIGH', 'code': 'CGPA_DROP', 'title': 'Low Academic Standing', 'reason': 'CGPA is 7.20, below department target (7.50)'}, {'severity': 'MEDIUM', 'code': 'CODING_VELOCITY', 'title': 'Low DSA Velocity', 'reason': 'Only 24 LeetCode problems solved by Year 3'}, {'severity': 'HIGH', 'code': 'CAREER_READINESS', 'title': 'No Internship Experience', 'reason': 'Year 3 student has 0 recorded corporate internships'}]"
+STU096,Anaya Kulkarni,Computer Science,4,9.4,6,470,320,8,7,3,4,2,3,2,1,Competitor,98.2,[]
+STU097,Kabir Verma,Information Technology,2,8.1,1,178,99,2,1,0,0,0,0,0,0,Competitor,42.9,[]
+STU098,Ira Bhattacharya,Electrical,3,8.5,4,69,126,5,4,1,2,0,1,1,1,Builder,57.3,[]
+STU099,Rishaan Malhotra,Computer Science,3,8.9,5,355,212,6,5,2,3,1,2,1,0,Competitor,81.4,[]
+STU100,Saanvi Iyer,Electronics,4,8.6,4,142,232,5,4,1,2,0,1,2,1,Builder,67.2,[]

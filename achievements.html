@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillGraph - Achievements</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .stats-ribbon {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .stat-icon.orange { background: #ffedd5; color: #c2410c; }
+        .stat-icon.purple { background: #ede9fe; color: #7c3aed; }
+        .stat-icon.blue   { background: #dbeafe; color: #1d4ed8; }
+        .stat-icon.green  { background: #dcfce7; color: #15803d; }
+
+        .stat-info h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .stat-info p {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .achievement-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.25s, box-shadow 0.25s;
+            position: relative;
+        }
+
+        .achievement-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.12);
+        }
+
+        .achievement-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .trophy-badge {
+            background: #fef3c7;
+            color: #b45309;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .achievement-card h2 {
+            font-size: 18px;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .achievement-card .sub {
+            color: #6366f1;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .achievement-card .desc {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .achievement-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 14px;
+            font-size: 12px;
+            color: #64748b;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <div class="logo">Skill<span>Graph</span></div>
+        <ul class="menu">
+            <li onclick="goTo('index.html')">🏠 Dashboard</li>
+            <li onclick="goTo('profile.html')">👤 My Profile</li>
+            <li onclick="goTo('skills.html')">🧠 Skills</li>
+            <li onclick="goTo('certifications.html')">📜 Certifications</li>
+            <li onclick="goTo('projects.html')">🚀 Projects</li>
+            <li class="active">🏆 Achievements</li>
+            <li onclick="goTo('team.html')">🤝 Team Match</li>
+            <li onclick="goTo('learning.html')">🎯 Learning Path</li>
+            <li onclick="goTo('graph.html')">🕸️ Skill Graph</li>
+            <li onclick="goTo('settings.html')">⚙️ Settings</li>
+        </ul>
+    </div>
+
+    <div class="main">
+
+        <div class="topbar">
+            <div>
+                <h1>🏆 Milestones & Achievements</h1>
+                <p>Recognitions, competitive honors, and departmental achievements.</p>
+            </div>
+            <button onclick="logAchievementPrompt()">
+                <span>➕</span> Log Milestone
+            </button>
+        </div>
+
+        <!-- Telemetry Ribbon -->
+        <div class="stats-ribbon">
+            <div class="stat-box">
+                <div class="stat-icon orange">🥇</div>
+                <div class="stat-info">
+                    <h3 id="statHackWon">—</h3>
+                    <p>Hackathons Won</p>
+                </div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon purple">💡</div>
+                <div class="stat-info">
+                    <h3 id="statIdeaWon">—</h3>
+                    <p>Ideathons Won</p>
+                </div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon blue">📜</div>
+                <div class="stat-info">
+                    <h3 id="statPapers">—</h3>
+                    <p>Research Papers</p>
+                </div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon green">🌟</div>
+                <div class="stat-info">
+                    <h3 id="statLeadership">Active</h3>
+                    <p>Leadership Standing</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievements Grid -->
+        <div class="item-grid" id="achievementsGrid">
+            <div class="item-card">
+                <div class="item-icon">⏳</div>
+                <h2>Loading Achievements…</h2>
+                <p>Retrieving milestones and awards…</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        const API = 'http://localhost:8000';
+        const MY_ID = 'STU001';
+        let allAchievementsList = [];
+
+        async function loadAchievements() {
+            try {
+                const res = await fetch(`${API}/api/student/${MY_ID}/portfolio`);
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+                renderAchievements(data);
+            } catch (err) {
+                // Graceful fallback
+                renderAchievements({
+                    achievements: [
+                        {
+                            title: "Inter-College Hackathon Winner",
+                            subtitle: "National Smart Hackathon 2024",
+                            icon: "🥇",
+                            badge: "1st Prize",
+                            year: "2024",
+                            desc: "Secured top position out of 80+ collegiate teams for building an AI-powered growth intelligence platform."
+                        },
+                        {
+                            title: "Student Technical Club Lead",
+                            subtitle: "College Coding & Innovation Club",
+                            icon: "🎤",
+                            badge: "Lead Coordinator",
+                            year: "2023 - Present",
+                            desc: "Spearheaded peer programming bootcamps and mentoring circles for 120+ student members."
+                        },
+                        {
+                            title: "Research Publication Presentation",
+                            subtitle: "IEEE International Tech Conference",
+                            icon: "📜",
+                            badge: "Published",
+                            year: "2024",
+                            desc: "Authored and presented peer-reviewed technical paper on intelligent student telemetry."
+                        },
+                        {
+                            title: "Dean's Academic Excellence Honor Roll",
+                            subtitle: "Top 10% in Computer Science",
+                            icon: "🎓",
+                            badge: "CGPA 8.7",
+                            year: "2023 - 2024",
+                            desc: "Consistently maintained outstanding academic performance with a 8.7 cumulative GPA."
+                        }
+                    ],
+                    metrics: {
+                        hackathons_won: 1,
+                        paper_presentations: 1
+                    }
+                });
+            }
+        }
+
+        function renderAchievements(data) {
+            allAchievementsList = data.achievements || [];
+            const metrics = data.metrics || {};
+
+            document.getElementById('statHackWon').textContent = metrics.hackathons_won ?? 1;
+            document.getElementById('statIdeaWon').textContent = metrics.ideathons_won ?? 0;
+            document.getElementById('statPapers').textContent = metrics.paper_presentations ?? 1;
+
+            const grid = document.getElementById('achievementsGrid');
+            if (allAchievementsList.length === 0) {
+                grid.innerHTML = `
+                    <div class="item-card" style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+                        <div style="font-size: 40px; margin-bottom: 12px;">🏆</div>
+                        <h2>No achievements recorded yet</h2>
+                        <p>Participate in hackathons, publish papers, or take on leadership roles.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = allAchievementsList.map(a => `
+                <div class="achievement-card">
+                    <div>
+                        <div class="achievement-header">
+                            <div class="item-icon">${a.icon || '🏆'}</div>
+                            <span class="trophy-badge">${a.badge || 'Honor'}</span>
+                        </div>
+                        <h2>${a.title}</h2>
+                        <div class="sub">${a.subtitle || ''}</div>
+                        <p class="desc">${a.desc}</p>
+                    </div>
+                    <div class="achievement-footer">
+                        <span>Year: <strong>${a.year || '2024'}</strong></span>
+                        <span style="color:#16a34a; font-weight:600;">✓ Verified Milestone</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function logAchievementPrompt() {
+            const title = prompt("Enter Achievement Title:", "Zonal Coding Competition Finalist");
+            if (!title) return;
+            const sub = prompt("Enter Event / Organization:", "State Tech Fest 2024");
+            const newAch = {
+                title: title,
+                subtitle: sub || "Collegiate Event",
+                icon: "🏅",
+                badge: "Special Mention",
+                year: "2024",
+                desc: "Demonstrated exemplary problem-solving skills and technical performance."
+            };
+            allAchievementsList.unshift(newAch);
+            renderAchievements({ achievements: allAchievementsList });
+        }
+
+        loadAchievements();
+    </script>
+
+</body>
+
+</html>
