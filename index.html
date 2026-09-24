@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Growth Intelligence — Mentor Console</title>
+  <title>Student Growth Intelligence — Mentor & Mentee Portals</title>
   
   <!-- Google Fonts: Poppins (300,400,500,600,700) & JetBrains Mono (400,500,600,700) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -105,7 +105,7 @@
   <div id="toastContainer" class="fixed top-5 right-5 z-[9999] flex flex-col space-y-2 pointer-events-none"></div>
 
   <!-- ========================================================================= -->
-  <!-- PAGE 1: SIGN-IN SCREEN                                                    -->
+  <!-- PAGE 1: SEPARATE SIGN-IN PORTAL SELECTOR & AUTHENTICATION SCREENS         -->
   <!-- ========================================================================= -->
   <div id="section-signin" class="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-navy-950 via-navy-900 to-[#0A2540] p-4">
     <!-- Animated Network of Student Nodes (Background SVG) -->
@@ -135,49 +135,61 @@
       <circle cx="65%" cy="75%" r="9" fill="#10B981" class="node-pulse-delay-2"/>
     </svg>
 
-    <!-- Sign-in Card (Max 420px) -->
-    <div class="w-full max-w-[420px] bg-white rounded-2xl shadow-2xl p-8 relative z-10 border border-slate-100/20 backdrop-blur-md">
+    <!-- Sign-in Container (Max 440px) -->
+    <div class="w-full max-w-[440px] bg-white rounded-2xl shadow-2xl p-7 relative z-10 border border-slate-100/20 backdrop-blur-md">
       
       <!-- Header with Logo Badge -->
-      <div class="text-center mb-6">
-        <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-electric to-blue-400 flex items-center justify-center shadow-lg shadow-blue-500/30 text-white font-extrabold text-xl tracking-wider mb-3">
+      <div class="text-center mb-5">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-electric to-blue-400 flex items-center justify-center shadow-lg shadow-blue-500/30 text-white font-extrabold text-xl tracking-wider mb-2.5">
           SG
         </div>
         <h1 class="text-xl font-bold text-navy-900 leading-tight">Student Growth Intelligence</h1>
-        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mt-1" id="loginRoleSubtitle">Mentor Console</p>
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mt-1" id="loginPortalBadge">Institutional Secure Portal</p>
       </div>
 
-      <!-- Role Selection Tabs (Mentor vs Mentee) without disturbing mentor side -->
-      <div class="grid grid-cols-2 p-1 bg-slate-100 rounded-xl mb-6 text-xs font-medium">
-        <button id="roleTabMentor" type="button" onclick="selectLoginRole('mentor')" class="py-2 rounded-lg font-bold transition bg-white text-navy shadow-sm">
-          👨‍🏫 Mentor Login
+      <!-- SEPARATE PORTAL SWITCHER: Distinct Login Modes -->
+      <div class="grid grid-cols-2 p-1.5 bg-slate-100 rounded-xl mb-5 text-xs font-semibold gap-1">
+        <button id="portalBtnMentor" type="button" onclick="switchLoginPortal('mentor')" class="py-2.5 rounded-lg transition flex items-center justify-center space-x-1.5 bg-white text-navy-900 shadow-sm border border-slate-200/60">
+          <span>👨‍🏫</span>
+          <span>Faculty Mentor</span>
         </button>
-        <button id="roleTabMentee" type="button" onclick="selectLoginRole('mentee')" class="py-2 rounded-lg font-bold transition text-slate-500 hover:text-navy">
-          🎓 Mentee (Student)
+        <button id="portalBtnStudent" type="button" onclick="switchLoginPortal('student')" class="py-2.5 rounded-lg transition flex items-center justify-center space-x-1.5 text-slate-500 hover:text-navy-900">
+          <span>🎓</span>
+          <span>Student Mentee</span>
         </button>
       </div>
 
-      <!-- Sign In Form -->
-      <form id="signInForm" onsubmit="handleSignInSubmit(event)" novalidate class="space-y-4">
-        <!-- Email Input -->
+      <!-- PORTAL NOTIFICATION BANNER -->
+      <div id="portalInfoBanner" class="p-3 mb-4 rounded-xl text-xs bg-blue-50/70 border border-blue-100 text-slate-700 flex items-start space-x-2">
+        <span class="text-electric text-sm shrink-0">🛡️</span>
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1" for="signInEmail">Institutional Email</label>
+          <p class="font-bold text-navy-900" id="portalBannerTitle">Faculty Mentor Console</p>
+          <p class="text-[11px] text-slate-500 mt-0.5" id="portalBannerDesc">Restricted to faculty advisors and department chairs for cohort oversight.</p>
+        </div>
+      </div>
+
+      <!-- SIGN IN FORM -->
+      <form id="signInForm" onsubmit="handlePortalSignIn(event)" novalidate class="space-y-4">
+        
+        <!-- Identifier Input (Email or Student ID) -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1" id="labelIdentifier">Faculty Email</label>
           <input 
-            type="email" 
-            id="signInEmail" 
+            type="text" 
+            id="loginIdentifier" 
             placeholder="dr.priya@college.edu" 
             class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-electric focus:bg-white transition text-slate-800"
             value="dr.priya@college.edu"
           >
-          <p id="emailErrorMsg" class="hidden text-danger text-[11px] mt-1 font-medium">Invalid email address (must contain @)</p>
+          <p id="identifierErrorMsg" class="hidden text-danger text-[11px] mt-1 font-medium"></p>
         </div>
 
-        <!-- Password Input -->
+        <!-- Password / PIN Input -->
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1" for="signInPassword">Password</label>
+          <label class="block text-xs font-semibold text-slate-700 mb-1" id="labelPassword">Faculty Password</label>
           <input 
             type="password" 
-            id="signInPassword" 
+            id="loginPassword" 
             placeholder="••••••••" 
             class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-electric focus:bg-white transition text-slate-800"
             value="faculty2026"
@@ -185,11 +197,23 @@
           <p id="passwordErrorMsg" class="hidden text-danger text-[11px] mt-1 font-medium">Password must be at least 4 characters</p>
         </div>
 
+        <!-- Student Selector Quick Dropdown (Only visible on Student Portal) -->
+        <div id="studentQuickSelectContainer" class="hidden">
+          <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Select Student Demo Profile</label>
+          <select id="studentProfileSelector" onchange="applySelectedStudentProfile(this.value)" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-800">
+            <option value="STU051">Aarav Mehta (STU051 - Year 3, Competitor)</option>
+            <option value="STU001">Kavya Reddy (STU001 - Year 1, Leader)</option>
+            <option value="STU026">Kabir Singh (STU026 - Year 2, Scholar)</option>
+            <option value="STU004">Ananya Iyer (STU004 - Year 1, Builder)</option>
+            <option value="STU080">Sneha Kulkarni (STU080 - Year 4, Leader)</option>
+          </select>
+        </div>
+
         <!-- Remember Me & Forgot Password -->
         <div class="flex items-center justify-between text-xs pt-1">
           <label class="flex items-center space-x-2 cursor-pointer text-slate-600 select-none">
             <input type="checkbox" id="rememberMeCheckbox" checked class="w-4 h-4 text-electric rounded border-slate-300 focus:ring-electric">
-            <span>Remember me</span>
+            <span>Remember device</span>
           </label>
           <button type="button" onclick="handleForgotPasswordAlert()" class="text-electric hover:underline font-medium">Forgot password?</button>
         </div>
@@ -200,7 +224,7 @@
           type="submit" 
           class="w-full py-2.5 px-4 bg-electric hover:bg-electric-700 text-white font-semibold rounded-lg shadow-md shadow-blue-500/20 transition-all flex items-center justify-center space-x-2 text-sm mt-2"
         >
-          <span id="signInBtnText">Sign In</span>
+          <span id="signInBtnText">Sign In to Console</span>
           <svg id="signInSpinner" class="hidden animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
@@ -208,13 +232,12 @@
         </button>
       </form>
 
-      <!-- Divider -->
-      <div class="relative my-5">
+      <!-- SSO Option -->
+      <div class="relative my-4">
         <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200"></div></div>
         <div class="relative flex justify-center text-xs uppercase"><span class="bg-white px-2 text-slate-400 font-medium">or</span></div>
       </div>
 
-      <!-- College SSO Button -->
       <button 
         type="button" 
         onclick="handleSSOLogin()" 
@@ -223,31 +246,18 @@
         <svg class="w-4 h-4 text-slate-600" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/>
         </svg>
-        <span>Sign in with College SSO</span>
+        <span id="ssoButtonText">Sign in with University SSO</span>
       </button>
 
-      <!-- Quick Demo Access Pills -->
-      <div class="mt-5 pt-4 border-t border-slate-100 flex flex-col space-y-1.5 text-center">
-        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">⚡ Instant Demo Switcher</span>
-        <div class="flex items-center justify-center space-x-2">
-          <button type="button" onclick="quickFillLogin('mentor')" class="px-2.5 py-1 bg-blue-50 text-electric hover:bg-blue-100 rounded-md text-[11px] font-semibold transition">
-            Dr. Priya (Mentor)
-          </button>
-          <button type="button" onclick="quickFillLogin('mentee')" class="px-2.5 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-md text-[11px] font-semibold transition">
-            Aarav Mehta (Mentee STU051)
-          </button>
-        </div>
-      </div>
-
-      <!-- Footer text -->
-      <p class="text-center text-xs text-slate-400 mt-4">
-        New here? <span class="font-medium text-slate-600">Contact your HOD for access</span>
+      <!-- Footer Info -->
+      <p class="text-center text-xs text-slate-400 mt-4" id="portalFooterNote">
+        Faculty access inquiries: <span class="font-medium text-slate-600">Contact Dean of Academics</span>
       </p>
     </div>
   </div>
 
   <!-- ========================================================================= -->
-  <!-- PAGE 2: MENTOR DASHBOARD APP WRAPPER                                      -->
+  <!-- PAGE 2: MENTOR DASHBOARD CONSOLE (STRICTLY FACULTY ONLY)                  -->
   <!-- ========================================================================= -->
   <div id="section-mentor-app" class="hidden min-h-screen flex flex-col">
     
@@ -260,7 +270,7 @@
         </div>
         <div>
           <div class="font-bold text-sm tracking-wide text-white leading-tight">Student Growth Intelligence</div>
-          <div class="text-[11px] font-medium tracking-wider uppercase text-blue-300">Mentor Console</div>
+          <div class="text-[11px] font-medium tracking-wider uppercase text-blue-300">Faculty Mentor Console</div>
         </div>
       </div>
 
@@ -345,12 +355,9 @@
             <button onclick="navigateTo('settings'); toggleUserMenu();" class="w-full text-left flex items-center px-4 py-2 text-xs hover:bg-slate-50 text-slate-700">
               <span class="mr-2">⚙️</span> Settings & Rules
             </button>
-            <button onclick="switchToMenteeView(); toggleUserMenu();" class="w-full text-left flex items-center px-4 py-2 text-xs hover:bg-slate-50 text-emerald-600 font-semibold">
-              <span class="mr-2">🎓</span> Switch to Mentee View
-            </button>
             <div class="border-t border-slate-100 my-1"></div>
             <button onclick="handleSignOut()" class="w-full text-left flex items-center px-4 py-2 text-xs text-danger hover:bg-red-50 font-semibold">
-              <span class="mr-2">🚪</span> Sign Out
+              <span class="mr-2">🚪</span> Faculty Sign Out
             </button>
           </div>
         </div>
@@ -365,7 +372,7 @@
         <div class="py-5 px-3 space-y-6 overflow-y-auto">
           <!-- Main Menu Section -->
           <div>
-            <div class="px-3 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Navigation</div>
+            <div class="px-3 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Faculty Console</div>
             <nav class="space-y-1">
               <!-- Dashboard -->
               <button id="nav-dashboard" onclick="navigateTo('dashboard')" class="sidebar-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition bg-electric text-white">
@@ -449,14 +456,10 @@
         </div>
 
         <!-- Sidebar Bottom: Sign Out -->
-        <div class="p-3 border-t border-navy-800 space-y-2">
-          <button onclick="switchToMenteeView()" class="w-full flex items-center space-x-2 px-3 py-2 rounded-xl text-xs font-semibold text-emerald-400 bg-navy-900/80 hover:bg-navy-800 transition">
-            <span>🎓</span>
-            <span>Mentee Portal View</span>
-          </button>
+        <div class="p-3 border-t border-navy-800">
           <button onclick="handleSignOut()" class="w-full flex items-center space-x-2 px-3 py-2 rounded-xl text-xs font-semibold text-danger hover:bg-navy-800 transition">
             <span>🚪</span>
-            <span>Sign out</span>
+            <span>Faculty Sign out</span>
           </button>
         </div>
       </aside>
@@ -464,11 +467,8 @@
       <!-- MAIN CONTENT AREA (Left Margin 260px) -->
       <main class="ml-[260px] flex-1 p-8 overflow-y-auto min-h-[calc(100vh-64px)]">
         
-        <!-- =================================================================== -->
-        <!-- VIEW: DASHBOARD TAB                                                 -->
-        <!-- =================================================================== -->
+        <!-- VIEW: DASHBOARD TAB -->
         <div id="view-dashboard" class="space-y-8">
-          <!-- Welcome Header -->
           <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <h1 class="text-2xl font-bold text-navy-900">Good morning, Dr. Priya</h1>
@@ -478,7 +478,7 @@
               <button onclick="showToast('Exported weekly cohort analytics (PDF)')" class="px-3.5 py-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg text-xs font-semibold shadow-sm transition">
                 📥 Export Weekly Report
               </button>
-              <button onclick="openScheduleModal()" class="px-4 py-2 bg-electric hover:bg-electric-700 text-white rounded-lg text-xs font-semibold shadow-sm transition">
+              <button onclick="openActionModal('schedule')" class="px-4 py-2 bg-electric hover:bg-electric-700 text-white rounded-lg text-xs font-semibold shadow-sm transition">
                 + New Intervention
               </button>
             </div>
@@ -486,7 +486,6 @@
 
           <!-- 4 TOP METRIC CARDS -->
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            <!-- Total Students -->
             <div class="metric-card bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
               <div>
                 <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Students</p>
@@ -496,22 +495,18 @@
               <div class="w-12 h-12 rounded-xl bg-blue-50 text-electric flex items-center justify-center text-xl">👥</div>
             </div>
 
-            <!-- Avg CGPA -->
             <div class="metric-card bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
               <div>
                 <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Avg CGPA</p>
                 <div class="flex items-baseline space-x-2 mt-1">
                   <h3 class="text-3xl font-extrabold text-navy-900 font-mono">8.29</h3>
-                  <span class="text-xs font-bold text-emerald-600 flex items-center">
-                    ↑ +0.1
-                  </span>
+                  <span class="text-xs font-bold text-emerald-600 flex items-center">↑ +0.1</span>
                 </div>
                 <p class="text-[11px] text-emerald-600 mt-1 font-medium">Above college benchmark</p>
               </div>
               <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">📈</div>
             </div>
 
-            <!-- Alerts This Week -->
             <div class="metric-card bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between cursor-pointer" onclick="navigateTo('alerts')">
               <div>
                 <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Alerts This Week</p>
@@ -524,7 +519,6 @@
               <div class="w-12 h-12 rounded-xl bg-red-50 text-danger flex items-center justify-center text-xl">🚨</div>
             </div>
 
-            <!-- Avg Attendance -->
             <div class="metric-card bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
               <div>
                 <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Avg Attendance</p>
@@ -542,7 +536,6 @@
               <span class="text-xs text-slate-400">Click any cohort to jump into detailed roster</span>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              <!-- Year 1 Card -->
               <div onclick="navigateTo('year1')" class="metric-card bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-electric group">
                 <div class="flex items-center justify-between mb-3">
                   <span class="px-2.5 py-1 bg-blue-50 text-electric text-xs font-bold rounded-lg">Year 1 &bull; Freshmen</span>
@@ -558,7 +551,6 @@
                 </div>
               </div>
 
-              <!-- Year 2 Card -->
               <div onclick="navigateTo('year2')" class="metric-card bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-electric group">
                 <div class="flex items-center justify-between mb-3">
                   <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-lg">Year 2 &bull; Sophomores</span>
@@ -574,7 +566,6 @@
                 </div>
               </div>
 
-              <!-- Year 3 Card -->
               <div onclick="navigateTo('year3')" class="metric-card bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-electric group">
                 <div class="flex items-center justify-between mb-3">
                   <span class="px-2.5 py-1 bg-amber-50 text-amber-700 text-xs font-bold rounded-lg">Year 3 &bull; Juniors</span>
@@ -590,7 +581,6 @@
                 </div>
               </div>
 
-              <!-- Year 4 Card -->
               <div onclick="navigateTo('year4')" class="metric-card bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-electric group">
                 <div class="flex items-center justify-between mb-3">
                   <span class="px-2.5 py-1 bg-purple-50 text-purple-700 text-xs font-bold rounded-lg">Year 4 &bull; Seniors</span>
@@ -608,10 +598,8 @@
             </div>
           </div>
 
-          <!-- GRID: WEEKLY ALERTS PANEL (2 Cols) + RECENT ACTIVITY FEED (1 Col) -->
+          <!-- GRID: WEEKLY ALERTS PANEL + RECENT ACTIVITY FEED -->
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            <!-- Weekly Alerts Panel -->
             <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
               <div>
                 <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
@@ -648,7 +636,6 @@
               </div>
             </div>
 
-            <!-- Recent Activity Feed -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col justify-between">
               <div>
                 <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
@@ -695,15 +682,11 @@
                 <button onclick="navigateTo('profile')" class="text-xs text-electric hover:underline font-semibold">View Complete Mentor Audit Trail &rarr;</button>
               </div>
             </div>
-
           </div>
         </div>
 
-        <!-- =================================================================== -->
-        <!-- VIEW: YEAR VIEW TAB (1/2/3/4 or All)                                -->
-        <!-- =================================================================== -->
+        <!-- VIEW: YEAR VIEW TAB -->
         <div id="view-year" class="hidden space-y-6">
-          <!-- Title & Badges -->
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <div class="flex items-center space-x-3">
@@ -713,7 +696,6 @@
               <p id="yearViewSubtitle" class="text-xs text-slate-500 mt-1">Computer Science & Engineering Cohort &bull; Default sorted by Attendance descending</p>
             </div>
 
-            <!-- Quick Cohort Filter Pills -->
             <div class="flex items-center space-x-1 bg-white p-1 rounded-xl border border-slate-200 text-xs">
               <button onclick="setYearTab('all')" id="cohortBtn-all" class="px-3 py-1.5 rounded-lg font-semibold transition text-slate-600 hover:text-navy">All</button>
               <button onclick="setYearTab(1)" id="cohortBtn-1" class="px-3 py-1.5 rounded-lg font-semibold transition text-slate-600 hover:text-navy">Year 1</button>
@@ -725,7 +707,6 @@
 
           <!-- CONTROLS BAR -->
           <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <!-- Left: Filter chips & Search -->
             <div class="flex flex-wrap items-center gap-2">
               <span class="text-xs font-bold text-slate-400 uppercase tracking-wider mr-1">Filter:</span>
               <button onclick="setFilterChip('all')" id="chip-all" class="px-3 py-1 rounded-full text-xs font-semibold bg-electric text-white">All</button>
@@ -735,9 +716,7 @@
               <button onclick="setFilterChip('top')" id="chip-top" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200">⭐ Top Performers</button>
             </div>
 
-            <!-- Right: Sort, Grouping toggle & Search -->
             <div class="flex flex-wrap items-center gap-3">
-              <!-- Search in table -->
               <div class="relative">
                 <input 
                   type="text" 
@@ -749,7 +728,6 @@
                 <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">🔍</span>
               </div>
 
-              <!-- Sort Dropdown -->
               <div class="flex items-center space-x-1.5 text-xs">
                 <span class="text-slate-500 font-medium">Sort:</span>
                 <select id="sortDropdown" onchange="handleSortChange(this.value)" class="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-semibold text-slate-700 focus:outline-none">
@@ -760,7 +738,6 @@
                 </select>
               </div>
 
-              <!-- Group in Batches of 10 Toggle -->
               <label class="flex items-center space-x-2 text-xs font-semibold text-slate-700 cursor-pointer select-none bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
                 <input type="checkbox" id="batchGroupToggle" onchange="toggleBatchGrouping(this.checked)" class="w-4 h-4 text-electric rounded border-slate-300 focus:ring-electric">
                 <span>Group in batches of 10</span>
@@ -768,7 +745,7 @@
             </div>
           </div>
 
-          <!-- STUDENTS ROSTER TABLE -->
+          <!-- TABLE -->
           <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="overflow-x-auto">
               <table class="w-full text-left text-xs">
@@ -791,19 +768,14 @@
               </table>
             </div>
 
-            <!-- Table Pagination (10 per page) -->
             <div class="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between text-xs gap-3">
               <span id="paginationInfo" class="text-slate-500 font-medium">Showing 1 to 10 of 29 students</span>
-              <div class="flex items-center space-x-2" id="paginationButtons">
-                <!-- Injected via renderPagination() -->
-              </div>
+              <div class="flex items-center space-x-2" id="paginationButtons"></div>
             </div>
           </div>
         </div>
 
-        <!-- =================================================================== -->
-        <!-- VIEW: ALERTS TAB                                                    -->
-        <!-- =================================================================== -->
+        <!-- VIEW: ALERTS TAB -->
         <div id="view-alerts" class="hidden space-y-6">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -818,7 +790,6 @@
             </button>
           </div>
 
-          <!-- Alert Filters Bar -->
           <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center gap-4 text-xs">
             <div>
               <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Severity</label>
@@ -852,7 +823,6 @@
             </div>
           </div>
 
-          <!-- Alerts Table -->
           <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="overflow-x-auto">
               <table class="w-full text-left text-xs">
@@ -875,9 +845,7 @@
           </div>
         </div>
 
-        <!-- =================================================================== -->
-        <!-- VIEW: REPORTS TAB                                                   -->
-        <!-- =================================================================== -->
+        <!-- VIEW: REPORTS TAB -->
         <div id="view-reports" class="hidden space-y-6">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -889,9 +857,7 @@
             </button>
           </div>
 
-          <!-- 3 CHARTS SIDE BY SIDE -->
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Chart 1: Bar chart - Alerts by dimension -->
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
               <div>
                 <h3 class="font-bold text-navy-900 text-sm">Alerts by Dimension</h3>
@@ -905,7 +871,6 @@
               </div>
             </div>
 
-            <!-- Chart 2: Donut chart - Students by persona -->
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
               <div>
                 <h3 class="font-bold text-navy-900 text-sm">Students by Persona</h3>
@@ -919,7 +884,6 @@
               </div>
             </div>
 
-            <!-- Chart 3: Line chart - Class avg CGPA trend (8 semesters) -->
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
               <div>
                 <h3 class="font-bold text-navy-900 text-sm">Class Avg CGPA Trend</h3>
@@ -935,9 +899,7 @@
           </div>
         </div>
 
-        <!-- =================================================================== -->
-        <!-- VIEW: MENTOR PROFILE PAGE (PAGE 3)                                  -->
-        <!-- =================================================================== -->
+        <!-- VIEW: MENTOR PROFILE PAGE -->
         <div id="view-profile" class="hidden space-y-6">
           <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold text-navy-900">Mentor Profile & Preferences</h1>
@@ -946,12 +908,8 @@
             </button>
           </div>
 
-          <!-- TWO-COLUMN LAYOUT -->
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            <!-- LEFT COLUMN (280px / 4 cols) -->
             <div class="lg:col-span-4 bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col items-center text-center">
-              <!-- Large Avatar -->
               <div class="w-24 h-24 rounded-full bg-navy-900 text-white flex items-center justify-center font-bold text-3xl shadow-xl ring-4 ring-blue-100 mb-4">
                 PR
               </div>
@@ -960,7 +918,6 @@
               <p class="text-xs text-slate-400 mt-0.5 font-mono">dr.priya@college.edu</p>
               <p class="text-[11px] text-slate-500 mt-1">Joined August 2021 &bull; 5th Academic Year</p>
 
-              <!-- Quick stats -->
               <div class="w-full grid grid-cols-2 gap-3 mt-6 pt-6 border-t border-slate-100 text-left">
                 <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
                   <p class="text-[10px] text-slate-400 font-bold uppercase">Mentored</p>
@@ -980,7 +937,6 @@
                 </div>
               </div>
 
-              <!-- Small Buttons -->
               <div class="w-full flex items-center space-x-2 mt-6">
                 <button onclick="toggleEditPersonalInfo()" class="flex-1 py-2 bg-electric hover:bg-electric-700 text-white rounded-lg text-xs font-semibold transition">
                   Edit Profile
@@ -991,10 +947,7 @@
               </div>
             </div>
 
-            <!-- RIGHT COLUMN (8 cols / Main Area) -->
             <div class="lg:col-span-8 space-y-6">
-              
-              <!-- SECTION A: Personal Information (View + Edit Toggle) -->
               <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
                 <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
                   <h3 class="font-bold text-navy-900 text-base">Personal Information</h3>
@@ -1003,7 +956,6 @@
                   </button>
                 </div>
 
-                <!-- Display Mode -->
                 <div id="personalInfoView" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                   <div>
                     <span class="text-slate-400 font-semibold block">Full Name:</span>
@@ -1031,7 +983,6 @@
                   </div>
                 </div>
 
-                <!-- Edit Mode Form (Hidden by default) -->
                 <form id="personalInfoForm" class="hidden space-y-4 pt-2 text-xs" onsubmit="savePersonalInfo(event)">
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -1062,7 +1013,7 @@
                 </form>
               </div>
 
-              <!-- SECTION B: Notification Preferences (Toggles) -->
+              <!-- Notifications Preferences -->
               <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
                 <h3 class="font-bold text-navy-900 text-base mb-4 pb-2 border-b border-slate-100">Notification Preferences</h3>
                 <div class="space-y-3.5 text-xs">
@@ -1098,21 +1049,10 @@
                       <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
                     </label>
                   </div>
-
-                  <div class="flex items-center justify-between p-2 rounded-xl hover:bg-slate-50">
-                    <div>
-                      <p class="font-semibold text-slate-800">Push notifications for resolved alerts</p>
-                      <p class="text-[11px] text-slate-400">Notify when peer mentor intervention restores student streak</p>
-                    </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                      <input type="checkbox" checked onchange="handlePrefChange('Resolved Alerts Push', this.checked)" class="sr-only peer">
-                      <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
-                    </label>
-                  </div>
                 </div>
               </div>
 
-              <!-- SECTION C: Recently Handled Students -->
+              <!-- Recently Handled -->
               <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
                 <h3 class="font-bold text-navy-900 text-base mb-4 pb-2 border-b border-slate-100">Recently Handled Students</h3>
                 <div class="overflow-x-auto">
@@ -1148,63 +1088,15 @@
                         <td class="py-2.5 px-3 font-mono text-slate-400">1 week ago</td>
                         <td class="py-2.5 px-3"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full font-semibold text-[10px]">Resolved</span></td>
                       </tr>
-                      <tr class="hover:bg-slate-50 cursor-pointer" onclick="openStudentDrawer('STU004')">
-                        <td class="py-2.5 px-3 font-bold text-navy-900">Ananya Iyer</td>
-                        <td class="py-2.5 px-3 text-danger font-medium">Attendance &lt; 70%</td>
-                        <td class="py-2.5 px-3 text-slate-600">Parent Consultation</td>
-                        <td class="py-2.5 px-3 font-mono text-slate-400">2 weeks ago</td>
-                        <td class="py-2.5 px-3"><span class="px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full font-semibold text-[10px]">Monitoring</span></td>
-                      </tr>
-                      <tr class="hover:bg-slate-50 cursor-pointer" onclick="openStudentDrawer('STU077')">
-                        <td class="py-2.5 px-3 font-bold text-navy-900">Vikramaditya Rao</td>
-                        <td class="py-2.5 px-3 text-electric font-medium">Research Grant Nomination</td>
-                        <td class="py-2.5 px-3 text-slate-600">Endorsed Proposal</td>
-                        <td class="py-2.5 px-3 font-mono text-slate-400">3 weeks ago</td>
-                        <td class="py-2.5 px-3"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full font-semibold text-[10px]">Completed</span></td>
-                      </tr>
                     </tbody>
                   </table>
                 </div>
               </div>
-
-              <!-- SECTION D: Activity Log -->
-              <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                <h3 class="font-bold text-navy-900 text-base mb-4 pb-2 border-b border-slate-100">Mentor Activity Timeline</h3>
-                <div class="space-y-4 text-xs">
-                  <div class="flex items-start space-x-3">
-                    <div class="w-2.5 h-2.5 rounded-full bg-electric mt-1 shrink-0"></div>
-                    <div>
-                      <p class="font-bold text-navy-900">Scheduled 1-on-1 with Aarav Mehta</p>
-                      <p class="text-[11px] text-slate-500">Focus: Diagnostic session on LeetCode consistency and placement roadmap.</p>
-                      <span class="text-[10px] text-slate-400 font-mono mt-0.5 block">3 days ago &bull; Verified</span>
-                    </div>
-                  </div>
-                  <div class="flex items-start space-x-3">
-                    <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 mt-1 shrink-0"></div>
-                    <div>
-                      <p class="font-bold text-navy-900">Resolved CGPA alert for Kabir Singh</p>
-                      <p class="text-[11px] text-slate-500">Action: Midterm retest completed with Grade 'A'.</p>
-                      <span class="text-[10px] text-slate-400 font-mono mt-0.5 block">5 days ago &bull; Closed</span>
-                    </div>
-                  </div>
-                  <div class="flex items-start space-x-3">
-                    <div class="w-2.5 h-2.5 rounded-full bg-purple-500 mt-1 shrink-0"></div>
-                    <div>
-                      <p class="font-bold text-navy-900">Assigned peer mentor to Diya Sharma</p>
-                      <p class="text-[11px] text-slate-500">Paired with Year 4 Senior (Sneha Kulkarni) for Web Development sprint.</p>
-                      <span class="text-[10px] text-slate-400 font-mono mt-0.5 block">1 week ago &bull; Paired</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
             </div>
           </div>
         </div>
 
-        <!-- =================================================================== -->
-        <!-- VIEW: SETTINGS TAB                                                  -->
-        <!-- =================================================================== -->
+        <!-- VIEW: SETTINGS TAB -->
         <div id="view-settings" class="hidden space-y-6">
           <div class="flex items-center justify-between">
             <div>
@@ -1254,11 +1146,11 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- PAGE 5: MENTEE (STUDENT) DASHBOARD PORTAL                                  -->
+  <!-- PAGE 5: DEDICATED STUDENT MENTEE DASHBOARD (STUDENT ISOLATED)             -->
   <!-- ========================================================================= -->
   <div id="section-mentee-app" class="hidden min-h-screen flex flex-col bg-[#F8FAFC]">
     
-    <!-- Mentee Top Bar -->
+    <!-- Mentee Top Bar: Notice NO links to faculty mentor console! -->
     <header class="h-16 bg-[#0A2540] text-white fixed top-0 left-0 right-0 z-40 px-6 flex items-center justify-between border-b border-navy-800 shadow-md">
       <div class="flex items-center space-x-3">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/30 text-white font-extrabold text-sm">
@@ -1266,44 +1158,57 @@
         </div>
         <div>
           <div class="font-bold text-sm tracking-wide text-white leading-tight">Student Growth Intelligence</div>
-          <div class="text-[11px] font-semibold tracking-wider uppercase text-emerald-300">Mentee Portal &bull; Student View</div>
+          <div class="text-[11px] font-semibold tracking-wider uppercase text-emerald-300">Mentee Growth Portal</div>
         </div>
       </div>
 
+      <!-- Student Profile & Sign Out Only -->
       <div class="flex items-center space-x-4">
-        <!-- Switch back to mentor console -->
-        <button onclick="switchToMentorView()" class="px-3 py-1.5 bg-navy-800 hover:bg-navy-700 text-blue-200 text-xs font-semibold rounded-lg border border-navy-700 transition">
-          👨‍🏫 Open Mentor Console
-        </button>
-        <button onclick="handleSignOut()" class="px-3 py-1.5 bg-red-500/20 text-red-300 hover:bg-red-500/30 text-xs font-semibold rounded-lg transition">
-          Sign Out
+        <div class="flex items-center space-x-2.5">
+          <div id="menteeHeaderAvatar" class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold ring-2 ring-emerald-400/40">
+            AM
+          </div>
+          <div class="hidden sm:block text-right">
+            <p id="menteeHeaderName" class="text-xs font-bold text-white leading-tight">Aarav Mehta</p>
+            <p id="menteeHeaderId" class="text-[10px] text-slate-300 font-mono">STU051 &bull; Student Account</p>
+          </div>
+        </div>
+
+        <div class="h-5 w-px bg-navy-700"></div>
+
+        <button onclick="handleSignOut()" class="px-3.5 py-1.5 bg-red-500/20 text-red-300 hover:bg-red-500/30 text-xs font-semibold rounded-lg transition flex items-center space-x-1.5">
+          <span>🚪</span>
+          <span>Sign Out</span>
         </button>
       </div>
     </header>
 
     <!-- Mentee Content Body -->
-    <main class="flex-1 p-8 pt-24 max-w-7xl mx-auto w-full space-y-8">
+    <main class="flex-1 p-6 md:p-8 pt-24 max-w-7xl mx-auto w-full space-y-7">
       
       <!-- Welcome Mentee Banner -->
       <div class="bg-gradient-to-r from-navy-900 via-navy-800 to-blue-900 text-white p-6 rounded-2xl shadow-xl border border-navy-700 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div class="flex items-center space-x-4">
-          <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-400 to-orange-500 text-white flex items-center justify-center font-extrabold text-2xl shadow-lg">
+          <div id="menteeBannerAvatar" class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-400 to-orange-500 text-white flex items-center justify-center font-extrabold text-2xl shadow-lg shrink-0">
             AM
           </div>
           <div>
-            <div class="flex items-center space-x-2">
-              <h1 class="text-xl font-bold">Aarav Mehta</h1>
-              <span class="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full font-mono text-xs font-bold border border-emerald-500/30">STU051</span>
-              <span class="px-2.5 py-0.5 bg-blue-500/20 text-blue-300 rounded-full text-xs font-semibold">Competitor Persona</span>
+            <div class="flex flex-wrap items-center gap-2">
+              <h1 id="menteeBannerName" class="text-xl font-bold">Aarav Mehta</h1>
+              <span id="menteeBannerId" class="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full font-mono text-xs font-bold border border-emerald-500/30">STU051</span>
+              <span id="menteeBannerPersona" class="px-2.5 py-0.5 bg-blue-500/20 text-blue-300 rounded-full text-xs font-semibold">Competitor</span>
             </div>
-            <p class="text-xs text-slate-300 mt-1">Year 3 &bull; Computer Science & Engineering &bull; Assigned Mentor: <strong class="text-white">Dr. Priya Raman</strong></p>
+            <p id="menteeBannerDetails" class="text-xs text-slate-300 mt-1">Year 3 &bull; Computer Science & Engineering &bull; Faculty Mentor: <strong class="text-white">Dr. Priya Raman</strong></p>
           </div>
         </div>
 
-        <div class="flex items-center space-x-3">
-          <button onclick="openScheduleModal()" class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl text-xs shadow-lg transition flex items-center space-x-2">
+        <div class="flex flex-wrap items-center gap-2.5">
+          <button onclick="openStudentRequestModal('appointment')" class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl text-xs shadow-lg transition flex items-center space-x-2">
             <span>📅</span>
-            <span>Request 1-on-1 with Dr. Priya</span>
+            <span>Request 1-on-1 with Mentor</span>
+          </button>
+          <button onclick="openStudentRequestModal('message')" class="px-3.5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-xl text-xs transition border border-white/20">
+            💬 Send Note
           </button>
         </div>
       </div>
@@ -1313,64 +1218,62 @@
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
           <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Current CGPA</p>
           <div class="flex items-baseline space-x-2 mt-1">
-            <h3 class="text-3xl font-extrabold text-navy-900 font-mono">8.70</h3>
-            <span class="text-xs font-bold text-emerald-600">Top 15%</span>
+            <h3 id="menteeCardCgpa" class="text-3xl font-extrabold text-navy-900 font-mono">8.70</h3>
+            <span class="text-xs font-bold text-emerald-600">Grade 'A'</span>
           </div>
-          <p class="text-[11px] text-slate-500 mt-1">Calculated through Semester 5</p>
+          <p class="text-[11px] text-slate-500 mt-1">Department average: 8.29</p>
         </div>
 
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-          <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Attendance</p>
+          <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Class Attendance</p>
           <div class="flex items-baseline space-x-2 mt-1">
-            <h3 class="text-3xl font-extrabold text-emerald-600 font-mono">91%</h3>
-            <span class="text-xs font-bold text-slate-500">Above target</span>
+            <h3 id="menteeCardAttendance" class="text-3xl font-extrabold text-emerald-600 font-mono">91%</h3>
+            <span class="text-xs font-bold text-slate-500">Good Standing</span>
           </div>
-          <p class="text-[11px] text-slate-500 mt-1">Total 168 of 185 sessions logged</p>
+          <p class="text-[11px] text-slate-500 mt-1">Above mandatory 75% requirement</p>
         </div>
 
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-          <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">LeetCode Problems</p>
+          <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">LeetCode Solves</p>
           <div class="flex items-baseline space-x-2 mt-1">
-            <h3 class="text-3xl font-extrabold text-navy-900 font-mono">320</h3>
-            <span class="text-xs font-bold text-danger">Dropped -40%</span>
+            <h3 id="menteeCardLeetcode" class="text-3xl font-extrabold text-navy-900 font-mono">320</h3>
+            <span id="menteeCardLeetcodeDrop" class="text-xs font-bold text-danger">-40% drop</span>
           </div>
-          <p class="text-[11px] text-danger font-medium mt-1">Attention flag flagged by Mentor</p>
+          <p class="text-[11px] text-slate-500 mt-1">Last 4 weeks weekly solve plateau</p>
         </div>
 
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
           <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Hackathons & Projects</p>
           <div class="flex items-baseline space-x-2 mt-1">
-            <h3 class="text-3xl font-extrabold text-electric font-mono">4</h3>
+            <h3 id="menteeCardHackathons" class="text-3xl font-extrabold text-electric font-mono">4</h3>
             <span class="text-xs font-bold text-emerald-600">1 Win</span>
           </div>
-          <p class="text-[11px] text-slate-500 mt-1">Smart India Hackathon Runner-up</p>
+          <p class="text-[11px] text-slate-500 mt-1">Project portfolio rated Excellent</p>
         </div>
       </div>
 
-      <!-- Mentee Growth Intelligence Charts -->
+      <!-- Growth Intelligence Charts -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Radar Chart -->
         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
           <div class="flex items-center justify-between mb-4">
             <div>
-              <h3 class="font-bold text-navy-900 text-sm">Personal Growth Radar (5 Dimensions)</h3>
-              <p class="text-[11px] text-slate-400">Current Competencies vs Department Benchmark</p>
+              <h3 class="font-bold text-navy-900 text-sm">My Growth Radar (5 Dimensions)</h3>
+              <p class="text-[11px] text-slate-400">Comparing your competencies against the department 85th percentile</p>
             </div>
-            <span class="px-2.5 py-0.5 bg-blue-50 text-electric font-bold rounded-lg text-xs">Evaluated Live</span>
+            <span class="px-2.5 py-0.5 bg-emerald-50 text-emerald-700 font-bold rounded-lg text-xs">Verified</span>
           </div>
           <div class="h-72">
             <canvas id="menteeRadarChart"></canvas>
           </div>
         </div>
 
-        <!-- 6-Month Velocity Line Chart -->
         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
           <div class="flex items-center justify-between mb-4">
             <div>
               <h3 class="font-bold text-navy-900 text-sm">6-Month Coding Velocity Trend</h3>
-              <p class="text-[11px] text-slate-400">LeetCode Solves over Last 6 Months</p>
+              <p class="text-[11px] text-slate-400">Weekly solve frequency tracked via automated platform telemetry</p>
             </div>
-            <span class="px-2.5 py-0.5 bg-red-50 text-danger font-bold rounded-lg text-xs">Alert Triggered</span>
+            <span class="px-2.5 py-0.5 bg-blue-50 text-electric font-bold rounded-lg text-xs">Live Telemetry</span>
           </div>
           <div class="h-72">
             <canvas id="menteeVelocityChart"></canvas>
@@ -1378,38 +1281,43 @@
         </div>
       </div>
 
-      <!-- Mentor Advisory & Goal Roadmap -->
+      <!-- Mentor Feedback & Placement Roadmap -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Mentor Guidance Note -->
-        <div class="lg:col-span-1 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-          <div class="flex items-center space-x-3 mb-4">
-            <div class="w-10 h-10 rounded-full bg-navy-900 text-white flex items-center justify-center font-bold text-xs">
-              PR
+        <!-- Mentor Advisory Note -->
+        <div class="lg:col-span-1 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center space-x-3 mb-4">
+              <div class="w-10 h-10 rounded-full bg-navy-900 text-white flex items-center justify-center font-bold text-xs shrink-0">
+                PR
+              </div>
+              <div>
+                <h4 class="font-bold text-navy-900 text-sm">Faculty Mentor Note</h4>
+                <p class="text-[11px] text-slate-400">Dr. Priya Raman &bull; Lead Advisor</p>
+              </div>
             </div>
-            <div>
-              <h4 class="font-bold text-navy-900 text-sm">Mentor Guidance</h4>
-              <p class="text-[11px] text-slate-400">From Dr. Priya Raman</p>
+            <div id="menteeMentorNoteBox" class="p-4 bg-blue-50/70 rounded-xl border border-blue-100 text-xs text-slate-700 leading-relaxed">
+              "Your academic consistency is commendable. However, our early-warning system detected that your problem-solving frequency dropped over the last 3 weeks. Please book a brief 1-on-1 check-in so we can streamline your placement interview preparation."
             </div>
           </div>
-          <div class="p-3.5 bg-blue-50/60 rounded-xl border border-blue-100 text-xs text-slate-700 leading-relaxed">
-            "Aarav, your academic standing is exceptional at 8.7 CGPA. However, we noticed your LeetCode problem volume dipped significantly over the past 3 weeks. Let's meet on Tuesday to review your algorithm interview preparation roadmap."
-          </div>
-          <div class="mt-4 flex items-center justify-between text-xs">
-            <span class="text-slate-400 text-[11px]">Next Scheduled 1-on-1:</span>
-            <span class="font-bold text-electric">Tomorrow, 3:30 PM</span>
+          <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span class="text-slate-400 text-[11px]">Assigned Peer Mentor:</span>
+            <span class="font-bold text-electric">Sneha Kulkarni (Senior)</span>
           </div>
         </div>
 
-        <!-- Milestone Roadmap -->
+        <!-- Placement Roadmap -->
         <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-          <h3 class="font-bold text-navy-900 text-sm mb-4">Target Milestones & Placement Roadmap</h3>
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-bold text-navy-900 text-sm">My Placement & Skill Readiness Roadmap</h3>
+            <span class="text-[11px] text-slate-400 font-mono">Target: 2027 Placements</span>
+          </div>
           <div class="space-y-3.5 text-xs">
             <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
               <div class="flex items-center space-x-3">
                 <span class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold">✓</span>
                 <div>
-                  <p class="font-bold text-slate-800">Complete Data Structures & Algorithms Core</p>
-                  <p class="text-[11px] text-slate-400">Grade 'A' secured in CS301 Laboratory</p>
+                  <p class="font-bold text-slate-800">Algorithms Core & Data Structures Mastery</p>
+                  <p class="text-[11px] text-slate-400">Cleared CS301 laboratory with Grade 'A'</p>
                 </div>
               </div>
               <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-semibold text-[10px]">Completed</span>
@@ -1419,8 +1327,8 @@
               <div class="flex items-center space-x-3">
                 <span class="w-6 h-6 rounded-full bg-electric text-white flex items-center justify-center text-xs font-bold">2</span>
                 <div>
-                  <p class="font-bold text-slate-800">Solve 350+ LeetCode Medium/Hard Problems</p>
-                  <p class="text-[11px] text-slate-400">Current progress: 320/350 &bull; Need 30 more</p>
+                  <p class="font-bold text-slate-800">Target 350+ LeetCode Medium/Hard Problems</p>
+                  <p class="text-[11px] text-slate-400">Currently solved 320 problems &bull; 30 to reach goal</p>
                 </div>
               </div>
               <span class="px-2 py-0.5 bg-blue-100 text-electric rounded font-semibold text-[10px]">In Progress</span>
@@ -1430,8 +1338,8 @@
               <div class="flex items-center space-x-3">
                 <span class="w-6 h-6 rounded-full bg-slate-300 text-slate-700 flex items-center justify-center text-xs font-bold">3</span>
                 <div>
-                  <p class="font-bold text-slate-800">Summer Internship Application Sprint</p>
-                  <p class="text-[11px] text-slate-400">Tier-1 product companies opening in Oct 2026</p>
+                  <p class="font-bold text-slate-800">System Design & Cloud Internship Drive</p>
+                  <p class="text-[11px] text-slate-400">Industry partner applications opening next month</p>
                 </div>
               </div>
               <span class="px-2 py-0.5 bg-slate-200 text-slate-600 rounded font-semibold text-[10px]">Upcoming</span>
@@ -1444,7 +1352,7 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- PAGE 4: STUDENT DETAIL DRAWER (520px Width)                               -->
+  <!-- PAGE 4: STUDENT DETAIL DRAWER (520px Width) - FOR FACULTY MENTOR ONLY     -->
   <!-- ========================================================================= -->
   <div id="studentDrawerBackdrop" class="drawer-backdrop fixed inset-0 bg-navy-950/50 backdrop-blur-xs z-50 opacity-0 pointer-events-none transition-opacity" onclick="closeStudentDrawer()"></div>
 
@@ -1473,8 +1381,7 @@
 
     <!-- Drawer Content Sections -->
     <div class="p-6 space-y-6 flex-1 text-xs">
-      
-      <!-- SECTION 1: 4 Metric Cards -->
+      <!-- Section 1: 4 Metric Cards -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80">
           <span class="text-[10px] font-bold text-slate-400 uppercase">CGPA</span>
@@ -1494,7 +1401,7 @@
         </div>
       </div>
 
-      <!-- SECTION 2: Radar Chart (5 dimensions) -->
+      <!-- Section 2: Radar Chart -->
       <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
         <div class="flex items-center justify-between mb-2">
           <h4 class="font-bold text-navy-900 text-xs uppercase tracking-wider">Skill Vector: Current vs Baseline</h4>
@@ -1505,7 +1412,7 @@
         </div>
       </div>
 
-      <!-- SECTION 3: 6-Month Trend Line -->
+      <!-- Section 3: 6-Month Trend Line -->
       <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
         <div class="flex items-center justify-between mb-2">
           <h4 class="font-bold text-navy-900 text-xs uppercase tracking-wider">6-Month LeetCode Solves</h4>
@@ -1516,25 +1423,20 @@
         </div>
       </div>
 
-      <!-- SECTION 4: Active Alerts List -->
+      <!-- Section 4: Active Alerts -->
       <div>
         <h4 class="font-bold text-navy-900 text-xs uppercase tracking-wider mb-2">Active Telemetry Alerts</h4>
-        <div id="drawerAlertsList" class="space-y-2">
-          <!-- Injected via renderDrawerAlerts() -->
-        </div>
+        <div id="drawerAlertsList" class="space-y-2"></div>
       </div>
 
-      <!-- SECTION 5: Activity Timeline -->
+      <!-- Section 5: Activity Timeline -->
       <div>
         <h4 class="font-bold text-navy-900 text-xs uppercase tracking-wider mb-3">Academic & Growth Timeline</h4>
-        <div id="drawerTimeline" class="space-y-3 pl-2 border-l-2 border-slate-200">
-          <!-- Injected via renderDrawerTimeline() -->
-        </div>
+        <div id="drawerTimeline" class="space-y-3 pl-2 border-l-2 border-slate-200"></div>
       </div>
-
     </div>
 
-    <!-- SECTION 6: Quick Actions (Bottom sticky footer) -->
+    <!-- Section 6: Quick Actions (Faculty Mentor Actions) -->
     <div class="p-4 bg-slate-50 border-t border-slate-200 sticky bottom-0">
       <div class="grid grid-cols-2 gap-2 text-xs">
         <button onclick="openActionModal('schedule')" class="py-2 px-3 bg-electric hover:bg-electric-700 text-white font-semibold rounded-lg shadow-sm transition">
@@ -1554,7 +1456,7 @@
   </aside>
 
   <!-- ========================================================================= -->
-  <!-- ACTION MODAL (Visual Prototype for Quick Actions)                        -->
+  <!-- ACTION MODAL (FOR FACULTY MENTOR)                                         -->
   <!-- ========================================================================= -->
   <div id="actionModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 bg-navy-950/50 backdrop-blur-xs">
     <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200">
@@ -1563,13 +1465,32 @@
         <button onclick="closeActionModal()" class="text-slate-400 hover:text-slate-700">&times;</button>
       </div>
 
-      <div id="modalBody" class="py-4 text-xs space-y-3">
-        <!-- Injected via openActionModal() -->
-      </div>
+      <div id="modalBody" class="py-4 text-xs space-y-3"></div>
 
       <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
         <button onclick="closeActionModal()" class="px-3.5 py-2 bg-slate-100 text-slate-600 rounded-lg text-xs font-semibold hover:bg-slate-200">Cancel</button>
         <button onclick="submitActionModal()" id="modalSubmitBtn" class="px-4 py-2 bg-electric text-white rounded-lg text-xs font-semibold hover:bg-electric-700 shadow-sm">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- STUDENT REQUEST MODAL (FOR STUDENTS IN MENTEE PORTAL)                     -->
+  <!-- ========================================================================= -->
+  <div id="studentRequestModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 bg-navy-950/50 backdrop-blur-xs">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 id="studentModalTitle" class="font-bold text-navy-900 text-sm">Request Session with Dr. Priya Raman</h3>
+        <button onclick="closeStudentRequestModal()" class="text-slate-400 hover:text-slate-700">&times;</button>
+      </div>
+
+      <div id="studentModalBody" class="py-4 text-xs space-y-3">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
+        <button onclick="closeStudentRequestModal()" class="px-3.5 py-2 bg-slate-100 text-slate-600 rounded-lg text-xs font-semibold hover:bg-slate-200">Cancel</button>
+        <button onclick="submitStudentRequestModal()" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-semibold hover:bg-emerald-700 shadow-sm">Send Request</button>
       </div>
     </div>
   </div>
@@ -1624,39 +1545,36 @@
         name = firstNames[(i * 3 + 5) % firstNames.length] + " " + lastNames[(i * 7 + 11) % lastNames.length];
         persona = personas[(i * 2 + 1) % personas.length];
         
-        // Distribution of ~28 flagged/watch across 100 students
         if (i % 7 === 0 || i === 8 || i === 22 || i === 44 || i === 63 || i === 88 || i === 94) {
           status = "Flagged";
-          attendance = 58 + ((i * 3) % 18); // 58% - 75%
-          cgpa = Number((6.5 + ((i * 5) % 15) / 10).toFixed(2)); // 6.5 - 7.9
+          attendance = 58 + ((i * 3) % 18);
+          cgpa = Number((6.5 + ((i * 5) % 15) / 10).toFixed(2));
           leetcode = 60 + (i % 120);
           hackathons = i % 2;
         } else if (i % 4 === 0) {
           status = "Watch";
-          attendance = 74 + ((i * 2) % 9); // 74% - 82%
-          cgpa = Number((7.4 + ((i * 3) % 14) / 10).toFixed(2)); // 7.4 - 8.7
+          attendance = 74 + ((i * 2) % 9);
+          cgpa = Number((7.4 + ((i * 3) % 14) / 10).toFixed(2));
           leetcode = 150 + (i % 140);
           hackathons = i % 3;
         } else {
           status = "On Track";
-          attendance = 83 + ((i * 2) % 15); // 83% - 97%
-          cgpa = Number((8.2 + ((i * 2) % 14) / 10).toFixed(2)); // 8.2 - 9.5
+          attendance = 83 + ((i * 2) % 15);
+          cgpa = Number((8.2 + ((i * 2) % 14) / 10).toFixed(2));
           leetcode = 240 + (i % 220);
           hackathons = 1 + (i % 4);
         }
       }
 
-      // LeetCode 6-Month history
       let leetcode6m;
       if (status === "Flagged" || i === 51) {
-        leetcode6m = [55, 62, 58, 64, 48, 27]; // sharp drop
+        leetcode6m = [55, 62, 58, 64, 48, 27];
       } else if (status === "Watch") {
         leetcode6m = [28, 30, 32, 29, 31, 26];
       } else {
         leetcode6m = [32, 38, 44, 49, 53, 58];
       }
 
-      // Radar vectors
       const academics = Math.min(98, Math.round(cgpa * 10));
       const attendanceScore = attendance;
       const programming = status === "Flagged" && i === 51 ? 48 : Math.min(95, Math.round((leetcode / 450) * 85) + 15);
@@ -1672,7 +1590,6 @@
         career: Math.max(45, career)
       };
 
-      // Active Alerts
       const alerts = [];
       if (status === "Flagged") {
         if (i === 51) {
@@ -1686,7 +1603,6 @@
         alerts.push({ id: `alt-${i}-4`, severity: "MEDIUM", dimension: i % 2 === 0 ? "Events" : "Programming", reason: "Zero coding commits or hackathon submissions logged in 14 days", detected: "6 days ago" });
       }
 
-      // Academic Timeline
       const timeline = [
         { year: `${2026 - year}`, title: "Admitted into B.Tech CSE", desc: "Enrolled in department honors program" },
         { year: `${2026 - year + 1}`, title: "Data Structures & Algorithms", desc: "Cleared core lab with grade 'A'" },
@@ -1699,6 +1615,7 @@
       studentsData.push({
         id,
         name,
+        email: `${name.toLowerCase().replace(' ', '.')}@college.edu`,
         year,
         department: "Computer Science",
         cgpa,
@@ -1716,11 +1633,14 @@
     }
 
     // =========================================================================
-    // 2. STATE MANAGEMENT & AUTH
+    // 2. STATE & ROLE-BASED ACCESS CONTROL (RBAC)
     // =========================================================================
-    let currentLoginRole = 'mentor';
+    let selectedPortalMode = 'mentor'; // 'mentor' or 'student'
+    let currentAuthRole = null;        // 'mentor' or 'student'
+    let currentAuthenticatedStudentId = 'STU051'; // default student is Aarav Mehta
+
     let currentActiveView = 'dashboard';
-    let currentActiveYear = 3; // default view tab is Year 3
+    let currentActiveYear = 3;
     let currentFilterChip = 'all';
     let currentSort = 'attendance';
     let isBatchGrouped = false;
@@ -1737,157 +1657,246 @@
     let chartCgpaInstance = null;
     let selectedDrawerStudent = null;
 
-    // Check stored session on load
+    // Check stored session on page load
     window.addEventListener('DOMContentLoaded', () => {
-      const storedEmail = localStorage.getItem('mentor_email');
-      const storedRole = localStorage.getItem('user_role');
+      const storedRole = localStorage.getItem('auth_role');
+      const storedUser = localStorage.getItem('auth_user_id');
 
       // Initialize date display
       const today = new Date().toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
       const dateEl = document.getElementById('dashboardCurrentDate');
       if (dateEl) dateEl.textContent = today;
 
-      if (storedEmail) {
-        if (storedRole === 'mentee') {
-          switchToMenteeView();
-        } else {
-          showMentorConsole();
-        }
+      if (storedRole === 'mentor') {
+        currentAuthRole = 'mentor';
+        showMentorConsole();
+      } else if (storedRole === 'student') {
+        currentAuthRole = 'student';
+        currentAuthenticatedStudentId = storedUser || 'STU051';
+        showStudentPortal(currentAuthenticatedStudentId);
+      } else {
+        // Default to mentor portal on initial landing
+        switchLoginPortal('mentor');
       }
     });
 
     // =========================================================================
-    // 3. AUTHENTICATION & LOGIN SCREEN BEHAVIOR
+    // 3. SEPARATE LOGIN PORTAL CONTROLLER
     // =========================================================================
-    function selectLoginRole(role) {
-      currentLoginRole = role;
-      const tabMentor = document.getElementById('roleTabMentor');
-      const tabMentee = document.getElementById('roleTabMentee');
-      const sub = document.getElementById('loginRoleSubtitle');
-      const emailInput = document.getElementById('signInEmail');
-
-      if (role === 'mentee') {
-        tabMentee.className = "py-2 rounded-lg font-bold transition bg-white text-emerald-700 shadow-sm";
-        tabMentor.className = "py-2 rounded-lg font-bold transition text-slate-500 hover:text-navy";
-        sub.textContent = "Mentee Portal";
-        emailInput.value = "aarav.mehta@college.edu";
-      } else {
-        tabMentor.className = "py-2 rounded-lg font-bold transition bg-white text-navy shadow-sm";
-        tabMentee.className = "py-2 rounded-lg font-bold transition text-slate-500 hover:text-navy";
-        sub.textContent = "Mentor Console";
-        emailInput.value = "dr.priya@college.edu";
-      }
-    }
-
-    function quickFillLogin(role) {
-      selectLoginRole(role);
-      handleSignInSubmit(new Event('submit'));
-    }
-
-    function handleSignInSubmit(e) {
-      if (e) e.preventDefault();
-      const emailInput = document.getElementById('signInEmail');
-      const passwordInput = document.getElementById('signInPassword');
-      const emailErr = document.getElementById('emailErrorMsg');
+    function switchLoginPortal(portal) {
+      selectedPortalMode = portal;
+      const btnMentor = document.getElementById('portalBtnMentor');
+      const btnStudent = document.getElementById('portalBtnStudent');
+      const badge = document.getElementById('loginPortalBadge');
+      const bannerTitle = document.getElementById('portalBannerTitle');
+      const bannerDesc = document.getElementById('portalBannerDesc');
+      const labelId = document.getElementById('labelIdentifier');
+      const labelPass = document.getElementById('labelPassword');
+      const inputId = document.getElementById('loginIdentifier');
+      const inputPass = document.getElementById('loginPassword');
+      const submitText = document.getElementById('signInBtnText');
+      const studentQuickSelect = document.getElementById('studentQuickSelectContainer');
+      const footerNote = document.getElementById('portalFooterNote');
+      const idErr = document.getElementById('identifierErrorMsg');
       const passErr = document.getElementById('passwordErrorMsg');
 
-      const email = emailInput.value.trim();
-      const password = passwordInput.value.trim();
+      idErr.classList.add('hidden');
+      passErr.classList.add('hidden');
+
+      if (portal === 'student') {
+        btnStudent.className = "py-2.5 rounded-lg transition flex items-center justify-center space-x-1.5 bg-white text-emerald-800 shadow-sm border border-emerald-200/80 font-bold";
+        btnMentor.className = "py-2.5 rounded-lg transition flex items-center justify-center space-x-1.5 text-slate-500 hover:text-navy-900";
+        badge.textContent = "Mentee Growth Portal Login";
+        bannerTitle.textContent = "Student Growth Portal";
+        bannerDesc.textContent = "Log in using your Student Roll Number (e.g. STU051) or College Email to track your skill velocity.";
+        labelId.textContent = "Student ID or Student Email";
+        labelPass.textContent = "Student PIN / Password";
+        inputId.placeholder = "STU051 or aarav.mehta@college.edu";
+        inputId.value = "STU051";
+        inputPass.value = "student2026";
+        submitText.textContent = "Access Mentee Portal";
+        studentQuickSelect.classList.remove('hidden');
+        footerNote.innerHTML = `Student account help: <span class="font-medium text-slate-600">Contact Student Mentorship Cell</span>`;
+      } else {
+        btnMentor.className = "py-2.5 rounded-lg transition flex items-center justify-center space-x-1.5 bg-white text-navy-900 shadow-sm border border-slate-200/60 font-bold";
+        btnStudent.className = "py-2.5 rounded-lg transition flex items-center justify-center space-x-1.5 text-slate-500 hover:text-navy-900";
+        badge.textContent = "Faculty Mentor Console Login";
+        bannerTitle.textContent = "Faculty Advisor Console";
+        bannerDesc.textContent = "Authorized faculty only. Student logins are strictly blocked on this console.";
+        labelId.textContent = "Faculty Institutional Email";
+        labelPass.textContent = "Faculty Master Password";
+        inputId.placeholder = "dr.priya@college.edu";
+        inputId.value = "dr.priya@college.edu";
+        inputPass.value = "faculty2026";
+        submitText.textContent = "Access Mentor Console";
+        studentQuickSelect.classList.add('hidden');
+        footerNote.innerHTML = `Faculty access inquiries: <span class="font-medium text-slate-600">Contact Dean of Academics</span>`;
+      }
+    }
+
+    function applySelectedStudentProfile(studentId) {
+      const student = studentsData.find(s => s.id === studentId);
+      if (student) {
+        document.getElementById('loginIdentifier').value = student.id;
+        document.getElementById('loginPassword').value = "student2026";
+      }
+    }
+
+    function handlePortalSignIn(e) {
+      if (e) e.preventDefault();
+      const idInput = document.getElementById('loginIdentifier');
+      const passInput = document.getElementById('loginPassword');
+      const idErr = document.getElementById('identifierErrorMsg');
+      const passErr = document.getElementById('passwordErrorMsg');
+
+      const idVal = idInput.value.trim();
+      const passVal = passInput.value.trim();
       let hasError = false;
 
-      // Email validation: must contain @
-      if (!email.includes('@')) {
-        emailErr.classList.remove('hidden');
+      idErr.classList.add('hidden');
+      passErr.classList.add('hidden');
+
+      if (!idVal) {
+        idErr.textContent = "Please enter your identifier.";
+        idErr.classList.remove('hidden');
         hasError = true;
-      } else {
-        emailErr.classList.add('hidden');
       }
 
-      // Password validation: min 4 chars
-      if (password.length < 4) {
+      if (passVal.length < 4) {
+        passErr.textContent = "Password must be at least 4 characters.";
         passErr.classList.remove('hidden');
         hasError = true;
-      } else {
-        passErr.classList.add('hidden');
       }
 
       if (hasError) return;
+
+      // STRICT ACCESS ENFORCEMENT
+      if (selectedPortalMode === 'mentor') {
+        // Check if student credentials were used on the mentor console
+        const isStudentAttempt = idVal.toUpperCase().startsWith('STU') || 
+                                 studentsData.some(s => s.id.toLowerCase() === idVal.toLowerCase() || s.email.toLowerCase() === idVal.toLowerCase());
+        
+        if (isStudentAttempt && !idVal.toLowerCase().includes('priya')) {
+          idErr.textContent = "⛔ Access Denied: Student accounts cannot access the Faculty Mentor Console. Please switch to the Student Mentee Portal above.";
+          idErr.classList.remove('hidden');
+          return;
+        }
+
+        // Validate mentor email
+        if (!idVal.includes('@')) {
+          idErr.textContent = "Invalid faculty email (must contain @).";
+          idErr.classList.remove('hidden');
+          return;
+        }
+      } else if (selectedPortalMode === 'student') {
+        // Check if faculty tried to log into student portal
+        if (idVal.toLowerCase().includes('dr.priya') || idVal.toLowerCase().includes('priya.raman')) {
+          idErr.textContent = "Faculty account detected. Please switch to the Faculty Mentor Portal tab above.";
+          idErr.classList.remove('hidden');
+          return;
+        }
+      }
 
       // Show spinner for 1 second
       const btn = document.getElementById('signInSubmitBtn');
       const btnText = document.getElementById('signInBtnText');
       const spinner = document.getElementById('signInSpinner');
 
-      btnText.textContent = "Authenticating...";
+      btnText.textContent = "Verifying Access Rights...";
       spinner.classList.remove('hidden');
       btn.disabled = true;
 
       setTimeout(() => {
-        btnText.textContent = "Sign In";
+        btnText.textContent = selectedPortalMode === 'mentor' ? "Access Mentor Console" : "Access Mentee Portal";
         spinner.classList.add('hidden');
         btn.disabled = false;
 
-        localStorage.setItem('mentor_email', email);
-        localStorage.setItem('user_role', currentLoginRole);
-
-        if (currentLoginRole === 'mentee') {
-          switchToMenteeView();
-          showToast(`Welcome back, Aarav Mehta (Mentee STU051)`);
-        } else {
+        if (selectedPortalMode === 'mentor') {
+          currentAuthRole = 'mentor';
+          localStorage.setItem('auth_role', 'mentor');
+          localStorage.setItem('auth_user_id', 'dr.priya@college.edu');
           showMentorConsole();
-          showToast(`Signed in successfully as Dr. Priya Raman`);
+          showToast("Authenticated as Faculty Mentor: Dr. Priya Raman");
+        } else {
+          // Identify which student logged in
+          let matched = studentsData.find(s => s.id.toLowerCase() === idVal.toLowerCase() || s.email.toLowerCase() === idVal.toLowerCase());
+          if (!matched) {
+            // Default to Aarav Mehta or create session
+            matched = studentsData.find(s => s.id === 'STU051') || studentsData[0];
+          }
+
+          currentAuthRole = 'student';
+          currentAuthenticatedStudentId = matched.id;
+          localStorage.setItem('auth_role', 'student');
+          localStorage.setItem('auth_user_id', matched.id);
+
+          showStudentPortal(matched.id);
+          showToast(`Welcome to your Growth Portal, ${matched.name} (${matched.id})`);
         }
-      }, 1000);
+      }, 900);
     }
 
     function handleForgotPasswordAlert() {
-      alert("Forgot password? Please contact IT Support at it-support@college.edu or dial Ext. 4020.");
+      if (selectedPortalMode === 'mentor') {
+        alert("Faculty Support: Please contact IT Department at faculty-helpdesk@college.edu (Ext. 4020).");
+      } else {
+        alert("Student Support: Please contact College Registrar or reset your PIN at student-desk@college.edu.");
+      }
     }
 
     function handleSSOLogin() {
-      showToast("Redirecting to College Single Sign-On (SSO)...");
+      showToast("Redirecting to Institutional SSO Gateway...");
       setTimeout(() => {
-        localStorage.setItem('mentor_email', 'dr.priya@college.edu');
-        localStorage.setItem('user_role', 'mentor');
-        showMentorConsole();
-      }, 800);
+        if (selectedPortalMode === 'mentor') {
+          currentAuthRole = 'mentor';
+          localStorage.setItem('auth_role', 'mentor');
+          localStorage.setItem('auth_user_id', 'dr.priya@college.edu');
+          showMentorConsole();
+        } else {
+          currentAuthRole = 'student';
+          localStorage.setItem('auth_role', 'student');
+          localStorage.setItem('auth_user_id', 'STU051');
+          showStudentPortal('STU051');
+        }
+      }, 700);
     }
 
     function handleSignOut() {
-      localStorage.removeItem('mentor_email');
-      localStorage.removeItem('user_role');
+      localStorage.removeItem('auth_role');
+      localStorage.removeItem('auth_user_id');
+      currentAuthRole = null;
 
       document.getElementById('section-mentor-app').classList.add('hidden');
       document.getElementById('section-mentee-app').classList.add('hidden');
       document.getElementById('section-signin').classList.remove('hidden');
 
-      showToast("Signed out successfully. Session cleared.");
+      showToast("Session securely closed. Returned to login portal.");
     }
 
+    // =========================================================================
+    // 4. MENTOR CONSOLE VIEW CONTROLLER (WITH ROUTE GUARD)
+    // =========================================================================
     function showMentorConsole() {
+      // Security guard: Ensure students cannot enter mentor console
+      if (currentAuthRole !== 'mentor') {
+        showToast("⛔ Security Guard: Unauthorized access to Faculty Mentor Console.");
+        handleSignOut();
+        return;
+      }
+
       document.getElementById('section-signin').classList.add('hidden');
       document.getElementById('section-mentee-app').classList.add('hidden');
       document.getElementById('section-mentor-app').classList.remove('hidden');
       navigateTo('dashboard');
     }
 
-    function switchToMenteeView() {
-      document.getElementById('section-signin').classList.add('hidden');
-      document.getElementById('section-mentor-app').classList.add('hidden');
-      document.getElementById('section-mentee-app').classList.remove('hidden');
-      initMenteeCharts();
-    }
-
-    function switchToMentorView() {
-      document.getElementById('section-mentee-app').classList.add('hidden');
-      document.getElementById('section-mentor-app').classList.remove('hidden');
-      navigateTo('dashboard');
-    }
-
-    // =========================================================================
-    // 4. MENTOR NAVIGATION & VIEW SWITCHER
-    // =========================================================================
     function navigateTo(target) {
+      // SECURITY CHECK: Students cannot trigger navigateTo for mentor tabs
+      if (currentAuthRole !== 'mentor') {
+        showToast("⛔ Access Denied: Student account does not have faculty privileges.");
+        return;
+      }
+
       // Close dropdowns
       document.getElementById('globalSearchResults').classList.add('hidden');
       document.getElementById('notificationDropdown').classList.add('hidden');
@@ -1957,13 +1966,177 @@
     }
 
     // =========================================================================
-    // 5. DASHBOARD TAB RENDERING
+    // 5. STUDENT PORTAL CONTROLLER (ISOLATED STUDENT EXPERIENCE)
+    // =========================================================================
+    function showStudentPortal(studentId) {
+      document.getElementById('section-signin').classList.add('hidden');
+      document.getElementById('section-mentor-app').classList.add('hidden');
+      document.getElementById('section-mentee-app').classList.remove('hidden');
+
+      const student = studentsData.find(s => s.id === studentId) || studentsData[0];
+      
+      // Update Mentee Header and Banner with the actual student's details
+      const initials = student.name.split(' ').map(n => n[0]).join('');
+      document.getElementById('menteeHeaderAvatar').textContent = initials;
+      document.getElementById('menteeHeaderName').textContent = student.name;
+      document.getElementById('menteeHeaderId').textContent = `${student.id} • Year ${student.year}`;
+
+      document.getElementById('menteeBannerAvatar').textContent = initials;
+      document.getElementById('menteeBannerName').textContent = student.name;
+      document.getElementById('menteeBannerId').textContent = student.id;
+      document.getElementById('menteeBannerPersona').textContent = `${student.persona} Persona`;
+      document.getElementById('menteeBannerDetails').innerHTML = `Year ${student.year} &bull; ${student.department} &bull; Assigned Mentor: <strong class="text-white">Dr. Priya Raman</strong>`;
+
+      // Update 4 Personal Metric Cards
+      document.getElementById('menteeCardCgpa').textContent = student.cgpa.toFixed(2);
+      document.getElementById('menteeCardAttendance').textContent = `${student.attendance}%`;
+      document.getElementById('menteeCardLeetcode').textContent = student.leetcode;
+      document.getElementById('menteeCardHackathons').textContent = student.hackathons;
+
+      const dropIndicator = document.getElementById('menteeCardLeetcodeDrop');
+      if (student.status === 'Flagged') {
+        dropIndicator.textContent = "-40% drop";
+        dropIndicator.className = "text-xs font-bold text-danger";
+      } else {
+        dropIndicator.textContent = "+12% growth";
+        dropIndicator.className = "text-xs font-bold text-emerald-600";
+      }
+
+      // Update Mentor Guidance text
+      const noteBox = document.getElementById('menteeMentorNoteBox');
+      if (student.status === 'Flagged') {
+        noteBox.textContent = `"${student.name.split(' ')[0]}, your academic record is steady, but your programming practice hours logged a significant variance. Please review the algorithm practice roadmap or book a 1-on-1 session with me."`;
+      } else {
+        noteBox.textContent = `"${student.name.split(' ')[0]}, excellent progress! Keep up your consistency in core algorithmic labs and prepare for upcoming tier-1 placement screenings."`;
+      }
+
+      initMenteeChartsForStudent(student);
+    }
+
+    function initMenteeChartsForStudent(student) {
+      // Mentee Radar
+      const ctxRadar = document.getElementById('menteeRadarChart');
+      if (ctxRadar) {
+        if (menteeRadarChartInstance) menteeRadarChartInstance.destroy();
+        menteeRadarChartInstance = new Chart(ctxRadar, {
+          type: 'radar',
+          data: {
+            labels: ['Academics (CGPA)', 'Programming (LeetCode)', 'Hackathons', 'Attendance', 'Career Prep'],
+            datasets: [
+              {
+                label: student.name,
+                data: [
+                  student.radarCurrent.academics,
+                  student.radarCurrent.programming,
+                  student.radarCurrent.events,
+                  student.radarCurrent.attendance,
+                  student.radarCurrent.career
+                ],
+                backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                borderColor: '#10B981',
+                pointBackgroundColor: '#10B981',
+                pointRadius: 3
+              },
+              {
+                label: 'Dept 85th Percentile',
+                data: [85, 80, 70, 88, 70],
+                backgroundColor: 'transparent',
+                borderColor: '#94A3B8',
+                borderDash: [4, 4],
+                pointRadius: 2
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { r: { min: 20, max: 100, ticks: { display: false } } }
+          }
+        });
+      }
+
+      // Mentee Velocity Line Chart
+      const ctxLine = document.getElementById('menteeVelocityChart');
+      if (ctxLine) {
+        if (menteeVelocityChartInstance) menteeVelocityChartInstance.destroy();
+        menteeVelocityChartInstance = new Chart(ctxLine, {
+          type: 'line',
+          data: {
+            labels: ['M -5', 'M -4', 'M -3', 'M -2', 'M -1', 'Current Month'],
+            datasets: [{
+              label: 'Solve Volume',
+              data: student.leetcode6m,
+              borderColor: '#10B981',
+              backgroundColor: 'rgba(16, 185, 129, 0.08)',
+              fill: true,
+              tension: 0.35,
+              pointBackgroundColor: (ctx) => (ctx.dataIndex === 5 && student.status === 'Flagged') ? '#EF4444' : '#10B981',
+              pointRadius: (ctx) => (ctx.dataIndex === 5 && student.status === 'Flagged') ? 6 : 4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true, grid: { color: '#F1F5F9' } }, x: { grid: { display: false } } }
+          }
+        });
+      }
+    }
+
+    function openStudentRequestModal(type) {
+      const modal = document.getElementById('studentRequestModal');
+      const title = document.getElementById('studentModalTitle');
+      const body = document.getElementById('studentModalBody');
+
+      if (type === 'appointment') {
+        title.textContent = "Book 1-on-1 Guidance with Dr. Priya Raman";
+        body.innerHTML = `
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Preferred Meeting Slot</label>
+            <select class="w-full p-2 border border-slate-200 rounded-lg bg-slate-50">
+              <option>Tuesday &bull; 3:30 PM - 4:00 PM (Office 402)</option>
+              <option>Thursday &bull; 4:00 PM - 4:30 PM (Office 402)</option>
+              <option>Friday &bull; 2:00 PM - 2:30 PM (Virtual Meet)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">What would you like to discuss?</label>
+            <textarea rows="3" class="w-full p-2 border border-slate-200 rounded-lg bg-slate-50" placeholder="E.g., Reviewing LeetCode preparation, summer internship advice, or semester project roadmap..."></textarea>
+          </div>
+        `;
+      } else {
+        title.textContent = "Send Message to Dr. Priya Raman";
+        body.innerHTML = `
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Subject</label>
+            <input type="text" class="w-full p-2 border border-slate-200 rounded-lg bg-slate-50" value="Query regarding placement roadmap">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Message</label>
+            <textarea rows="4" class="w-full p-2 border border-slate-200 rounded-lg bg-slate-50" placeholder="Type your note for faculty mentor review..."></textarea>
+          </div>
+        `;
+      }
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeStudentRequestModal() {
+      document.getElementById('studentRequestModal').classList.add('hidden');
+    }
+
+    function submitStudentRequestModal() {
+      closeStudentRequestModal();
+      showToast("✅ Request transmitted to Dr. Priya Raman's advisory queue!");
+    }
+
+    // =========================================================================
+    // 6. DASHBOARD TAB RENDERING (FACULTY ONLY)
     // =========================================================================
     function renderDashboardWeeklyAlerts() {
       const tbody = document.getElementById('dashboardWeeklyAlertsBody');
       if (!tbody) return;
 
-      // Select top 6 flagged students
       const flaggedStudents = studentsData.filter(s => s.status === 'Flagged' || s.alerts.length > 0).slice(0, 6);
 
       tbody.innerHTML = flaggedStudents.map(s => {
@@ -1993,7 +2166,6 @@
         `;
       }).join('');
 
-      // Also populate top bar notification dropdown list
       const notifList = document.getElementById('notificationList');
       if (notifList) {
         notifList.innerHTML = flaggedStudents.map(s => `
@@ -2009,7 +2181,7 @@
     }
 
     // =========================================================================
-    // 6. YEAR VIEW RENDERING & CONTROLS
+    // 7. YEAR VIEW RENDERING & CONTROLS (FACULTY ONLY)
     // =========================================================================
     function setYearTab(y) {
       currentActiveYear = y;
@@ -2019,7 +2191,6 @@
     }
 
     function updateYearHeaderUI() {
-      // Cohort pills styling
       ['all', 1, 2, 3, 4].forEach(y => {
         const btn = document.getElementById(`cohortBtn-${y}`);
         if (btn) {
@@ -2082,12 +2253,10 @@
     function getFilteredAndSortedStudents() {
       let list = [...studentsData];
 
-      // Year filter
       if (currentActiveYear !== 'all') {
         list = list.filter(s => s.year === currentActiveYear);
       }
 
-      // Filter chip
       if (currentFilterChip === 'flagged') {
         list = list.filter(s => s.status === 'Flagged');
       } else if (currentFilterChip === 'watch') {
@@ -2098,7 +2267,6 @@
         list = list.filter(s => s.cgpa >= 9.0 || s.leetcode >= 350);
       }
 
-      // Search query
       if (tableSearchQuery) {
         list = list.filter(s => 
           s.name.toLowerCase().includes(tableSearchQuery) || 
@@ -2106,7 +2274,6 @@
         );
       }
 
-      // Sort
       if (currentSort === 'attendance') {
         list.sort((a, b) => b.attendance - a.attendance);
       } else if (currentSort === 'cgpa') {
@@ -2127,7 +2294,6 @@
       const fullList = getFilteredAndSortedStudents();
       const totalStudents = fullList.length;
 
-      // Pagination slice
       const startIdx = (currentPage - 1) * pageSize;
       const endIdx = startIdx + pageSize;
       const pagedList = fullList.slice(startIdx, endIdx);
@@ -2142,7 +2308,6 @@
       pagedList.forEach((s, idx) => {
         const overallRank = startIdx + idx + 1;
 
-        // When "Group in batches of 10" is ON, show batch headers
         if (isBatchGrouped && overallRank % 10 === 1) {
           const batchLetter = String.fromCharCode(65 + Math.floor((overallRank - 1) / 10));
           const batchEnd = Math.min(overallRank + 9, totalStudents);
@@ -2155,7 +2320,6 @@
           `;
         }
 
-        // Status pill
         let statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">🟢 On Track</span>`;
         if (s.status === 'Watch') {
           statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800">🟡 Watch</span>`;
@@ -2234,7 +2398,7 @@
     }
 
     // =========================================================================
-    // 7. ALERTS TAB LOGIC
+    // 8. ALERTS TAB LOGIC (FACULTY ONLY)
     // =========================================================================
     function renderAlertsPage() {
       const tbody = document.getElementById('fullAlertsTableBody');
@@ -2260,7 +2424,6 @@
         });
       });
 
-      // Filters
       if (sevFilter !== 'all') allAlerts = allAlerts.filter(a => a.severity === sevFilter);
       if (yrFilter !== 'all') allAlerts = allAlerts.filter(a => String(a.year) === String(yrFilter));
       if (dimFilter !== 'all') allAlerts = allAlerts.filter(a => a.dimension === dimFilter);
@@ -2301,7 +2464,6 @@
     }
 
     function resolveAlert(studentId, alertId) {
-      // Find and remove alert from student data
       const student = studentsData.find(s => s.id === studentId);
       if (student) {
         student.alerts = student.alerts.filter(a => a.id !== alertId);
@@ -2310,7 +2472,6 @@
         }
       }
 
-      // Remove row with smooth fade
       const row = document.getElementById(`row-${alertId}`);
       if (row) {
         row.classList.add('opacity-0', 'transition-opacity');
@@ -2330,10 +2491,9 @@
     }
 
     // =========================================================================
-    // 8. REPORTS TAB CHARTS (Chart.js)
+    // 9. REPORTS TAB CHARTS (FACULTY ONLY)
     // =========================================================================
     function initReportsCharts() {
-      // Bar Chart: Alerts by dimension
       const ctxBar = document.getElementById('chartAlertsByDimension');
       if (ctxBar) {
         if (chartAlertsInstance) chartAlertsInstance.destroy();
@@ -2357,7 +2517,6 @@
         });
       }
 
-      // Donut Chart: Students by Persona
       const ctxDonut = document.getElementById('chartStudentsByPersona');
       if (ctxDonut) {
         if (chartPersonaInstance) chartPersonaInstance.destroy();
@@ -2381,7 +2540,6 @@
         });
       }
 
-      // Line Chart: Class Avg CGPA Trend (8 Semesters)
       const ctxLine = document.getElementById('chartCgpaTrend');
       if (ctxLine) {
         if (chartCgpaInstance) chartCgpaInstance.destroy();
@@ -2411,14 +2569,18 @@
     }
 
     // =========================================================================
-    // 9. STUDENT DETAIL DRAWER (PAGE 4)
+    // 10. STUDENT DETAIL DRAWER (FACULTY MENTOR USE ONLY)
     // =========================================================================
     function openStudentDrawer(studentId) {
+      if (currentAuthRole !== 'mentor') {
+        showToast("⛔ Access Denied: Cohort drawer is restricted to faculty mentors.");
+        return;
+      }
+
       const s = studentsData.find(st => st.id === studentId);
       if (!s) return;
       selectedDrawerStudent = s;
 
-      // Populate basic info
       document.getElementById('drawerStudentName').textContent = s.name;
       document.getElementById('drawerStudentMeta').textContent = `${s.id} • Year ${s.year} • ${s.department}`;
       document.getElementById('drawerAvatar').textContent = s.name.split(' ').map(n => n[0]).join('');
@@ -2427,25 +2589,16 @@
       pill.textContent = s.status;
       pill.className = `px-2 py-0.5 rounded-full text-xs font-bold ${s.status === 'On Track' ? 'bg-emerald-100 text-emerald-800' : s.status === 'Watch' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-danger'}`;
 
-      // Section 1: 4 Metric Cards
       document.getElementById('drawerCgpa').textContent = s.cgpa.toFixed(2);
       document.getElementById('drawerAttendance').textContent = `${s.attendance}%`;
       document.getElementById('drawerLeetcode').textContent = s.leetcode;
       document.getElementById('drawerHackathons').textContent = s.hackathons;
 
-      // Section 2: Radar Chart
       renderDrawerRadarChart(s);
-
-      // Section 3: 6-Month Line Chart
       renderDrawerLineChart(s);
-
-      // Section 4: Active Alerts
       renderDrawerAlerts(s);
-
-      // Section 5: Timeline
       renderDrawerTimeline(s);
 
-      // Open drawer smoothly
       const drawer = document.getElementById('studentDrawer');
       const backdrop = document.getElementById('studentDrawerBackdrop');
       backdrop.classList.remove('opacity-0', 'pointer-events-none');
@@ -2570,72 +2723,7 @@
     }
 
     // =========================================================================
-    // 10. MENTEE PORTAL CHARTS
-    // =========================================================================
-    function initMenteeCharts() {
-      // Mentee Radar
-      const ctxRadar = document.getElementById('menteeRadarChart');
-      if (ctxRadar) {
-        if (menteeRadarChartInstance) menteeRadarChartInstance.destroy();
-        menteeRadarChartInstance = new Chart(ctxRadar, {
-          type: 'radar',
-          data: {
-            labels: ['Academics (CGPA)', 'Programming (LeetCode)', 'Hackathons', 'Attendance', 'Career Prep'],
-            datasets: [
-              {
-                label: 'Aarav Mehta',
-                data: [87, 52, 85, 91, 75],
-                backgroundColor: 'rgba(16, 185, 129, 0.2)',
-                borderColor: '#10B981',
-                pointBackgroundColor: '#10B981'
-              },
-              {
-                label: 'Dept 85th Percentile',
-                data: [85, 80, 70, 88, 70],
-                backgroundColor: 'transparent',
-                borderColor: '#94A3B8',
-                borderDash: [4, 4]
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: { r: { min: 20, max: 100, ticks: { display: false } } }
-          }
-        });
-      }
-
-      // Mentee Velocity Line Chart
-      const ctxLine = document.getElementById('menteeVelocityChart');
-      if (ctxLine) {
-        if (menteeVelocityChartInstance) menteeVelocityChartInstance.destroy();
-        menteeVelocityChartInstance = new Chart(ctxLine, {
-          type: 'line',
-          data: {
-            labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep (W1-2)', 'Current Week'],
-            datasets: [{
-              label: 'Weekly Solves',
-              data: [55, 62, 58, 64, 48, 27],
-              borderColor: '#10B981',
-              backgroundColor: 'rgba(16, 185, 129, 0.08)',
-              fill: true,
-              tension: 0.35,
-              pointBackgroundColor: (ctx) => ctx.dataIndex === 5 ? '#EF4444' : '#10B981',
-              pointRadius: (ctx) => ctx.dataIndex === 5 ? 7 : 4
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: { y: { beginAtZero: true, grid: { color: '#F1F5F9' } }, x: { grid: { display: false } } }
-          }
-        });
-      }
-    }
-
-    // =========================================================================
-    // 11. PROFILE PAGE: PERSONAL INFO EDIT & PREFERENCES
+    // 11. PROFILE PAGE: PERSONAL INFO EDIT & PREFERENCES (FACULTY)
     // =========================================================================
     let isEditingPersonalInfo = false;
 
@@ -2679,7 +2767,7 @@
     }
 
     // =========================================================================
-    // 12. QUICK ACTIONS & MODAL SYSTEM
+    // 12. QUICK ACTIONS & MODAL SYSTEM (FACULTY)
     // =========================================================================
     function openActionModal(actionType) {
       const modal = document.getElementById('actionModal');
@@ -2761,6 +2849,8 @@
     // 13. GLOBAL SEARCH & DROPDOWN UTILITIES
     // =========================================================================
     function handleGlobalSearch(query) {
+      if (currentAuthRole !== 'mentor') return;
+
       const dropdown = document.getElementById('globalSearchResults');
       const q = query.toLowerCase().trim();
 
@@ -2813,14 +2903,18 @@
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
         const input = document.getElementById('globalSearchInput');
-        if (input) input.focus();
+        if (input && currentAuthRole === 'mentor') input.focus();
       }
       if (e.key === 'Escape') {
         closeStudentDrawer();
         closeActionModal();
-        document.getElementById('globalSearchResults').classList.add('hidden');
-        document.getElementById('notificationDropdown').classList.add('hidden');
-        document.getElementById('userMenuDropdown').classList.add('hidden');
+        closeStudentRequestModal();
+        const sResults = document.getElementById('globalSearchResults');
+        if (sResults) sResults.classList.add('hidden');
+        const nDrop = document.getElementById('notificationDropdown');
+        if (nDrop) nDrop.classList.add('hidden');
+        const uDrop = document.getElementById('userMenuDropdown');
+        if (uDrop) uDrop.classList.add('hidden');
       }
     });
 
